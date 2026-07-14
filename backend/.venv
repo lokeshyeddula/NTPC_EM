@@ -1,0 +1,10 @@
+SECRET_KEY=change_this_to_a_long_random_secret_key
+DEBUG=True
+
+DB_NAME=ntpc_em
+DB_USER=postgres
+DB_PASSWORD=Nothing@8985
+DB_HOST=localhost
+DB_PORT=5432
+
+ALLOWED_HOSTS=127.0.0.1,localhost

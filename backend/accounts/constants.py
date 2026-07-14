@@ -1,0 +1,1 @@
+DEFAULT_PASSWORD = "Welcome@123"
