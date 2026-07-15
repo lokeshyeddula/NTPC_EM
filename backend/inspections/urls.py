@@ -8,7 +8,7 @@ from .views import (
 urlpatterns = [
 
     path(
-        "checklists/<str:machine_type>/",
+        "checklists/<int:machinery_type_id>/",
         MachineryChecklistAPIView.as_view(),
         name="machine-checklist",
     ),

@@ -11,6 +11,12 @@ from rest_framework.generics import ListAPIView
 from .serializers import VehicleSerializer
 
 
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+
+from .models import Vehicle
+from .serializers import VehicleSerializer
+
 class VehicleByMachineAPIView(ListAPIView):
 
     serializer_class = VehicleSerializer
@@ -18,13 +24,12 @@ class VehicleByMachineAPIView(ListAPIView):
 
     def get_queryset(self):
 
-        machine = self.kwargs["machine"]
+        machinery_type_id = self.kwargs["machinery_type_id"]
 
         return Vehicle.objects.filter(
-            machinery_type__name__iexact=machine,
+            machinery_type_id=machinery_type_id,
             status="Active",
         ).order_by("machine_number")
-
 class MachineryTypeViewSet(viewsets.ModelViewSet):
 
     queryset = MachineryType.objects.all()

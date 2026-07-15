@@ -32,14 +32,16 @@ class MachineryChecklistAPIView(generics.ListAPIView):
 
     def get_queryset(self):
 
-        machine_type = self.kwargs["machine_type"]
+        machinery_type_id = self.kwargs["machinery_type_id"]
 
         try:
+
             machinery = MachineryType.objects.get(
-                name__iexact=machine_type
+                id=machinery_type_id
             )
 
         except MachineryType.DoesNotExist:
+
             raise NotFound("Machine type not found.")
 
         return (
@@ -53,7 +55,6 @@ class MachineryChecklistAPIView(generics.ListAPIView):
             )
             .order_by("display_order")
         )
-
 
 class InspectionCreateAPIView(APIView):
 

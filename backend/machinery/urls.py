@@ -1,10 +1,11 @@
 from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
-from .views import VehicleByMachineAPIView
+
 from .views import (
     MachineryTypeViewSet,
     VehicleViewSet,
+    VehicleByMachineAPIView,
 )
 
 router = DefaultRouter()
@@ -20,12 +21,16 @@ router.register(
 )
 
 urlpatterns = [
+
+    path(
+        "vehicles/by-type/<int:machinery_type_id>/",
+        VehicleByMachineAPIView.as_view(),
+        name="vehicles-by-type",
+    ),
+
     path(
         "",
         include(router.urls),
     ),
-    path(
-    "vehicles/<str:machine>/",
-    VehicleByMachineAPIView.as_view(),
-),
+
 ]
