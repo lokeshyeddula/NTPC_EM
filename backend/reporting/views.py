@@ -2,10 +2,14 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from inspections.models import InspectionLog
+from rest_framework.generics import ListAPIView
 from django.http import HttpResponse
 from .pdf_generator import generate_inspection_pdf
 from .serializers import (
     InspectionReportSerializer,
+)
+from reporting.serializers import (
+    ShiftReportSerializer,
 )
 
 # ----------------------------
@@ -48,6 +52,55 @@ class InspectionPDFAPIView(APIView):
         )
 
         return response
+class ShiftReportAPIView(ListAPIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    serializer_class = (
+        ShiftReportSerializer
+    )
+
+    def get_queryset(self):
+
+        queryset = (
+            InspectionLog.objects
+            .select_related(
+                "engineer",
+                "vehicle",
+            )
+        )
+
+        shift = self.request.GET.get("shift")
+
+        relay = self.request.GET.get("relay")
+
+        date = self.request.GET.get("date")
+
+        if shift:
+
+            queryset = queryset.filter(
+                shift=shift
+            )
+
+        if relay:
+
+            queryset = queryset.filter(
+                relay=relay
+            )
+
+        if date:
+
+            queryset = queryset.filter(
+                inspection_date=date
+            )
+
+        return queryset.order_by(
+            "-inspection_date",
+            "-inspection_number",
+        )
+
 class InspectionReportAPIView(
     generics.RetrieveAPIView
 ):

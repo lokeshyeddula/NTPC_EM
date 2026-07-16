@@ -4,6 +4,9 @@ from .views import (
     InspectionReportAPIView,
     InspectionPDFAPIView,
 )
+from .views import (
+    ShiftReportAPIView,
+)
 
 urlpatterns = [
 
@@ -20,5 +23,14 @@ urlpatterns = [
         InspectionPDFAPIView.as_view(),
         name="inspection-pdf",
     ),
+path(
+
+    "shift/",
+
+    ShiftReportAPIView.as_view(),
+
+    name="shift-report",
+
+),
 
 ]

@@ -2,6 +2,40 @@ from rest_framework import serializers
 
 from inspections.models import InspectionLog
 
+
+class ShiftReportSerializer(serializers.ModelSerializer):
+
+    vehicle = serializers.CharField(
+        source="vehicle.machine_number"
+    )
+
+    engineer = serializers.CharField(
+        source="engineer.full_name"
+    )
+
+    class Meta:
+
+        model = InspectionLog
+
+        fields = [
+
+            "id",
+
+            "inspection_number",
+
+            "inspection_date",
+
+            "shift",
+
+            "relay",
+
+            "vehicle",
+
+            "engineer",
+
+            "operational_status",
+
+        ]
 class InspectionResultReportSerializer(serializers.Serializer):
 
     field_name = serializers.CharField()
