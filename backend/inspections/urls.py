@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     MachineryChecklistAPIView,
     InspectionCreateAPIView,
+    InspectionHistoryAPIView,
 )
 
 urlpatterns = [
@@ -18,5 +19,10 @@ urlpatterns = [
         InspectionCreateAPIView.as_view(),
         name="inspection-create",
     ),
+path(
+    "history/",
+    InspectionHistoryAPIView.as_view(),
+    name="inspection-history",
+),
 
 ]

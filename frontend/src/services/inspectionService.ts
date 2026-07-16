@@ -56,6 +56,15 @@ class InspectionService {
         return response.data;
 
     }
+async getInspectionHistory() {
+
+    const response = await api.get(
+        "/inspections/history/"
+    );
+
+    return response.data;
+
+}
 
 }
 

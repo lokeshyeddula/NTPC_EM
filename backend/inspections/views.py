@@ -22,6 +22,7 @@ from .models import (
 from .serializers import (
     MachineryInspectionFieldSerializer,
     InspectionCreateSerializer,
+    InspectionHistorySerializer,
 )
 
 
@@ -102,3 +103,18 @@ class InspectionCreateAPIView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+class InspectionHistoryAPIView(generics.ListAPIView):
+
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = InspectionHistorySerializer
+
+    queryset = (
+        InspectionLog.objects
+        .select_related(
+            "vehicle",
+            "engineer",
+        )
+        .order_by("-created_at")
+    )
