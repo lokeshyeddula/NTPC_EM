@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "reports",
     "dashboard",
     "common",
+    "reporting",
 ]
 
 # -------------------------------------------------

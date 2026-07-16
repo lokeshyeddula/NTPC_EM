@@ -1,0 +1,9 @@
+export default function DateRangeReportPanel() {
+    return (
+        <div>
+            <h2 className="text-2xl font-bold">
+                Shift Report
+            </h2>
+        </div>
+    );
+}

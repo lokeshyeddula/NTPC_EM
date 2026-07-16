@@ -1,0 +1,44 @@
+@media print {
+
+    body {
+        background: white !important;
+    }
+
+    /* Hide application UI */
+
+    aside,
+    nav,
+    header,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Report */
+
+    .print-report {
+
+        width: 100% !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        box-shadow: none !important;
+
+        border: none !important;
+
+    }
+
+    button {
+        display: none !important;
+    }
+
+    @page {
+
+        size: A4 portrait;
+
+        margin: 10mm;
+
+    }
+
+}

@@ -65,6 +65,19 @@ async getInspectionHistory() {
     return response.data;
 
 }
+async getInspectionReport(
+    inspectionNumber: string
+) {
+
+    const response = await api.get(
+
+        `/reports/inspection/${inspectionNumber}/`
+
+    );
+
+    return response.data;
+
+}
 
 }
 
