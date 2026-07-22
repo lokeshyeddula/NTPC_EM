@@ -20,38 +20,28 @@ export interface InspectionResult {
     result: "Pass" | "Fail";
 }
 
-export interface InspectionFormData {
+export interface InspectionPayload {
     relay: string;
 
     vehicle: number;
 
     operational_status: "Fit" | "Unfit";
 
-    remarks: string;
+    operator_name: string;
 
-    results: InspectionResult[];
-}
-export interface InspectionResult {
+    operator_employee_id: string;
 
-    inspection_field: number;
+    operator_agency: string;
 
-    result: "Pass" | "Fail";
+    operator_mobile: string;
 
-}
-
-export interface InspectionCreateRequest {
-
-    relay: string;
-
-    vehicle: number;
-
-    operational_status: "Fit" | "Unfit";
+    operator_checklist_filled: boolean;
 
     remarks: string;
 
     results: InspectionResult[];
-
 }
+
 export const RELAYS = [
     "Relay A",
     "Relay B",

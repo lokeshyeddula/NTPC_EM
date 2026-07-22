@@ -141,6 +141,7 @@ export default function InspectionForm() {
                             <option>Relay B</option>
                             <option>Relay C</option>
                             <option>Relay D</option>
+                            <option>General Shift</option>
 
                         </select>
 

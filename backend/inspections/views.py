@@ -75,17 +75,42 @@ class InspectionCreateAPIView(APIView):
         )
 
         inspection = InspectionLog.objects.create(
+
             inspection_number=generate_inspection_number(),
+
             inspection_date=timezone.localdate(),
+
             shift=get_current_shift(),
+
             relay=serializer.validated_data["relay"],
+
             engineer=request.user,
+
             vehicle=vehicle,
+
             operational_status=serializer.validated_data["operational_status"],
+
+            operator_name=serializer.validated_data["operator_name"],
+
+            operator_employee_id=serializer.validated_data["operator_employee_id"],
+
+            operator_agency=serializer.validated_data["operator_agency"],
+
+            operator_mobile=serializer.validated_data.get(
+                "operator_mobile",
+                "",
+            ),
+
+            operator_checklist_filled=serializer.validated_data[
+                "operator_checklist_filled"
+            ],
+            operator_remarks=serializer.validated_data.get("operator_remarks", ""),
+
             remarks=serializer.validated_data.get(
                 "remarks",
                 "",
             ),
+
         )
 
         for item in serializer.validated_data["results"]:

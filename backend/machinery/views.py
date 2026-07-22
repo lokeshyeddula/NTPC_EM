@@ -31,8 +31,22 @@ class VehicleByMachineAPIView(ListAPIView):
             status="Active",
         ).order_by("machine_number")
 class MachineryTypeViewSet(viewsets.ModelViewSet):
-
-    queryset = MachineryType.objects.all()
+    queryset = MachineryType.objects.filter(
+        name__in=[
+            "Tipper",
+            "Excavator",
+            "Surface Miner",
+            "Dozer",
+            "Grader",
+            "Wheel Loader",
+            "Water Tanker",
+            "Diesel Tanker",
+            "Service Van",
+            "Crane",
+            "Drill Machine",
+            "Bus",
+        ]
+    ).order_by("name")
 
     serializer_class = MachineryTypeSerializer
 

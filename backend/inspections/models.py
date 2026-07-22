@@ -113,6 +113,38 @@ class InspectionLog(models.Model):
         choices=STATUS_CHOICES,
     )
 
+    operator_name = models.CharField(
+        max_length=150,
+        blank=True,
+        default="",
+    )
+
+    operator_employee_id = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+    )
+
+    operator_agency = models.CharField(
+        max_length=150,
+        blank=True,
+        default="",
+    )
+
+    operator_mobile = models.CharField(
+        max_length=10,
+        blank=True,
+        default="",
+    )
+
+    operator_checklist_filled = models.BooleanField(
+        default=False,
+    )
+    operator_remarks = models.TextField(
+        blank=True,
+        default=""
+    )
+
     remarks = models.TextField(
         blank=True,
     )

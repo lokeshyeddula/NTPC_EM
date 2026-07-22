@@ -16,6 +16,8 @@ MACHINERY_TYPES = [
     "Crane",
     "Drill Machine",
     "Tower Light",
+    "Sky Lift",
+    "Bus",
 ]
 
 
