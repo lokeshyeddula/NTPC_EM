@@ -6,7 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from alerts.alert_manager import send_machinery_failure_alert
 from common.utils import get_current_shift
 
 from inspections.utils import generate_inspection_number
@@ -88,13 +88,21 @@ class InspectionCreateAPIView(APIView):
 
             vehicle=vehicle,
 
-            operational_status=serializer.validated_data["operational_status"],
+            operational_status=serializer.validated_data[
+                "operational_status"
+            ],
 
-            operator_name=serializer.validated_data["operator_name"],
+            operator_name=serializer.validated_data[
+                "operator_name"
+            ],
 
-            operator_employee_id=serializer.validated_data["operator_employee_id"],
+            operator_employee_id=serializer.validated_data[
+                "operator_employee_id"
+            ],
 
-            operator_agency=serializer.validated_data["operator_agency"],
+            operator_agency=serializer.validated_data[
+                "operator_agency"
+            ],
 
             operator_mobile=serializer.validated_data.get(
                 "operator_mobile",
@@ -104,13 +112,16 @@ class InspectionCreateAPIView(APIView):
             operator_checklist_filled=serializer.validated_data[
                 "operator_checklist_filled"
             ],
-            operator_remarks=serializer.validated_data.get("operator_remarks", ""),
+
+            operator_remarks=serializer.validated_data.get(
+                "operator_remarks",
+                "",
+            ),
 
             remarks=serializer.validated_data.get(
                 "remarks",
                 "",
             ),
-
         )
 
         for item in serializer.validated_data["results"]:
@@ -120,6 +131,10 @@ class InspectionCreateAPIView(APIView):
                 inspection_field_id=item["inspection_field"],
                 result=item["result"],
             )
+
+        inspection.refresh_from_db()
+
+        send_machinery_failure_alert(inspection)
 
         return Response(
             {
