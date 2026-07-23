@@ -18,7 +18,6 @@ from inspections.models import InspectionResult
 
 
 def generate_inspection_pdf(inspection):
-
     buffer = BytesIO()
 
     doc = SimpleDocTemplate(
@@ -137,22 +136,22 @@ def generate_inspection_pdf(inspection):
 
     body.append(Spacer(1, 0.10 * inch))
 
-    info = [
+    # Ensure status is a string and handle None values safely
+    op_status = str(inspection.operational_status or "")
 
+    info = [
         [
             "Inspection No",
             inspection.inspection_number,
             "Inspection Date",
             str(inspection.inspection_date),
         ],
-
         [
             "Engineer",
             inspection.engineer.full_name if inspection.engineer else "",
             "Designation",
             inspection.engineer.designation if inspection.engineer else "",
         ],
-
         [
             "Vehicle",
             inspection.vehicle.machine_number if inspection.vehicle else "",
@@ -161,21 +160,18 @@ def generate_inspection_pdf(inspection):
             if inspection.vehicle and inspection.vehicle.machinery_type
             else "",
         ],
-
         [
             "Shift",
             inspection.shift,
             "Relay",
             inspection.relay,
         ],
-
         [
             "Status",
-            inspection.operational_status,
+            op_status,
             "",
             "",
         ],
-
     ]
 
     info_table = Table(
@@ -183,23 +179,24 @@ def generate_inspection_pdf(inspection):
         colWidths=[100, 170, 100, 170],
     )
 
-    info_table.setStyle(
-        TableStyle(
-            [
+    # Base styles for Info Table
+    info_styles = [
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#EAF2FF")),
+        ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#EAF2FF")),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+    ]
 
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    # Dynamically color the Status text (Row 4, Column 1) for FIT/PASS and UNFIT/FAIL
+    if op_status.lower() in ["pass", "fit"]:
+        info_styles.append(("TEXTCOLOR", (1, 4), (1, 4), colors.green))
+        info_styles.append(("FONTNAME", (1, 4), (1, 4), "Helvetica-Bold"))
+    elif op_status.lower() in ["fail", "unfit"]:
+        info_styles.append(("TEXTCOLOR", (1, 4), (1, 4), colors.red))
+        info_styles.append(("FONTNAME", (1, 4), (1, 4), "Helvetica-Bold"))
 
-                ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#EAF2FF")),
-
-                ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#EAF2FF")),
-
-                ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
-
-            ]
-        )
-    )
+    info_table.setStyle(TableStyle(info_styles))
 
     body.append(info_table)
     body.append(Spacer(1, 0.30 * inch))
@@ -218,57 +215,52 @@ def generate_inspection_pdf(inspection):
     body.append(Spacer(1, 0.10 * inch))
 
     checklist = [
-
         [
             "Sl No",
             "Inspection Item",
             "Result",
         ]
-
     ]
 
     results = InspectionResult.objects.filter(
         inspection=inspection
     ).select_related("inspection_field")
 
+    # Base styles for Checklist Table
+    checklist_styles = [
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+    ]
+
     for index, item in enumerate(results, start=1):
 
+        result_val = str(item.result or "")
+
         checklist.append(
-
             [
-
                 str(index),
-
                 item.inspection_field.field_name,
-
-                item.result,
-
+                result_val,
             ]
-
         )
+
+        # Dynamically color the Result text (Column 2, Current Row)
+        if result_val.lower() in ["pass", "fit"]:
+            checklist_styles.append(("TEXTCOLOR", (2, index), (2, index), colors.green))
+            checklist_styles.append(("FONTNAME", (2, index), (2, index), "Helvetica-Bold"))
+        elif result_val.lower() in ["fail", "unfit"]:
+            checklist_styles.append(("TEXTCOLOR", (2, index), (2, index), colors.red))
+            checklist_styles.append(("FONTNAME", (2, index), (2, index), "Helvetica-Bold"))
 
     checklist_table = Table(
         checklist,
         colWidths=[50, 340, 120],
     )
 
-    checklist_table.setStyle(
-        TableStyle(
-            [
-
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
-
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-
-            ]
-        )
-    )
+    checklist_table.setStyle(TableStyle(checklist_styles))
 
     body.append(checklist_table)
     body.append(Spacer(1, 0.30 * inch))
@@ -300,39 +292,26 @@ def generate_inspection_pdf(inspection):
     # -------------------------------------------------
 
     sign_table = Table(
-
         [
-
             [
                 "____________________",
                 "____________________",
             ],
-
             [
                 "Inspection Engineer",
                 "Supervisor",
             ],
-
         ],
-
         colWidths=[250, 250],
-
     )
 
     sign_table.setStyle(
-
         TableStyle(
-
             [
-
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-
                 ("TOPPADDING", (0, 1), (-1, 1), 10),
-
             ]
-
         )
-
     )
 
     body.append(sign_table)

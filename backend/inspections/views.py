@@ -6,7 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from alerts.alert_manager import send_machinery_failure_alert
+from alerts.tasks import send_failure_email_task
 from common.utils import get_current_shift
 
 from inspections.utils import generate_inspection_number
@@ -134,7 +134,9 @@ class InspectionCreateAPIView(APIView):
 
         inspection.refresh_from_db()
 
-        send_machinery_failure_alert(inspection)
+        transaction.on_commit(
+            lambda: send_failure_email_task.delay(inspection.id)
+        )
 
         return Response(
             {

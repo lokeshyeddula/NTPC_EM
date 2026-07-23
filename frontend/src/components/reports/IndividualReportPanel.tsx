@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import inspectionService from "../../services/inspectionService";
 import InspectionReport from "../../pages/Reports/InspectionReport";
+
 interface Inspection {
     id: number;
     inspection_number: string;
@@ -17,8 +18,7 @@ export default function IndividualReportPanel() {
     const [searchInspection, setSearchInspection] = useState("");
     const [searchVehicle, setSearchVehicle] = useState("");
     const [searchDate, setSearchDate] = useState("");
-    const [selectedInspection, setSelectedInspection] =
-    useState<string | null>(null);
+    const [selectedInspection, setSelectedInspection] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,7 +36,6 @@ export default function IndividualReportPanel() {
         }
     }
 
-    // This MUST be inside the component to access state variables
     const filteredInspections = inspections.filter((item) => {
         const inspectionMatch = item.inspection_number
             .toLowerCase()
@@ -120,10 +119,11 @@ export default function IndividualReportPanel() {
                                     <td className="p-3">{item.inspection_date}</td>
                                     <td className="p-3">{item.shift}</td>
                                     <td className="p-3">
+                                        {/* Updated status check for Pass/Fail */}
                                         <span className={`px-2 py-1 rounded text-sm font-medium ${
-                                            item.operational_status === "FIT"
+                                            item.operational_status.toLowerCase() === "pass"
                                                 ? "bg-green-100 text-green-700"
-                                                : item.operational_status === "UNFIT"
+                                                : item.operational_status.toLowerCase() === "fail"
                                                 ? "bg-red-100 text-red-700"
                                                 : "bg-gray-100 text-gray-700"
                                         }`}>
@@ -131,14 +131,12 @@ export default function IndividualReportPanel() {
                                         </span>
                                     </td>
                                     <td className="p-3">
-                                       <button
-    onClick={() =>
-        setSelectedInspection(item.inspection_number)
-    }
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
->
-    View
-</button>
+                                        <button
+                                            onClick={() => setSelectedInspection(item.inspection_number)}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                                        >
+                                            View
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -151,18 +149,15 @@ export default function IndividualReportPanel() {
                         )}
                     </tbody>
                 </table>
+
                 {selectedInspection && (
-
-    <div className="mt-10 border-t pt-8">
-
-        <InspectionReport
-    inspectionNumber={selectedInspection}
-    embedded={true}
-/>
-
-    </div>
-
-)}
+                    <div className="mt-10 border-t pt-8">
+                        <InspectionReport
+                            inspectionNumber={selectedInspection}
+                            embedded={true}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
