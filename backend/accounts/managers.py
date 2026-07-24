@@ -3,7 +3,8 @@ from django.contrib.auth.base_user import BaseUserManager
 
 class UserManager(BaseUserManager):
     """
-    Custom User Manager where Employee ID is the unique identifier.
+    Custom User Manager
+    Employee ID is used as the username.
     """
 
     use_in_migrations = True
@@ -12,8 +13,13 @@ class UserManager(BaseUserManager):
         if not emp_id:
             raise ValueError("Employee ID is required.")
 
+        email = extra_fields.get("email")
+
+        if email:
+            extra_fields["email"] = self.normalize_email(email)
+
         user = self.model(
-            emp_id=emp_id,
+            emp_id=emp_id.upper().strip(),
             **extra_fields
         )
 
@@ -29,4 +35,14 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("is_first_login", False)
 
-        return self.create_user(emp_id, password, **extra_fields)
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(
+            emp_id,
+            password=password,
+            **extra_fields,
+        )

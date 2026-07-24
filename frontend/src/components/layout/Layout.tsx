@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { Menu } from "lucide-react";
 
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -8,16 +9,48 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen bg-gray-100 overflow-hidden">
 
-            <Sidebar />
+            {/* Mobile Sidebar Overlay / Backdrop */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 z-40 bg-black/50 transition-opacity md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                    aria-hidden="true"
+                />
+            )}
 
-            <div className="flex-1 flex flex-col">
+            {/* Sidebar Container */}
+            <div
+                className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                }`}
+            >
+                {/* Passed the onClose function to allow the Sidebar to close itself */}
+                <Sidebar onClose={() => setIsSidebarOpen(false)} />
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+
+                {/* Mobile Hamburger Button */}
+                {/* Mobile Hamburger Button */}
+                {/* Mobile Hamburger Button */}
+                <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="md:hidden absolute top-3.5 left-4 z-50 p-1 bg-transparent text-white rounded focus:outline-none active:bg-[#1a4b8c]"
+                    aria-label="Open sidebar"
+                >
+                    <Menu size={28} />
+                </button>
 
                 <Header />
 
-                <main className="flex-1 bg-gray-100 p-6 overflow-auto">
+                {/* Main Content Scrollable Area */}
+                <main className="flex-1 bg-gray-100 p-4 sm:p-6 overflow-y-auto">
                     {children}
                 </main>
 

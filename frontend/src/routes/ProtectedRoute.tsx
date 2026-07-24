@@ -2,13 +2,13 @@ import { Navigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 
-import type { ReactNode } from "react";
-
 interface Props {
-    children: ReactNode;
+    children: JSX.Element;
 }
 
-export default function ProtectedRoute({ children }: Props) {
+export default function ProtectedRoute({
+    children,
+}: Props) {
 
     const {
         loading,
@@ -17,13 +17,29 @@ export default function ProtectedRoute({ children }: Props) {
 
     if (loading) {
 
-        return <h2>Loading...</h2>;
+        return (
+
+            <div className="min-h-screen flex items-center justify-center bg-slate-100">
+
+                <div className="text-center">
+
+                    <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-blue-900 border-t-transparent"></div>
+
+                    <p className="mt-4 text-gray-600 font-medium">
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
 
     }
 
     if (!isAuthenticated) {
 
-        return <Navigate to="/" replace />;
+        return <Navigate to="/login" replace />;
 
     }
 

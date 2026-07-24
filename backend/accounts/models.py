@@ -4,6 +4,13 @@ from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
 
 
+class Company(models.TextChoices):
+    NTPC = "NTPC", "NTPC"
+    VPR = "VPR", "VPR"
+    NML = "NML", "NML"
+    OTHER = "OTHER", "Other"
+
+
 class User(AbstractUser):
     """
     Custom User Model
@@ -20,43 +27,70 @@ class User(AbstractUser):
         verbose_name="Employee ID",
     )
 
-    full_name = models.CharField(max_length=150)
+    full_name = models.CharField(
+        max_length=150,
+    )
 
-    designation = models.CharField(max_length=150)
+    designation = models.CharField(
+        max_length=150,
+    )
 
     department = models.CharField(
         max_length=100,
         default="E&M",
+        null=True,
+    )
+
+    company = models.CharField(
+        max_length=20,
+        choices=Company.choices,
+        default=Company.NTPC,
     )
 
     email = models.EmailField(
-        blank=True,
+        unique=True,
         null=True,
     )
 
     mobile_number = models.CharField(
         max_length=15,
-        blank=True,
+        unique=True,
         null=True,
     )
 
-    is_admin = models.BooleanField(default=False)
+    is_admin = models.BooleanField(
+        default=False,
+    )
 
-    is_first_login = models.BooleanField(default=True)
+    is_first_login = models.BooleanField(
+        default=True,
+    )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True,
+    )
 
-    is_staff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(
+        default=False,
+    )
 
-    date_created = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,  # Add this line
+    )
 
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
 
     USERNAME_FIELD = "emp_id"
 
     REQUIRED_FIELDS = [
         "full_name",
         "designation",
+        "department",
+        "company",
+        "email",
     ]
 
     objects = UserManager()

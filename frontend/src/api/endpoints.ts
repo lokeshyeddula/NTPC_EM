@@ -1,5 +1,6 @@
 const ENDPOINTS = {
 
+    REGISTER: "/auth/register/",
     LOGIN: "/auth/login/",
     PROFILE: "/auth/profile/",
     CHANGE_PASSWORD: "/auth/change-password/",

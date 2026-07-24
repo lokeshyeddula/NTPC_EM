@@ -2,18 +2,25 @@ import {
     BrowserRouter,
     Routes,
     Route,
+    Navigate,
 } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
-
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+// Auth
 import Login from "./pages/Login/Login";
+import Register from "./pages/Login/Register";
+
+
+// Dashboard
 import Dashboard from "./pages/Dashboard/Dashboard";
 
+// Inspection
 import InspectionPage from "./pages/Inspection/InspectionPage";
 import InspectionHistory from "./pages/Inspection/InspectionHistory";
 
+// Reports
 import ReportsDashboard from "./pages/Reports/ReportsDashboard";
 import InspectionReport from "./pages/Reports/InspectionReport";
 import IndividualReport from "./pages/Reports/IndividualReport";
@@ -23,24 +30,22 @@ import DateRangeReport from "./pages/Reports/DateRangeReport";
 import MonthlySummary from "./pages/Reports/MonthlySummary";
 
 function App() {
-
     return (
-
         <BrowserRouter>
-
             <AuthProvider>
-
                 <Routes>
 
-                    {/* Public Route */}
-
+                    {/* Redirect */}
                     <Route
                         path="/"
-                        element={<Login />}
+                        element={<Navigate to="/login" replace />}
                     />
 
-                    {/* Dashboard */}
+                    {/* Public */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
 
+                    {/* Dashboard */}
                     <Route
                         path="/dashboard"
                         element={
@@ -51,7 +56,6 @@ function App() {
                     />
 
                     {/* Inspection */}
-
                     <Route
                         path="/inspection"
                         element={
@@ -70,8 +74,7 @@ function App() {
                         }
                     />
 
-                    {/* Reports Dashboard */}
-
+                    {/* Reports */}
                     <Route
                         path="/reports"
                         element={
@@ -80,8 +83,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
-                    {/* Individual Inspection Report */}
 
                     <Route
                         path="/reports/individual"
@@ -92,8 +93,6 @@ function App() {
                         }
                     />
 
-                    {/* View Single Inspection Report */}
-
                     <Route
                         path="/reports/inspection/:inspectionNumber"
                         element={
@@ -102,8 +101,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
-                    {/* Shift Wise Report */}
 
                     <Route
                         path="/reports/shift"
@@ -114,8 +111,6 @@ function App() {
                         }
                     />
 
-                    {/* Daily Report */}
-
                     <Route
                         path="/reports/daily"
                         element={
@@ -124,8 +119,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
-                    {/* Date Range Report */}
 
                     <Route
                         path="/reports/date-range"
@@ -136,8 +129,6 @@ function App() {
                         }
                     />
 
-                    {/* Monthly Summary */}
-
                     <Route
                         path="/reports/monthly"
                         element={
@@ -147,14 +138,16 @@ function App() {
                         }
                     />
 
+                    {/* 404 */}
+                    <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                    />
+
                 </Routes>
-
             </AuthProvider>
-
         </BrowserRouter>
-
     );
-
 }
 
 export default App;

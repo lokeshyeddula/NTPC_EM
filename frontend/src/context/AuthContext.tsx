@@ -10,15 +10,24 @@ import authService from "../services/authService";
 
 import type {
     LoginRequest,
+    RegisterRequest,
     User,
 } from "../types/auth";
 
 interface AuthContextType {
     user: User | null;
+
     loading: boolean;
+
     isAuthenticated: boolean;
+
     login: (data: LoginRequest) => Promise<void>;
+
+    register: (data: RegisterRequest) => Promise<void>;
+
     logout: () => void;
+
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(
@@ -40,8 +49,11 @@ export function AuthProvider({ children }: Props) {
         const token = localStorage.getItem("access");
 
         if (!token) {
+
             setLoading(false);
+
             return;
+
         }
 
         loadProfile();
@@ -68,7 +80,9 @@ export function AuthProvider({ children }: Props) {
 
     }
 
-    async function login(data: LoginRequest) {
+    async function login(
+        data: LoginRequest
+    ) {
 
         const response = await authService.login(data);
 
@@ -86,11 +100,30 @@ export function AuthProvider({ children }: Props) {
 
     }
 
+    async function register(
+        data: RegisterRequest
+    ) {
+
+        const response =
+            await authService.register(data);
+
+        localStorage.setItem(
+            "access",
+            response.access
+        );
+
+        localStorage.setItem(
+            "refresh",
+            response.refresh
+        );
+
+        setUser(response.user);
+
+    }
+
     function logout() {
 
-        localStorage.removeItem("access");
-
-        localStorage.removeItem("refresh");
+        authService.logout();
 
         setUser(null);
 
@@ -104,7 +137,9 @@ export function AuthProvider({ children }: Props) {
                 loading,
                 isAuthenticated: !!user,
                 login,
+                register,
                 logout,
+                setUser,
             }}
         >
 

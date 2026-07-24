@@ -53,102 +53,68 @@ export default function InspectionHeader() {
 
     }
 
-    return (
+return (
+    <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6">
+            Random Machinery Inspection
+        </h2>
 
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-                Random Machinery Inspection
+            <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                    Inspection Date
+                </label>
 
-            </h2>
+                <p className="font-semibold text-slate-800">
+                    {formatDate()}
+                </p>
+            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                    Inspection Time
+                </label>
 
-                <div>
+                <p className="font-semibold text-slate-800">
+                    {formatTime()}
+                </p>
+            </div>
 
-                    <label className="text-gray-500 text-sm">
+            <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                    Shift
+                </label>
 
-                        Inspection Date
+                <p className="font-semibold text-slate-800">
+                    {getShift()}
+                </p>
+            </div>
 
-                    </label>
+            <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                    Inspection Engineer
+                </label>
 
-                    <p className="font-semibold">
+                <p className="font-semibold text-slate-800 break-words">
+                    {user?.full_name}
+                </p>
+            </div>
 
-                        {formatDate()}
+            <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                    Designation
+                </label>
 
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <label className="text-gray-500 text-sm">
-
-                        Inspection Time
-
-                    </label>
-
-                    <p className="font-semibold">
-
-                        {formatTime()}
-
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <label className="text-gray-500 text-sm">
-
-                        Shift
-
-                    </label>
-
-                    <p className="font-semibold">
-
-                        {getShift()}
-
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <label className="text-gray-500 text-sm">
-
-                        Inspection Engineer
-
-                    </label>
-
-                    <p className="font-semibold">
-
-                        {user?.full_name}
-
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <label className="text-gray-500 text-sm">
-
-                        Designation
-
-                    </label>
-
-                    <p className="font-semibold">
-
-                        {user?.designation}
-
-                    </p>
-
-                </div>
-
+                <p className="font-semibold text-slate-800 break-words">
+                    {user?.designation}
+                </p>
             </div>
 
         </div>
 
-    );
+    </div>
+);
 
 }

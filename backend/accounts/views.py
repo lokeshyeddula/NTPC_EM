@@ -1,24 +1,47 @@
 from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
 from .serializers import (
+    RegisterSerializer,
     LoginSerializer,
-    ChangePasswordSerializer,
     UserSerializer,
+    ChangePasswordSerializer,
+    ProfileUpdateSerializer,
 )
 
 
-class LoginView(APIView):
-
+class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
 
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "message": "Registration successful.",
+                "user": UserSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
         serializer = LoginSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
@@ -29,65 +52,57 @@ class LoginView(APIView):
 
         return Response(
             {
-                "success": True,
-                "message": "Login Successful",
-
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-
+                "message": "Login successful.",
                 "user": UserSerializer(user).data,
-            },
-            status=status.HTTP_200_OK,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
         )
 
 
-class ProfileView(APIView):
-
+class ProfileView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
+    serializer_class = ProfileUpdateSerializer
+
+    def get_object(self):
+        return self.request.user
+
     def get(self, request):
-
-        serializer = UserSerializer(request.user)
-
-        return Response(serializer.data)
+        return Response(
+            UserSerializer(request.user).data
+        )
 
 
 class ChangePasswordView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
         serializer = ChangePasswordSerializer(
             data=request.data
         )
 
         serializer.is_valid(raise_exception=True)
 
-        user = request.user
-
-        if not user.check_password(
+        if not request.user.check_password(
             serializer.validated_data["old_password"]
         ):
             return Response(
                 {
-                    "success": False,
-                    "message": "Old password is incorrect."
+                    "detail": "Old password is incorrect."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user.set_password(
+        request.user.set_password(
             serializer.validated_data["new_password"]
         )
 
-        user.is_first_login = False
-
-        user.save()
+        request.user.is_first_login = False
+        request.user.save()
 
         return Response(
             {
-                "success": True,
                 "message": "Password changed successfully."
             }
         )

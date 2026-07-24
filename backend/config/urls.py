@@ -16,23 +16,21 @@ urlpatterns = [
         include("accounts.urls"),
     ),
 
-
     path(
         "api/machinery/",
         include("machinery.urls"),
     ),
+
     path(
-    "api/inspections/",
-    include("inspections.urls"),
-),
-path(
-    "api/reports/",
-    include("reporting.urls"),
-),
-path(
-    "api/reports/",
-    include("reporting.urls"),
-),
+        "api/inspections/",
+        include("inspections.urls"),
+    ),
+
+    path(
+        "api/reports/",
+        include("reporting.urls"),
+    ),
+
 ]
 
 if settings.DEBUG:

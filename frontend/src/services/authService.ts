@@ -4,11 +4,16 @@ import ENDPOINTS from "../api/endpoints";
 import type {
     LoginRequest,
     LoginResponse,
+    RegisterRequest,
+    User,
+    ChangePasswordRequest,
 } from "../types/auth";
 
 class AuthService {
 
-    async login(data: LoginRequest): Promise<LoginResponse> {
+    async login(
+        data: LoginRequest
+    ): Promise<LoginResponse> {
 
         const response = await api.post(
             ENDPOINTS.LOGIN,
@@ -18,7 +23,19 @@ class AuthService {
         return response.data;
     }
 
-    async getProfile() {
+async register(
+    data: RegisterRequest
+): Promise<LoginResponse> {
+
+    const response = await api.post(
+        ENDPOINTS.REGISTER,
+        data
+    );
+
+    return response.data;
+}
+
+    async getProfile(): Promise<User> {
 
         const response = await api.get(
             ENDPOINTS.PROFILE
@@ -27,7 +44,21 @@ class AuthService {
         return response.data;
     }
 
-    async changePassword(data: any) {
+    async updateProfile(
+        data: Partial<User>
+    ) {
+
+        const response = await api.put(
+            ENDPOINTS.PROFILE,
+            data
+        );
+
+        return response.data;
+    }
+
+    async changePassword(
+        data: ChangePasswordRequest
+    ) {
 
         const response = await api.post(
             ENDPOINTS.CHANGE_PASSWORD,
@@ -39,10 +70,9 @@ class AuthService {
 
     logout() {
 
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
+        localStorage.clear();
 
-        window.location.href = "/";
+        window.location.href = "/login";
     }
 
 }
