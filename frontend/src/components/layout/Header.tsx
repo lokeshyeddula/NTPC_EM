@@ -4,19 +4,17 @@ export default function Header() {
     const { user, logout } = useAuth();
 
     return (
-        <header className="bg-[#0b3366] border-b border-[#08254a] shadow-md px-4 sm:px-6 py-3 sm:py-0 sm:h-16 flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+        <header className="bg-[#0b3366] border-b border-[#08254a] shadow-md px-4 sm:px-6 py-3 sm:h-16 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
 
-            {/* Title Section */}
-            {/* pl-12 ensures the text doesn't hide under the hamburger menu on mobile */}
-            <div className="w-full sm:w-auto pl-12 sm:pl-0 flex items-center pt-1.5 sm:pt-0">
-                <h1 className="text-lg sm:text-xl font-bold text-white leading-tight">
+            {/* Title Section: pl-12 ensures text clears the mobile hamburger button */}
+            <div className="w-full sm:w-auto pl-12 sm:pl-0 flex items-center">
+                <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide truncate">
                     NTPC E&M Inspection System
                 </h1>
             </div>
 
             {/* User Info & Actions Section */}
-            <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto border-t sm:border-0 border-[#1a4b8c] pt-3 sm:pt-0 mt-1 sm:mt-0">
-
+            <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto border-t sm:border-0 border-[#1a4b8c] pt-2 sm:pt-0">
                 <div className="text-left sm:text-right mr-4 overflow-hidden">
                     <div className="font-semibold text-sm text-white truncate">
                         {user?.full_name}
@@ -32,7 +30,6 @@ export default function Header() {
                 >
                     Logout
                 </button>
-
             </div>
 
         </header>

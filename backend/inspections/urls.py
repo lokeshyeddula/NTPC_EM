@@ -4,8 +4,11 @@ from .views import (
     MachineryChecklistAPIView,
     InspectionCreateAPIView,
     InspectionHistoryAPIView,
+    CheckVehicleStatusAPIView,
+    PendingReinspectionsAPIView,
 )
 
+path('reinspections/pending/', PendingReinspectionsAPIView.as_view(), name='pending-reinspections'),
 urlpatterns = [
 
     path(
@@ -19,10 +22,21 @@ urlpatterns = [
         InspectionCreateAPIView.as_view(),
         name="inspection-create",
     ),
-path(
-    "history/",
-    InspectionHistoryAPIView.as_view(),
-    name="inspection-history",
-),
 
+    path(
+        "history/",
+        InspectionHistoryAPIView.as_view(),
+        name="inspection-history",
+    ),
+
+    path(
+        'check-status/',
+        CheckVehicleStatusAPIView.as_view(),
+        name='check-vehicle-status'
+    ),
+    path(
+        'reinspections/pending/',
+        PendingReinspectionsAPIView.as_view(),
+        name='pending-reinspections'
+    ),
 ]

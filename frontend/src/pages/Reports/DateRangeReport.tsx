@@ -1,23 +1,9 @@
-import Layout from "../../components/layout/Layout";
-
-export default function IndividualReport() {
-
+export default function DateRangeReport() {
     return (
-
-        <Layout>
-
-            <div className="p-10">
-
-                <h1 className="text-3xl font-bold">
-
-                    DateRange Inspection Report
-
-                </h1>
-
-            </div>
-
-        </Layout>
-
+        <div className="bg-white rounded-lg shadow p-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                DateRange Inspection Report
+            </h1>
+        </div>
     );
-
 }

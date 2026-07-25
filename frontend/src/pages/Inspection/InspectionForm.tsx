@@ -1,43 +1,75 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Select, { type StylesConfig } from "react-select";
-import inspectionService from "../../services/inspectionService";
+import inspectionService, { type PendingReinspection } from "../../services/inspectionService";
 import Checklist from "./Checklist";
 import type { MachineryType, Vehicle } from "../../types/inspection";
 
-// Updated to accept both string and number values
 interface SelectOption {
     value: string | number;
     label: string;
 }
 
 export default function InspectionForm() {
-    const [relay, setRelay] = useState("");
+    const [searchParams] = useSearchParams();
 
-    // Data States
+    const [relay, setRelay] = useState("");
     const [machineryTypes, setMachineryTypes] = useState<MachineryType[]>([]);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-    // Selection States
     const [selectedMachinery, setSelectedMachinery] = useState<number | null>(null);
     const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
 
-    // Loading States
     const [isLoadingMachinery, setIsLoadingMachinery] = useState(false);
     const [isLoadingVehicles, setIsLoadingVehicles] = useState(false);
+    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+
+    const [pendingReinspection, setPendingReinspection] = useState<PendingReinspection | null>(null);
 
     useEffect(() => {
-        loadMachineryTypes();
-    }, []);
+        async function initializeForm() {
+            setIsLoadingMachinery(true);
+            try {
+                const mTypes = await inspectionService.getMachineryTypes();
+                setMachineryTypes(mTypes);
 
-    async function loadMachineryTypes() {
-        setIsLoadingMachinery(true);
+                const urlMachineId = searchParams.get("machine_id");
+                const urlVehicleId = searchParams.get("vehicle_id");
+
+                if (urlMachineId && urlVehicleId) {
+                    const mId = Number(urlMachineId);
+                    const vId = Number(urlVehicleId);
+
+                    setSelectedMachinery(mId);
+
+                    setIsLoadingVehicles(true);
+                    const vList = await inspectionService.getVehicles(mId.toString());
+                    setVehicles(vList);
+                    setIsLoadingVehicles(false);
+
+                    setSelectedVehicle(vId);
+                    checkVehicleStatus(vId);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setIsLoadingMachinery(false);
+            }
+        }
+
+        initializeForm();
+    }, [searchParams]);
+
+    async function checkVehicleStatus(vehicleId: number) {
+        setIsCheckingStatus(true);
+        setPendingReinspection(null);
         try {
-            const data = await inspectionService.getMachineryTypes();
-            setMachineryTypes(data);
+            const status = await inspectionService.checkVehicleStatus(vehicleId.toString());
+            setPendingReinspection(status);
         } catch (err) {
-            console.error(err);
+            console.error("Failed to check vehicle status", err);
         } finally {
-            setIsLoadingMachinery(false);
+            setIsCheckingStatus(false);
         }
     }
 
@@ -46,13 +78,14 @@ export default function InspectionForm() {
             setSelectedMachinery(null);
             setSelectedVehicle(null);
             setVehicles([]);
+            setPendingReinspection(null);
             return;
         }
 
-        // We know Machinery values are numbers based on our API
         const machineryId = option.value as number;
         setSelectedMachinery(machineryId);
         setSelectedVehicle(null);
+        setPendingReinspection(null);
         setIsLoadingVehicles(true);
 
         try {
@@ -65,7 +98,18 @@ export default function InspectionForm() {
         }
     }
 
-    // --- Options Arrays ---
+    function handleVehicleChange(option: SelectOption | null) {
+        if (!option) {
+            setSelectedVehicle(null);
+            setPendingReinspection(null);
+            return;
+        }
+
+        const vehicleId = option.value as number;
+        setSelectedVehicle(vehicleId);
+        checkVehicleStatus(vehicleId);
+    }
+
     const relayOptions: SelectOption[] = [
         { value: "Relay A", label: "Relay A" },
         { value: "Relay B", label: "Relay B" },
@@ -84,13 +128,12 @@ export default function InspectionForm() {
         label: item.machine_number,
     }));
 
-    // --- Beautified React-Select Styles ---
     const customSelectStyles: StylesConfig<SelectOption, false> = {
         control: (provided, state) => ({
             ...provided,
-            minHeight: '3rem', // 48px height to match Tailwind's standard inputs
+            minHeight: '3rem',
             borderRadius: '0.5rem',
-            borderColor: state.isFocused ? '#2563eb' : '#d1d5db', // blue-600 or gray-300
+            borderColor: state.isFocused ? '#2563eb' : '#d1d5db',
             boxShadow: state.isFocused ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none',
             backgroundColor: state.isDisabled ? '#f9fafb' : '#ffffff',
             cursor: state.isDisabled ? 'not-allowed' : 'pointer',
@@ -101,17 +144,11 @@ export default function InspectionForm() {
         }),
         option: (provided, state) => ({
             ...provided,
-            backgroundColor: state.isSelected
-                ? '#2563eb' // blue-600 when selected
-                : state.isFocused
-                    ? '#eff6ff' // blue-50 on hover
-                    : 'transparent',
-            color: state.isSelected ? 'white' : '#1f2937', // gray-800
+            backgroundColor: state.isSelected ? '#2563eb' : state.isFocused ? '#eff6ff' : 'transparent',
+            color: state.isSelected ? 'white' : '#1f2937',
             cursor: 'pointer',
             padding: '10px 14px',
-            '&:active': {
-                backgroundColor: '#dbeafe', // blue-100 when clicked
-            }
+            '&:active': { backgroundColor: '#dbeafe' }
         }),
         menu: (provided) => ({
             ...provided,
@@ -121,56 +158,27 @@ export default function InspectionForm() {
             overflow: 'hidden',
             zIndex: 50,
         }),
-        menuList: (provided) => ({
-            ...provided,
-            padding: '4px', // slight padding inside the popup menu
-        }),
-        valueContainer: (provided) => ({
-            ...provided,
-            padding: '0 0.75rem',
-        }),
-        input: (provided) => ({
-            ...provided,
-            margin: '0',
-            padding: '0',
-        }),
-        placeholder: (provided) => ({
-            ...provided,
-            color: '#9ca3af', // gray-400
-        }),
-        singleValue: (provided) => ({
-            ...provided,
-            color: '#111827', // gray-900
-            fontWeight: 500,
-        })
     };
 
     return (
         <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-100">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-                    {/* Beautified Relay Dropdown */}
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Relay
-                        </label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Relay</label>
                         <Select
                             options={relayOptions}
                             placeholder="Select Relay..."
-                            isSearchable={false} // No need to search just 5 options
+                            isSearchable={false}
                             styles={customSelectStyles}
                             value={relayOptions.find(x => x.value === relay) || null}
                             onChange={(option) => setRelay(option ? (option.value as string) : "")}
                         />
                     </div>
-
-                    {/* Beautified Machinery Type Dropdown */}
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Machinery Type
-                        </label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Machinery Type</label>
                         <Select
                             options={machineryOptions}
                             placeholder="Search Machinery..."
@@ -181,31 +189,39 @@ export default function InspectionForm() {
                             onChange={handleMachineryChange}
                         />
                     </div>
-
-                    {/* Beautified Door Number Dropdown */}
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Door Number
-                        </label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Door Number</label>
                         <Select
                             options={vehicleOptions}
                             placeholder="Search Door Number..."
                             isSearchable
                             isDisabled={!selectedMachinery}
-                            isLoading={isLoadingVehicles}
+                            isLoading={isLoadingVehicles || isCheckingStatus}
                             styles={customSelectStyles}
                             value={vehicleOptions.find(x => x.value === selectedVehicle) || null}
-                            onChange={(option) => setSelectedVehicle(option ? (option.value as number) : null)}
+                            onChange={handleVehicleChange}
                         />
                     </div>
                 </div>
             </div>
 
-            {selectedMachinery && selectedVehicle && (
+            {pendingReinspection?.is_unfit && selectedVehicle && (
+                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 sm:p-6 rounded-r-lg shadow-sm">
+                    <h3 className="text-lg font-bold text-orange-800 mb-1">
+                        ⚠️ Targeted Reinspection
+                    </h3>
+                    <p className="text-orange-700 text-sm sm:text-base">
+                        This vehicle is currently marked as UNFIT. You are now performing a targeted reinspection on the previously failed checkpoints.
+                    </p>
+                </div>
+            )}
+
+            {selectedMachinery && selectedVehicle && !isCheckingStatus && (
                 <Checklist
                     machineryType={selectedMachinery}
                     vehicle={selectedVehicle}
                     relay={relay}
+                    pendingReinspection={pendingReinspection}
                 />
             )}
         </div>

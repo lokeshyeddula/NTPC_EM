@@ -3,15 +3,18 @@ import {
     Routes,
     Route,
     Navigate,
+    Outlet,
 } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+// Layout
+import Layout from "./components/Layout/Layout";
+
 // Auth
 import Login from "./pages/Login/Login";
 import Register from "./pages/Login/Register";
-
 
 // Dashboard
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -19,6 +22,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 // Inspection
 import InspectionPage from "./pages/Inspection/InspectionPage";
 import InspectionHistory from "./pages/Inspection/InspectionHistory";
+import PendingReinspections from "./pages/Inspection/PendingReinspections";
 
 // Reports
 import ReportsDashboard from "./pages/Reports/ReportsDashboard";
@@ -28,6 +32,20 @@ import ShiftReport from "./pages/Reports/ShiftReport";
 import DailyReport from "./pages/Reports/DailyReport";
 import DateRangeReport from "./pages/Reports/DateRangeReport";
 import MonthlySummary from "./pages/Reports/MonthlySummary";
+
+// Profile
+import Profile from "./pages/Profile/Profile";
+
+// Helper layout wrapper component for protected pages (renders layout shell only once)
+function DashboardLayout() {
+    return (
+        <ProtectedRoute>
+            <Layout>
+                <Outlet />
+            </Layout>
+        </ProtectedRoute>
+    );
+}
 
 function App() {
     return (
@@ -41,102 +59,29 @@ function App() {
                         element={<Navigate to="/login" replace />}
                     />
 
-                    {/* Public */}
+                    {/* Public Routes */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
 
-                    {/* Dashboard */}
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <Dashboard />
-                            </ProtectedRoute>
-                        }
-                    />
+                    {/* Protected Routes Grouped Under DashboardLayout */}
+                    <Route element={<DashboardLayout />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/inspection" element={<InspectionPage />} />
+                        <Route path="/Re-Inspection" element={<PendingReinspections />} />
+                        <Route path="/inspection-history" element={<InspectionHistory />} />
 
-                    {/* Inspection */}
-                    <Route
-                        path="/inspection"
-                        element={
-                            <ProtectedRoute>
-                                <InspectionPage />
-                            </ProtectedRoute>
-                        }
-                    />
+                        {/* Profile */}
+                        <Route path="/profile" element={<Profile />} />
 
-                    <Route
-                        path="/inspection-history"
-                        element={
-                            <ProtectedRoute>
-                                <InspectionHistory />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Reports */}
-                    <Route
-                        path="/reports"
-                        element={
-                            <ProtectedRoute>
-                                <ReportsDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/individual"
-                        element={
-                            <ProtectedRoute>
-                                <IndividualReport />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/inspection/:inspectionNumber"
-                        element={
-                            <ProtectedRoute>
-                                <InspectionReport />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/shift"
-                        element={
-                            <ProtectedRoute>
-                                <ShiftReport />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/daily"
-                        element={
-                            <ProtectedRoute>
-                                <DailyReport />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/date-range"
-                        element={
-                            <ProtectedRoute>
-                                <DateRangeReport />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/reports/monthly"
-                        element={
-                            <ProtectedRoute>
-                                <MonthlySummary />
-                            </ProtectedRoute>
-                        }
-                    />
+                        {/* Reports */}
+                        <Route path="/reports" element={<ReportsDashboard />} />
+                        <Route path="/reports/individual" element={<IndividualReport />} />
+                        <Route path="/reports/inspection/:inspectionNumber" element={<InspectionReport />} />
+                        <Route path="/reports/shift" element={<ShiftReport />} />
+                        <Route path="/reports/daily" element={<DailyReport />} />
+                        <Route path="/reports/date-range" element={<DateRangeReport />} />
+                        <Route path="/reports/monthly" element={<MonthlySummary />} />
+                    </Route>
 
                     {/* 404 */}
                     <Route

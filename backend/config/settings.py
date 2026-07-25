@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     "common",
     "reporting",
     "alerts",
-    "maintenance",
 ]
 
 # -------------------------------------------------

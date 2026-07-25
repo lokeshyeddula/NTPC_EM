@@ -78,10 +78,10 @@ export default function InspectionReport({
     }
 
     return (
-        <Layout>
+
             <div className="w-full pb-6 sm:py-6">
                 {reportContent}
             </div>
-        </Layout>
+
     );
 }

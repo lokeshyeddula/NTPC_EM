@@ -14,7 +14,7 @@ export default function Layout({ children }: Props) {
     return (
         <div className="flex h-screen bg-gray-100 overflow-hidden">
 
-            {/* Mobile Sidebar Overlay / Backdrop */}
+            {/* Mobile Sidebar Backdrop */}
             {isSidebarOpen && (
                 <div
                     className="fixed inset-0 z-40 bg-black/50 transition-opacity md:hidden"
@@ -29,27 +29,24 @@ export default function Layout({ children }: Props) {
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
-                {/* Passed the onClose function to allow the Sidebar to close itself */}
                 <Sidebar onClose={() => setIsSidebarOpen(false)} />
             </div>
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
 
-                {/* Mobile Hamburger Button */}
-                {/* Mobile Hamburger Button */}
-                {/* Mobile Hamburger Button */}
+                {/* Mobile Hamburger Trigger Button */}
                 <button
                     onClick={() => setIsSidebarOpen(true)}
                     className="md:hidden absolute top-3.5 left-4 z-50 p-1 bg-transparent text-white rounded focus:outline-none active:bg-[#1a4b8c]"
                     aria-label="Open sidebar"
                 >
-                    <Menu size={28} />
+                    <Menu size={26} />
                 </button>
 
                 <Header />
 
-                {/* Main Content Scrollable Area */}
+                {/* Scrollable Main Area */}
                 <main className="flex-1 bg-gray-100 p-4 sm:p-6 overflow-y-auto">
                     {children}
                 </main>

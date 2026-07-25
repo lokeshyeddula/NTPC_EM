@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from inspections.models import InspectionLog
 from rest_framework.generics import ListAPIView
 from django.http import HttpResponse
-from .pdf_generator import generate_inspection_pdf
+from .pdf_generator import generate_inspection_pdf, generate_shift_pdf
 from .serializers import (
     InspectionReportSerializer,
 )
@@ -100,6 +100,42 @@ class ShiftReportAPIView(ListAPIView):
             "-inspection_date",
             "-inspection_number",
         )
+
+
+class ShiftPDFAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        shift = request.GET.get("shift")
+        date_str = request.GET.get("date")
+
+        if not shift or not date_str:
+            return HttpResponse("Missing date or shift parameters", status=400)
+
+        # Optimize query to fetch all required relationships efficiently
+        queryset = (
+            InspectionLog.objects
+            .select_related(
+                "engineer",
+                "vehicle",
+                "vehicle__machinery_type",
+            )
+            .prefetch_related(
+                "results__inspection_field"  # Needed for failed items extraction
+            )
+            .filter(
+                shift__iexact=shift,
+                inspection_date=date_str
+            )
+            .order_by("created_at")
+        )
+
+        pdf = generate_shift_pdf(queryset, date_str, shift)
+
+        response = HttpResponse(pdf, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="Shift_Report_{date_str}_{shift}.pdf"'
+
+        return response
 
 class InspectionReportAPIView(
     generics.RetrieveAPIView

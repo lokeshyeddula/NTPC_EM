@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Layout from "../../components/layout/Layout";
 import inspectionService from "../../services/inspectionService";
 
 interface InspectionHistory {
@@ -34,7 +33,7 @@ export default function InspectionHistory() {
     }
 
     return (
-        <Layout>
+
             <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                 <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
                     Inspection History
@@ -149,6 +148,6 @@ export default function InspectionHistory() {
                     </>
                 )}
             </div>
-        </Layout>
+
     );
 }

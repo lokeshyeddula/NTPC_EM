@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import Layout from "../../components/layout/Layout";
 import inspectionService from "../../services/inspectionService";
 
 import ReportHeader from "../../components/report/ReportHeader";
@@ -57,10 +55,6 @@ export default function InspectionReport({
         </div>
     ) : (
         <div className="max-w-6xl mx-auto print-report bg-white rounded-xl shadow-sm sm:shadow-lg border border-gray-200 overflow-hidden">
-            {/*
-              Responsive padding and vertical spacing.
-              The layout adapts for mobile (p-4 sm:p-6) up to desktop (md:p-10).
-            */}
             <div className="p-4 sm:p-6 md:p-10 space-y-6 sm:space-y-8">
                 <ReportActions inspectionNumber={report.inspection_number} />
                 <ReportHeader />
@@ -78,10 +72,8 @@ export default function InspectionReport({
     }
 
     return (
-        <Layout>
-            <div className="w-full pb-6 sm:py-6">
-                {reportContent}
-            </div>
-        </Layout>
+        <div className="w-full pb-6 sm:py-6">
+            {reportContent}
+        </div>
     );
 }

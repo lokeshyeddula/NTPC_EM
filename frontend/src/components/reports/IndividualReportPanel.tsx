@@ -15,7 +15,6 @@ interface Inspection {
 export default function IndividualReportPanel() {
     const [inspections, setInspections] = useState<Inspection[]>([]);
 
-    // Changed from searchInspection to searchEngineer
     const [searchEngineer, setSearchEngineer] = useState("");
     const [searchVehicle, setSearchVehicle] = useState("");
     const [searchDate, setSearchDate] = useState("");
@@ -39,13 +38,11 @@ export default function IndividualReportPanel() {
         }
     }
 
-    // 1. Check if the user has typed anything into any of the filters
     const hasActiveFilter =
         searchEngineer.trim() !== "" ||
         searchVehicle.trim() !== "" ||
         searchDate !== "";
 
-    // 2. Filter logic updated to match Engineer name instead of Inspection Number
     const filteredInspections = hasActiveFilter
         ? inspections.filter((item) => {
               const engineerMatch = item.engineer
@@ -193,7 +190,6 @@ export default function IndividualReportPanel() {
                                     : "View Report"}
                             </button>
 
-                            {/* INLINE MOBILE REPORT */}
                             {selectedInspection === item.inspection_number && (
                                 <div className="mt-4 border-t border-gray-200 pt-4">
                                     <InspectionReport
@@ -218,17 +214,13 @@ export default function IndividualReportPanel() {
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-slate-800 text-white">
                         <tr>
-                            <th className="p-4 font-semibold text-sm">
-                                Inspection No
-                            </th>
+                            <th className="p-4 font-semibold text-sm">Inspection No</th>
                             <th className="p-4 font-semibold text-sm">Engineer</th>
                             <th className="p-4 font-semibold text-sm">Vehicle</th>
                             <th className="p-4 font-semibold text-sm">Date</th>
                             <th className="p-4 font-semibold text-sm">Shift</th>
                             <th className="p-4 font-semibold text-sm">Status</th>
-                            <th className="p-4 font-semibold text-sm text-center">
-                                Action
-                            </th>
+                            <th className="p-4 font-semibold text-sm text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -288,10 +280,8 @@ export default function IndividualReportPanel() {
                                         </td>
                                     </tr>
 
-                                    {/* INLINE DESKTOP REPORT (Expanding Row) */}
                                     {selectedInspection === item.inspection_number && (
                                         <tr>
-                                            {/* ColSpan updated to 7 since we added the Engineer column */}
                                             <td colSpan={7} className="p-0 border-b-2 border-blue-200">
                                                 <div className="bg-gray-50 p-6 shadow-inner">
                                                     <InspectionReport
@@ -306,7 +296,6 @@ export default function IndividualReportPanel() {
                             ))
                         ) : (
                             <tr>
-                                {/* ColSpan updated to 7 */}
                                 <td colSpan={7} className="p-8 text-center text-gray-500">
                                     {!hasActiveFilter
                                         ? "Enter an Engineer Name, Vehicle, or Date to search."
