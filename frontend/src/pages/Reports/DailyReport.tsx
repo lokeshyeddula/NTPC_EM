@@ -1,9 +1,10 @@
+import React from "react";
+import DailyReportPanel from "../../components/reports/DailyReportPanel"; // Adjust path if needed
+
 export default function DailyReport() {
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                Daily Inspection Report
-            </h1>
+        <div className="bg-white rounded-lg shadow p-2 sm:p-6 mb-8">
+            <DailyReportPanel />
         </div>
     );
 }

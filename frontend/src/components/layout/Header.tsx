@@ -1,37 +1,143 @@
+import { Menu, LogOut } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 
-export default function Header() {
+import ntpcLogo from "../../assets/Ntpc_logo.png";
+import nmlLogo from "../../assets/nml_logo.png";
+
+interface Props {
+    onMenuClick?: () => void;
+}
+
+export default function Header({ onMenuClick }: Props) {
+
     const { user, logout } = useAuth();
 
+    const initials =
+        user?.full_name
+            ?.split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase() || "U";
+
     return (
-        <header className="bg-[#0b3366] border-b border-[#08254a] shadow-md px-4 sm:px-6 py-3 sm:h-16 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
 
-            {/* Title Section: pl-12 ensures text clears the mobile hamburger button */}
-            <div className="w-full sm:w-auto pl-12 sm:pl-0 flex items-center">
-                <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide truncate">
-                    NTPC E&M Inspection System
-                </h1>
-            </div>
+        <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm">
 
-            {/* User Info & Actions Section */}
-            <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto border-t sm:border-0 border-[#1a4b8c] pt-2 sm:pt-0">
-                <div className="text-left sm:text-right mr-4 overflow-hidden">
-                    <div className="font-semibold text-sm text-white truncate">
-                        {user?.full_name}
+            <div className="h-18 px-4 lg:px-6">
+
+                <div className="flex h-[72px] items-center justify-between">
+
+                    {/* LEFT */}
+
+                    <div className="flex items-center gap-4">
+
+                        {/* Mobile Menu */}
+
+                        <button
+                            onClick={onMenuClick}
+                            className="md:hidden flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg"
+                        >
+                            <Menu size={24} />
+                        </button>
+
+                        {/* Logos */}
+
+                        <img
+                            src={ntpcLogo}
+                            className="h-10 w-auto"
+                            alt="NTPC"
+                        />
+
+                        <img
+                            src={nmlLogo}
+                            className="h-10 w-auto"
+                            alt="NML"
+                        />
+
+                        {/* Title */}
+
+                        <div className="hidden lg:block">
+
+                            <h1 className="text-2xl font-bold text-slate-800">
+
+                                NTPC E&M
+
+                            </h1>
+
+                            <p className="text-sm text-slate-500">
+
+                                NML Talaipalli
+
+                            </p>
+
+                        </div>
+
                     </div>
-                    <div className="text-xs text-blue-200 truncate">
-                        {user?.designation}
+
+                    {/* RIGHT */}
+
+                    <div className="flex items-center gap-5">
+
+                        {/* User */}
+
+                        <div className="hidden md:flex items-center gap-3">
+
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white font-bold text-lg">
+
+                                {initials}
+
+                            </div>
+
+                            <div>
+
+                                <h3 className="font-semibold text-slate-800">
+
+                                    {user?.full_name}
+
+                                </h3>
+
+                                <p className="text-sm text-slate-500">
+
+                                    {user?.designation}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        {/* Desktop Logout */}
+
+                        <button
+                            onClick={logout}
+                            className="hidden md:flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-white font-semibold hover:bg-red-700 transition"
+                        >
+
+                            <LogOut size={18} />
+
+                            Logout
+
+                        </button>
+
+                        {/* Mobile Logout */}
+
+                        <button
+                            onClick={logout}
+                            className="md:hidden flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600 text-white shadow-lg"
+                        >
+
+                            <LogOut size={22} />
+
+                        </button>
+
                     </div>
+
                 </div>
 
-                <button
-                    onClick={logout}
-                    className="bg-white text-red-600 hover:bg-red-50 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#0b3366]"
-                >
-                    Logout
-                </button>
             </div>
 
         </header>
+
     );
+
 }

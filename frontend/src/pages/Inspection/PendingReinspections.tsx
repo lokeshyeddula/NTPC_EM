@@ -55,23 +55,23 @@ export default function PendingReinspections() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                         <label className="block text-sm font-semibold text-gray-500 mb-1">Inspection Date</label>
-                        <div className="font-medium text-gray-900">{formattedDate}</div>
+                        <div className="font-semibold text-slate-800">{formattedDate}</div>
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-gray-500 mb-1">Inspection Time</label>
-                        <div className="font-medium text-gray-900">{formattedTime}</div>
+                        <div className="font-semibold text-slate-800">{formattedTime}</div>
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-gray-500 mb-1">Shift</label>
-                        <div className="font-medium text-gray-900">{getShift(currentTime)}</div>
+                        <div className="font-semibold text-slate-800">{getShift(currentTime)}</div>
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-gray-500 mb-1">Inspection Engineer</label>
-                        <div className="font-medium text-gray-900">{user?.full_name || "N/A"}</div>
+                        <div className="font-semibold text-slate-800">{user?.full_name || "N/A"}</div>
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-gray-500 mb-1">Designation</label>
-                        <div className="font-medium text-gray-900">{user?.designation || "N/A"}</div>
+                        <div className="font-semibold text-slate-800">{user?.designation || "N/A"}</div>
                     </div>
                 </div>
             </div>

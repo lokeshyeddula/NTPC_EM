@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "accounts",
     "machinery",
     "inspections",
-    "reports",
     "dashboard",
     "common",
     "reporting",

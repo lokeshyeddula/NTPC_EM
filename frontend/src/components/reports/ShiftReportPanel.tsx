@@ -104,41 +104,57 @@ export default function ShiftReportPanel() {
 
     return (
         <div className="w-full">
-            {/* Non-printable Control Bar */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200 gap-4">
-                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <div>
-                        <label className="block text-sm font-semibold mb-1.5 text-gray-700">
+{/* Non-printable Control Bar */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 bg-white p-5 rounded-xl shadow-sm border border-slate-200 print:hidden gap-4">
+                <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
+
+                    {/* Improved Date Picker */}
+                    <div className="relative">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             Select Date
                         </label>
                         <input
                             type="date"
                             value={filterDate}
                             onChange={(e) => setFilterDate(e.target.value)}
-                            className="w-full sm:w-48 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            className="w-full sm:w-44 bg-slate-50 border border-slate-300 text-slate-700 py-2.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 transition-colors cursor-pointer shadow-sm"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-semibold mb-1.5 text-gray-700">
+
+                    {/* Improved Custom Dropdown */}
+                    <div className="relative">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             Select Shift
                         </label>
-                        <select
-                            value={filterShift}
-                            onChange={(e) => setFilterShift(e.target.value)}
-                            className="w-full sm:w-48 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-                        >
-                            <option value="">All</option>
-                            <option value="Morning">Morning Shift</option>
-                            <option value="Evening">Evening Shift</option>
-                            <option value="Night">Night Shift</option>
-                            <option value="General">General Shift</option>
-                        </select>
+                        <div className="relative w-full sm:w-44">
+                            <select
+                                value={filterShift}
+                                onChange={(e) => setFilterShift(e.target.value)}
+                                // appearance-none removes the ugly default OS dropdown styling
+                                className="w-full appearance-none bg-slate-50 border border-slate-300 text-slate-700 py-2.5 px-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 transition-colors cursor-pointer shadow-sm"
+                            >
+                                <option value="" className="text-gray-500">-- All Shifts --</option>
+                                <option value="Morning" className="text-gray-900">Morning Shift</option>
+                                <option value="Evening" className="text-gray-900">Evening Shift</option>
+                                <option value="Night" className="text-gray-900">Night Shift</option>
+                                <option value="General" className="text-gray-900">General Shift</option>
+                            </select>
+
+                            {/* Custom SVG Dropdown Arrow */}
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {/* Download Button */}
                 <button
                     onClick={handleDownloadPdf}
                     disabled={filterShift === "" || isGeneratingPdf}
-                    className="w-full sm:w-auto bg-[#1a365d] hover:bg-[#122644] disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors flex items-center justify-center min-w-[160px]"
+                    className="w-full sm:w-auto bg-[#1a365d] hover:bg-[#122644] disabled:bg-slate-400 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors flex items-center justify-center min-w-[160px]"
                 >
                     {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
                 </button>

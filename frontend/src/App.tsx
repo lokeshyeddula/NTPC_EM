@@ -30,7 +30,7 @@ import InspectionReport from "./pages/Reports/InspectionReport";
 import IndividualReport from "./pages/Reports/IndividualReport";
 import ShiftReport from "./pages/Reports/ShiftReport";
 import DailyReport from "./pages/Reports/DailyReport";
-import DateRangeReport from "./pages/Reports/DateRangeReport";
+
 import MonthlySummary from "./pages/Reports/MonthlySummary";
 
 // Profile
@@ -79,7 +79,6 @@ function App() {
                         <Route path="/reports/inspection/:inspectionNumber" element={<InspectionReport />} />
                         <Route path="/reports/shift" element={<ShiftReport />} />
                         <Route path="/reports/daily" element={<DailyReport />} />
-                        <Route path="/reports/date-range" element={<DateRangeReport />} />
                         <Route path="/reports/monthly" element={<MonthlySummary />} />
                     </Route>
 
