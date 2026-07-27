@@ -98,7 +98,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 
-EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
 
@@ -213,11 +213,12 @@ REST_FRAMEWORK = {
 # CORS
 # -------------------------------------------------
 CORS_ALLOWED_ORIGINS = os.getenv(
-    "https://ntpc-em-frontend-tan.vercel.app",
-    "http://localhost:5173"
+    "CORS_ALLOWED_ORIGINS",
+    "https://ntpc-em-frontend-tan.vercel.app,http://localhost:5173"
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
+
 # -------------------------------------------------
 # JWT Configuration
 # -------------------------------------------------
@@ -243,7 +244,11 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
 
 CSRF_COOKIE_SECURE = not DEBUG
+
+# -------------------------------------------------
+# CSRF
+# -------------------------------------------------
 CSRF_TRUSTED_ORIGINS = os.getenv(
-    "https://ntpc-em-frontend-tan.vercel.app",
-    ""
-).split(",") if os.getenv("CSRF_TRUSTED_ORIGINS") else []
+    "CSRF_TRUSTED_ORIGINS",
+    "https://ntpc-em-frontend-tan.vercel.app"
+).split(",")
