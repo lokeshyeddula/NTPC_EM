@@ -47,19 +47,11 @@ export default function Layout({ children }: Props) {
 
                 {/* Content */}
 
-                <main className="flex-1 overflow-y-auto">
-
-                    <div className="p-4 md:p-6 lg:p-8">
-
-                        <div className="min-h-full rounded-3xl bg-white shadow-sm border border-slate-200 p-6">
-
-                            {children}
-
-                        </div>
-
-                    </div>
-
-                </main>
+                <main className="flex-1 overflow-y-auto bg-slate-100">
+    <div className="w-full px-3 sm:px-5 lg:px-8 py-4">
+        {children}
+    </div>
+</main>
 
             </div>
 

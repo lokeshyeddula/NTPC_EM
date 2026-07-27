@@ -8,7 +8,7 @@ export default function InspectionPage() {
           space-y-4 (16px) on mobile,
           space-y-6 (24px) on sm screens and up
         */
-        <div className="flex flex-col space-y-4 sm:space-y-6 w-full max-w-7xl mx-auto">
+        <div className="w-full flex flex-col gap-4">
             <InspectionHeader />
             <InspectionForm />
         </div>
