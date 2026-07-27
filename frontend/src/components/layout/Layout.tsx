@@ -39,19 +39,18 @@ export default function Layout({ children }: Props) {
 
             <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
 
-
-
                 {/* Header */}
 
                 <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
                 {/* Content */}
 
-                <main className="flex-1 overflow-y-auto bg-slate-100">
-    <div className="w-full px-3 sm:px-5 lg:px-8 py-4">
-        {children}
-    </div>
-</main>
+                {/* MODIFIED: Changed mobile background to white and removed mobile padding */}
+                <main className="flex-1 overflow-y-auto bg-white sm:bg-slate-100">
+                    <div className="w-full px-0 py-0 sm:px-5 lg:px-8 sm:py-4">
+                        {children}
+                    </div>
+                </main>
 
             </div>
 
