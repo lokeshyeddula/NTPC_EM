@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import inspectionService from "../../services/inspectionService";
 import api from "../../api/axios";
 import ntpcLogo from "../../assets/Ntpc_logo.png";

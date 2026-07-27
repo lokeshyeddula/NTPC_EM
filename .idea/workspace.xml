@@ -6,12 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="27/07/26">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/config/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/DailyReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/DailyReportPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/MonthlySummaryPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/MonthlySummaryPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/ShiftReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/ShiftReportPanel.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
