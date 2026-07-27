@@ -32,9 +32,12 @@ class Command(BaseCommand):
 
         file_path = settings.BASE_DIR / "Vehicle_door_numbers.xlsx"
 
+        self.stdout.write(f"Looking for: {file_path}")
+        self.stdout.write(f"Exists: {file_path.exists()}")
+
         if not file_path.exists():
             self.stdout.write(
-                self.style.ERROR("Excel file not found.")
+                self.style.ERROR(f"Excel file not found: {file_path}")
             )
             return
 
