@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
-import ntpcLogo from "../../assets/ntpc_logo.png";
+import ntpcLogo from "../../assets/Ntpc_logo.png";
 import nmlLogo from "../../assets/nml_logo.png";
 
 import useAuth from "../../hooks/useAuth";
