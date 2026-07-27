@@ -1,7 +1,7 @@
 import  { useEffect, useState } from "react";
 import inspectionService from "../../services/inspectionService";
 import InspectionReport from "../../pages/Reports/InspectionReport";
-
+import React from "react";
 interface Inspection {
     id: number;
     inspection_number: string;

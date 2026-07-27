@@ -53,10 +53,10 @@ export default function ReportSummary({ report }: Props) {
                     </p>
                     <p
                         className={`text-xl sm:text-2xl font-bold uppercase tracking-wide ${
-                            report.operational_status === "Fit" || report.operational_status === "Pass"
-                                ? "text-green-600"
-                                : "text-red-600"
-                        }`}
+    report.operational_status === "Fit"
+        ? "text-green-600"
+        : "text-red-600"
+}`}
                     >
                         {report.operational_status}
                     </p>

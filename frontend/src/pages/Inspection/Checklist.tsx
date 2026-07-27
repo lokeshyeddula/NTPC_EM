@@ -30,11 +30,12 @@ export default function Checklist({ machineryType, vehicle, relay, pendingReinsp
   const totalCount = fields.length;
   const allCompleted = completedCount === totalCount && totalCount > 0;
 
-  const operationalStatus = Object.values(results).includes("Fail")
-    ? "Unfit"
-    : allCompleted
-    ? "Fit"
-    : "Pending";
+ const operationalStatus: "Fit" | "Unfit" | "Pending" =
+    Object.values(results).includes("Fail")
+        ? "Unfit"
+        : allCompleted
+        ? "Fit"
+        : "Pending";
 
   const remarksRequired = operationalStatus === "Unfit";
   const isReinspection = pendingReinspection?.is_unfit;
@@ -80,7 +81,7 @@ export default function Checklist({ machineryType, vehicle, relay, pendingReinsp
     const payload = {
       relay,
       vehicle,
-      operational_status: operationalStatus,
+      operational_status: operationalStatus as "Fit" | "Unfit",
 
       // Auto-fill dummy data for reinspections to satisfy backend requirements
       operator_name: isReinspection ? "N/A (Reinspection)" : operatorName,

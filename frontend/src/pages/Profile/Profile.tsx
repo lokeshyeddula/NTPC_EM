@@ -85,8 +85,8 @@ export default function Profile() {
                             Username / Email
                         </label>
                         <div className="font-medium text-gray-900 text-base">
-                            {user?.username || user?.email || "N/A"}
-                        </div>
+    {user?.email || "N/A"}
+</div>
                     </div>
 
                     <div>
@@ -102,9 +102,9 @@ export default function Profile() {
                         <label className="block text-sm font-semibold text-gray-500 mb-1">
                             Role / Access Level
                         </label>
-                        <div className="font-medium text-gray-900 text-base uppercase">
-                            {user?.role || "Engineer"}
-                        </div>
+                       <div className="font-medium text-gray-900 text-base uppercase">
+    {user?.is_admin ? "Administrator" : "Engineer"}
+</div>
                     </div>
                 </div>
             </div>
