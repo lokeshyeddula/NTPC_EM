@@ -6,11 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="27/07/26">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/report/ReportSummary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/report/ReportSummary.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/context/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/context/AuthContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/DailyReport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/DailyReport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/IndividualReport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/IndividualReport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/ReportsDashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/ReportsDashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/routes/ProtectedRoute.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/routes/ProtectedRoute.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +98,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785149841834</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="27/07/26">
+      <option name="closed" value="true" />
+      <created>1785151103743</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1785151103743</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

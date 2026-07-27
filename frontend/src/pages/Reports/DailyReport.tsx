@@ -1,4 +1,4 @@
-import React from "react";
+
 import DailyReportPanel from "../../components/reports/DailyReportPanel"; // Adjust path if needed
 
 export default function DailyReport() {

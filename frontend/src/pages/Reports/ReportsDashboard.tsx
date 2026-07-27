@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 
 import IndividualReportPanel from "../../components/reports/IndividualReportPanel";
 import ShiftReportPanel from "../../components/reports/ShiftReportPanel";

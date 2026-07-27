@@ -2,8 +2,10 @@ import { Navigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 
+import type { ReactNode } from "react";
+
 interface Props {
-    children: JSX.Element;
+    children: ReactNode;
 }
 
 export default function ProtectedRoute({
