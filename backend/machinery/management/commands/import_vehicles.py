@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        file_path = settings.BASE_DIR / "vehicle_door_numbers.xlsx"
+        file_path = settings.BASE_DIR / "Vehicle_door_numbers.xlsx"
 
         if not file_path.exists():
             self.stdout.write(
