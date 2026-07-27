@@ -129,27 +129,36 @@ export default function InspectionForm() {
     }));
 
     const customSelectStyles: StylesConfig<SelectOption, false> = {
-        control: (provided, state) => ({
-            ...provided,
-            minHeight: '3rem',
-            borderRadius: '0.5rem',
-            borderColor: state.isFocused ? '#2563eb' : '#d1d5db',
-            boxShadow: state.isFocused ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none',
-            backgroundColor: state.isDisabled ? '#f9fafb' : '#ffffff',
-            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s ease',
-            '&:hover': {
-                borderColor: state.isFocused ? '#2563eb' : '#9ca3af'
-            }
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected ? '#2563eb' : state.isFocused ? '#eff6ff' : 'transparent',
-            color: state.isSelected ? 'white' : '#1f2937',
-            cursor: 'pointer',
-            padding: '10px 14px',
-            '&:active': { backgroundColor: '#dbeafe' }
-        }),
+        control: (provided, state) => {
+            // Check screen width to make controls slightly shorter on mobile
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+            return {
+                ...provided,
+                minHeight: isMobile ? '2.5rem' : '3rem', // Slimmer height on mobile
+                borderRadius: '0.5rem',
+                borderColor: state.isFocused ? '#2563eb' : '#d1d5db',
+                boxShadow: state.isFocused ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none',
+                backgroundColor: state.isDisabled ? '#f9fafb' : '#ffffff',
+                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                fontSize: isMobile ? '0.875rem' : '1rem', // Slightly smaller text on mobile
+                '&:hover': {
+                    borderColor: state.isFocused ? '#2563eb' : '#9ca3af'
+                }
+            };
+        },
+        option: (provided, state) => {
+            const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+            return {
+                ...provided,
+                backgroundColor: state.isSelected ? '#2563eb' : state.isFocused ? '#eff6ff' : 'transparent',
+                color: state.isSelected ? 'white' : '#1f2937',
+                cursor: 'pointer',
+                padding: isMobile ? '8px 12px' : '10px 14px', // Tighter dropdown padding on mobile
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                '&:active': { backgroundColor: '#dbeafe' }
+            };
+        },
         menu: (provided) => ({
             ...provided,
             borderRadius: '0.5rem',
@@ -158,11 +167,16 @@ export default function InspectionForm() {
             overflow: 'hidden',
             zIndex: 50,
         }),
+        // Optional: Tighten value container padding slightly for mobile layout
+        valueContainer: (provided) => ({
+            ...provided,
+            padding: '0 8px',
+        })
     };
 
     return (
         <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-white sm:rounded-lg sm:shadow px-4 py-4 sm:p-6">
 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

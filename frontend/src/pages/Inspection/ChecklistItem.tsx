@@ -12,7 +12,7 @@ export default function ChecklistItem({
     onChange,
 }: Props) {
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-4 sm:p-5 mb-4">
+        <div className="bg-white sm:rounded-xl border-b sm:border border-gray-200 sm:shadow-sm py-4 sm:p-5 sm:mb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
 
                 {/* Text Container */}

@@ -10,7 +10,7 @@ export default function Remarks({
     required,
 }: Props) {
     return (
-        <div className="bg-white rounded-lg border shadow-sm p-4 sm:p-6 mt-4 sm:mt-6">
+        <div className="bg-white sm:rounded-xl border-b sm:border border-gray-200 sm:shadow-sm py-4 sm:p-5 sm:mb-4">
             <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">
                 Remarks
                 {required && (

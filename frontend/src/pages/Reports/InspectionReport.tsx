@@ -46,15 +46,15 @@ export default function InspectionReport({
     }
 
     const reportContent = loading ? (
-        <div className="flex justify-center items-center p-8 sm:p-12 text-gray-500 font-medium text-sm sm:text-base bg-white rounded-lg shadow-sm border border-gray-100">
+        <div className="flex justify-center items-center p-8 sm:p-12 text-gray-500 font-medium text-sm sm:text-base bg-white sm:rounded-lg sm:shadow-sm sm:border border-gray-100">
             Loading Report...
         </div>
     ) : !report ? (
-        <div className="flex justify-center items-center p-8 sm:p-12 text-red-500 font-medium text-sm sm:text-base bg-white rounded-lg shadow-sm border border-gray-100">
+        <div className="flex justify-center items-center p-8 sm:p-12 text-gray-500 font-medium text-sm sm:text-base bg-white sm:rounded-lg sm:shadow-sm sm:border border-gray-100">
             Report not found.
         </div>
     ) : (
-        <div className="max-w-6xl mx-auto print-report bg-white rounded-xl shadow-sm sm:shadow-lg border border-gray-200 overflow-hidden">
+        <div className="max-w-6xl mx-auto print-report bg-white sm:rounded-xl sm:shadow-lg sm:border border-gray-200 overflow-hidden">
             <div className="p-4 sm:p-6 md:p-10 space-y-6 sm:space-y-8">
                 <ReportActions inspectionNumber={report.inspection_number} />
                 <ReportHeader />

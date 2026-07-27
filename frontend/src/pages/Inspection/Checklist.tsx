@@ -127,7 +127,7 @@ export default function Checklist({ machineryType, vehicle, relay, pendingReinsp
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+    <div className="bg-white sm:rounded-lg sm:shadow px-4 py-2 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="w-full sm:w-auto">
           <h2 className="text-xl sm:text-2xl font-bold">
@@ -152,7 +152,7 @@ export default function Checklist({ machineryType, vehicle, relay, pendingReinsp
 
       {/* Conditionally render the entire Operator Information block */}
       {!isReinspection && (
-          <div className="mt-6 sm:mt-8 mb-6 sm:mb-8 border rounded-lg p-4 sm:p-6 bg-gray-50">
+          <div className="mt-6 pt-6 border-t border-gray-200 sm:mt-8 sm:mb-8 sm:border sm:rounded-lg sm:p-6 sm:bg-gray-50">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-5">Operator Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <div><label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Operator Name</label><input type="text" className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} /></div>

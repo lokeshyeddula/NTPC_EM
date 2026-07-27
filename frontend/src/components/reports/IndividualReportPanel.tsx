@@ -81,7 +81,7 @@ export default function IndividualReportPanel() {
             </h2>
 
             {/* Responsive Search Filters */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 mt-6 pt-6 border-t border-gray-200 sm:mt-0 sm:pt-0 sm:bg-white sm:p-4 sm:rounded-lg sm:shadow-sm sm:border border-gray-100">
                 <div>
                     <label className="block text-sm font-medium mb-1.5 text-gray-700">
                         Engineer Name
@@ -210,7 +210,7 @@ export default function IndividualReportPanel() {
             </div>
 
             {/* Desktop View: Table Layout */}
-            <div className="hidden md:block overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="-mx-4 px-4 sm:mx-0 sm:px-0 hidden md:block overflow-x-auto sm:bg-white sm:border border-gray-200 sm:rounded-lg sm:shadow-sm">
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-slate-800 text-white">
                         <tr>

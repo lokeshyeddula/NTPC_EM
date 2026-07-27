@@ -89,7 +89,7 @@ export default function InspectionHistory() {
                     </div>
 
                     {/* Desktop View: Table Layout */}
-                    <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
+                    <div className="-mx-4 sm:mx-0 px-4 sm:px-0 hidden md:block overflow-x-auto sm:rounded-lg sm:border border-gray-200">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-100 text-gray-700 uppercase text-sm border-b">

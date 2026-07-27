@@ -54,7 +54,7 @@ export default function InspectionHeader() {
     }
 
 return (
-    <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+    <div className="bg-white sm:rounded-xl sm:shadow-md px-4 py-4 sm:p-6 mb-2 sm:mb-6">
 
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6">
             Random Machinery Inspection

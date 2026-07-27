@@ -3,7 +3,7 @@ import DailyReportPanel from "../../components/reports/DailyReportPanel"; // Adj
 
 export default function DailyReport() {
     return (
-        <div className="bg-white rounded-lg shadow p-2 sm:p-6 mb-8">
+        <div className="bg-white sm:rounded-lg sm:shadow py-4 sm:p-6 sm:mb-8 border-b sm:border-none border-gray-200">
             <DailyReportPanel />
         </div>
     );

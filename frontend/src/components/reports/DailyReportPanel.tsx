@@ -130,7 +130,7 @@ export default function DailyReportPanel() {
 
             {/* Live Dashboard Report Canvas (Virtual Desk Paper style) */}
             {filterDate ? (
-                <div className="bg-white p-6 sm:p-10 rounded-sm shadow-xl border border-slate-200 w-full max-w-5xl mx-auto print:shadow-none print:border-none print:p-0 print:max-w-none">
+                <div className="bg-white py-4 sm:p-10 sm:rounded-sm sm:shadow-xl sm:border border-slate-200 w-full max-w-5xl mx-auto print:shadow-none print:border-none print:p-0 print:max-w-none">
                     <div className="flex justify-between items-center border-b-2 border-[#1a365d] pb-4 mb-4">
                         <img
                             src={ntpcLogo}

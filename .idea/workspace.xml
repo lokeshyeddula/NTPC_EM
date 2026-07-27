@@ -6,7 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="27/07/26">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/DailyReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/DailyReportPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/IndividualReportPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/MonthlySummaryPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/MonthlySummaryPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/reports/ReportSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/reports/ReportSelector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/ChecklistItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/ChecklistItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHistory.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHistory.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/PendingReinspections.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/PendingReinspections.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/Remarks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/Remarks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/DailyReport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/DailyReport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/InspectionReport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/InspectionReport.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/ReportsDashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/ReportsDashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Reports/ShiftReport.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Reports/ShiftReport.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785160472838</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="27/07/26">
+      <option name="closed" value="true" />
+      <created>1785161187471</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1785161187471</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

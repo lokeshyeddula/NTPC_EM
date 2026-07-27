@@ -17,10 +17,10 @@ export default function ReportsDashboard() {
 
     return (
         // Added bg-slate-50 here to give the whole section a soft, premium background
-        <div className="p-4 sm:p-6 min-h-screen bg-slate-50 space-y-6 rounded-2xl">
+        <div className="sm:p-6 min-h-screen bg-white sm:bg-slate-50 sm:space-y-6 sm:rounded-2xl">
 
             {/* Header and Navigation Tabs */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <div className="bg-white sm:rounded-xl sm:shadow-sm border-b sm:border border-slate-200 py-4 sm:p-6">
                 <h1 className="text-2xl sm:text-3xl font-extrabold mb-5 text-gray-900 tracking-tight">
                     Reports Dashboard
                 </h1>
@@ -48,7 +48,7 @@ export default function ReportsDashboard() {
             </div>
 
             {/* Dynamic Report Panel Canvas */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 min-h-[500px]">
+            <div className="bg-white sm:rounded-xl sm:shadow-sm sm:border border-slate-200 pt-4 sm:p-6 min-h-[500px]">
                 {selectedReport === "individual" && <IndividualReportPanel />}
                 {selectedReport === "shift" && <ShiftReportPanel />}
                 {selectedReport === "daily" && <DailyReportPanel />}

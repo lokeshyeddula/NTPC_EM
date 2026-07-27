@@ -113,7 +113,7 @@ export default function MonthlySummaryPanel() {
     return (
         <div className="w-full">
             {/* Control Bar */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200 print:hidden gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 mt-6 pt-6 border-t border-gray-200 sm:mt-0 sm:pt-0 sm:bg-white sm:p-4 sm:rounded-lg sm:shadow-sm sm:border border-gray-200 print:hidden gap-4">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                     <div>
                         <label className="block text-sm font-semibold mb-1.5 text-gray-700">
