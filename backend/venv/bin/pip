@@ -1,4 +1,4 @@
-#!/Users/lokesh/IdeaProjects/NTPC_EM/backend/venv/bin/python3.11
+#!/Users/lokesh/PycharmProjects/NTPC_EM/backend/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

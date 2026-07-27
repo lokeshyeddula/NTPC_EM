@@ -1,13 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/NTPC_EM.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/Activate.ps1" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/Activate.ps1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/activate" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/activate" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/activate.csh" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/activate.csh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/activate.fish" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/activate.fish" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/django-admin" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/django-admin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/dotenv" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/dotenv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/f2py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/f2py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/jsonschema" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/jsonschema" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/normalizer" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/normalizer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/numpy-config" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/numpy-config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/pip" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/pip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/pip3" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/pip3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/pip3.11" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/pip3.11" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/bin/sqlformat" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/bin/sqlformat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/asgiref-3.11.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/asgiref-3.11.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/attrs-26.1.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/attrs-26.1.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/certifi-2026.7.22.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/certifi-2026.7.22.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/charset_normalizer-3.4.9.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/charset_normalizer-3.4.9.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django-5.2.16.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django-5.2.16.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django_cors_headers-4.9.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django_cors_headers-4.9.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django_filter-26.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/django_filter-26.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/djangorestframework-3.17.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/djangorestframework-3.17.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/djangorestframework_simplejwt-5.5.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/djangorestframework_simplejwt-5.5.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/drf_spectacular-0.30.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/drf_spectacular-0.30.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/et_xmlfile-2.0.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/et_xmlfile-2.0.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/inflection-0.5.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/inflection-0.5.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/jsonschema-4.26.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/jsonschema-4.26.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/jsonschema_specifications-2025.9.1.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/jsonschema_specifications-2025.9.1.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/numpy-2.4.6.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/numpy-2.4.6.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/openpyxl-3.1.5.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/openpyxl-3.1.5.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pandas-3.0.3.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pandas-3.0.3.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pillow-12.3.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pillow-12.3.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pip-26.1.2.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pip-26.1.2.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/psycopg2_binary-2.9.12.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/psycopg2_binary-2.9.12.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pyjwt-2.13.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pyjwt-2.13.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/python_dateutil-2.9.0.post0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/python_dateutil-2.9.0.post0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/python_dotenv-1.2.2.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/python_dotenv-1.2.2.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pyyaml-6.0.3.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/pyyaml-6.0.3.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/referencing-0.37.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/referencing-0.37.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab-5.0.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab-5.0.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab/fonts/DarkGarden.sfd" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab/fonts/DarkGarden.sfd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab/fonts/DarkGardenMK.afm" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/reportlab/fonts/DarkGardenMK.afm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/rpds_py-2026.6.3.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/rpds_py-2026.6.3.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/setuptools-65.5.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/setuptools-65.5.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/six-1.17.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/six-1.17.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/sqlparse-0.5.5.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/sqlparse-0.5.5.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/typing_extensions-4.16.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/typing_extensions-4.16.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/uritemplate-4.2.0.dist-info/RECORD" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/lib/python3.11/site-packages/uritemplate-4.2.0.dist-info/RECORD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/venv/pyvenv.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/backend/venv/pyvenv.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,9 +66,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "lokeshyeddula"
+  }
 }]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/lokeshyeddula/NTPC_EM.git",
+    "accountId": "3c5fb407-8c00-41e1-9746-029662f8f201"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="3GTwqtkQ6vUd4XTFcC9BNfsaMZv" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -29,6 +90,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
@@ -37,110 +99,6 @@
     "to.speed.mode.migration.done": "true"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Docutils task">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Sphinx task">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Autodetect">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="NTPC_EM" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
