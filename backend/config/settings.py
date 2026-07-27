@@ -213,7 +213,7 @@ REST_FRAMEWORK = {
 # CORS
 # -------------------------------------------------
 CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
+    "https://ntpc-em-frontend-tan.vercel.app",
     "http://localhost:5173"
 ).split(",")
 
@@ -244,6 +244,6 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS",
+    "https://ntpc-em-frontend-tan.vercel.app",
     ""
 ).split(",") if os.getenv("CSRF_TRUSTED_ORIGINS") else []
