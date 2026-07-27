@@ -1,4 +1,4 @@
-import ntpcLogo from "../../assets/ntpc_logo.png";
+import ntpcLogo from "../../assets/Ntpc_logo.png";
 import nmlLogo from "../../assets/nml_logo.png";
 
 export default function ReportHeader() {
