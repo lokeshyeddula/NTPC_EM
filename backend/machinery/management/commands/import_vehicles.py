@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from django.conf import settings
 import pandas as pd
 from django.core.management.base import BaseCommand
 
@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        file_path = Path("vehicle_door_numbers.xlsx")
+        file_path = settings.BASE_DIR / "vehicle_door_numbers.xlsx"
 
         if not file_path.exists():
             self.stdout.write(
