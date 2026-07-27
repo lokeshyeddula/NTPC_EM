@@ -26,9 +26,15 @@ class VehicleByMachineAPIView(ListAPIView):
 
         machinery_type_id = self.kwargs["machinery_type_id"]
 
-        return Vehicle.objects.filter(
+        # FIXED: Added select_related to prevent N+1 queries
+        # FIXED: Added defer('remarks') to save massive amounts of RAM
+        return Vehicle.objects.select_related(
+            "machinery_type"
+        ).filter(
             machinery_type_id=machinery_type_id,
             status="Active",
+        ).defer(
+            "remarks"
         ).order_by("machine_number")
 class MachineryTypeViewSet(viewsets.ModelViewSet):
     queryset = MachineryType.objects.filter(
