@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -6,46 +8,43 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from alerts.tasks import send_failure_email_task
 from common.utils import get_current_shift
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from machinery.models import Vehicle
-from .models import InspectionLog
-from inspections.utils import generate_inspection_number
-
 from machinery.models import MachineryType, Vehicle
 
 from .models import (
-    MachineryInspectionField,
     InspectionLog,
     InspectionResult,
+    MachineryInspectionField,
 )
-
 from .serializers import (
-    MachineryInspectionFieldSerializer,
     InspectionCreateSerializer,
     InspectionHistorySerializer,
+    MachineryInspectionFieldSerializer,
 )
+from .utils import generate_inspection_number
 
+
+logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# MACHINERY CHECKLIST
+# ============================================================
 
 class MachineryChecklistAPIView(generics.ListAPIView):
     serializer_class = MachineryInspectionFieldSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-
         machinery_type_id = self.kwargs["machinery_type_id"]
 
         try:
-
             machinery = MachineryType.objects.get(
                 id=machinery_type_id
             )
-
         except MachineryType.DoesNotExist:
-
             raise NotFound("Machine type not found.")
 
         return (
@@ -61,85 +60,175 @@ class MachineryChecklistAPIView(generics.ListAPIView):
         )
 
 
-# ==========================================
-# NEW ENDPOINT: Check Vehicle Status
-# ==========================================
+# ============================================================
+# CHECK CURRENT VEHICLE STATUS
+# ============================================================
+
 class CheckVehicleStatusAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        vehicle_id = request.query_params.get('vehicle_id')
+        vehicle_id = request.query_params.get("vehicle_id")
 
         if not vehicle_id:
-            return Response({"error": "vehicle_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "error": "vehicle_id is required"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
-            # Check chronological history to see if the machine is currently broken
-            latest_inspection = InspectionLog.objects.filter(
-                vehicle_id=vehicle_id
-            ).latest('created_at')
+            latest_inspection = (
+                InspectionLog.objects
+                .filter(vehicle_id=vehicle_id)
+                .order_by("-created_at")
+                .first()
+            )
 
-            if latest_inspection.operational_status.lower() == 'unfit':
-                # Grab ONLY the fields that caused the failure
-                failed_results = InspectionResult.objects.filter(
-                    inspection=latest_inspection,
-                    result__iexact='Fail'
-                ).select_related('inspection_field')
+            if not latest_inspection:
+                return Response(
+                    {
+                        "is_unfit": False
+                    },
+                    status=status.HTTP_200_OK,
+                )
+
+            if (
+                latest_inspection.operational_status
+                and latest_inspection.operational_status.lower() == "unfit"
+            ):
+                failed_results = (
+                    InspectionResult.objects
+                    .filter(
+                        inspection=latest_inspection,
+                        result__iexact="Fail",
+                    )
+                    .select_related("inspection_field")
+                )
 
                 failed_fields = [
                     {
-                        "id": res.inspection_field.id,
-                        "field_name": res.inspection_field.field_name
-                    } for res in failed_results
+                        "id": result.inspection_field.id,
+                        "field_name": result.inspection_field.field_name,
+                    }
+                    for result in failed_results
                 ]
 
-                return Response({
-                    "is_unfit": True,
-                    "original_inspection_id": latest_inspection.id,
-                    "failed_fields": failed_fields
-                }, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "is_unfit": True,
+                        "original_inspection_id": latest_inspection.id,
+                        "failed_fields": failed_fields,
+                    },
+                    status=status.HTTP_200_OK,
+                )
 
-            else:
-                return Response({"is_unfit": False}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "is_unfit": False
+                },
+                status=status.HTTP_200_OK,
+            )
 
-        except InspectionLog.DoesNotExist:
-            return Response({"is_unfit": False}, status=status.HTTP_200_OK)
+        except Exception:
+            logger.exception(
+                "Error checking vehicle status. vehicle_id=%s",
+                vehicle_id,
+            )
+
+            return Response(
+                {
+                    "error": "Unable to check vehicle status."
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+# ============================================================
+# PENDING RE-INSPECTIONS
+# ============================================================
 
 class PendingReinspectionsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        vehicles = Vehicle.objects.select_related('machinery_type').all()
+        """
+        Return vehicles whose MOST RECENT inspection is UNFIT.
+
+        IMPORTANT:
+        We deliberately do NOT filter operational_status='unfit'
+        before selecting the latest inspection.
+
+        Otherwise, a vehicle that was previously UNFIT but later
+        became FIT would incorrectly appear as pending.
+        """
+
+        latest_inspections = (
+            InspectionLog.objects
+            .select_related(
+                "vehicle",
+                "vehicle__machinery_type",
+            )
+            .order_by(
+                "vehicle_id",
+                "-created_at",
+            )
+            .distinct("vehicle_id")
+        )
+
         pending_list = []
 
-        for vehicle in vehicles:
-            # Get the single most recent inspection for this vehicle
-            latest_inspection = InspectionLog.objects.filter(
-                vehicle=vehicle
-            ).order_by('-created_at').first()
+        for inspection in latest_inspections:
 
-            if latest_inspection and latest_inspection.operational_status.lower() == 'unfit':
-                pending_list.append({
+            if not inspection.operational_status:
+                continue
+
+            if inspection.operational_status.lower() != "unfit":
+                continue
+
+            vehicle = inspection.vehicle
+            machinery_type = vehicle.machinery_type
+
+            pending_list.append(
+                {
                     "vehicle_id": vehicle.id,
                     "machine_number": vehicle.machine_number,
-                    "machinery_type_id": vehicle.machinery_type.id,
-                    "machinery_name": vehicle.machinery_type.name,
-                    "last_inspection_date": latest_inspection.inspection_date,
-                    "original_inspection_number": latest_inspection.inspection_number
-                })
+                    "machinery_type_id": machinery_type.id,
+                    "machinery_name": machinery_type.name,
+                    "last_inspection_date": (
+                        inspection.inspection_date
+                    ),
+                    "original_inspection_id": inspection.id,
+                    "original_inspection_number": (
+                        inspection.inspection_number
+                    ),
+                }
+            )
 
-        return Response(pending_list)
+        return Response(
+            pending_list,
+            status=status.HTTP_200_OK,
+        )
+
+
+# ============================================================
+# CREATE INSPECTION
+# ============================================================
 
 class InspectionCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic
     def post(self, request):
+
         serializer = InspectionCreateSerializer(
             data=request.data
         )
 
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(
+            raise_exception=True
+        )
 
         vehicle = Vehicle.objects.get(
             id=serializer.validated_data["vehicle"]
@@ -193,12 +282,14 @@ class InspectionCreateAPIView(APIView):
                 "remarks",
                 "",
             ),
-
-            # If you add parent_inspection_id to your models.py later to link them,
-            # you can map it here by extracting serializer.validated_data.get("parent_inspection_id")
         )
 
+        # ----------------------------------------------------
+        # Save inspection results
+        # ----------------------------------------------------
+
         for item in serializer.validated_data["results"]:
+
             InspectionResult.objects.create(
                 inspection=inspection,
                 inspection_field_id=item["inspection_field"],
@@ -207,33 +298,69 @@ class InspectionCreateAPIView(APIView):
 
         inspection.refresh_from_db()
 
-        # Trigger Celery Alert if the inspection (or targeted reinspection) fails
+        # ----------------------------------------------------
+        # Send failure notification
+        # ----------------------------------------------------
+        #
+        # IMPORTANT:
+        # Email/Celery must NEVER make the inspection itself
+        # fail.
+        #
+        # If Redis/Celery is unavailable, the inspection should
+        # still be successfully saved.
+        # ----------------------------------------------------
+
+        def send_failure_notification():
+            try:
+                send_failure_email_task.delay(
+                    inspection.id
+                )
+
+            except Exception:
+                logger.exception(
+                    "Unable to queue failure email for inspection %s",
+                    inspection.inspection_number,
+                )
+
         transaction.on_commit(
-            lambda: send_failure_email_task.delay(inspection.id)
+            send_failure_notification
         )
+
+        # ----------------------------------------------------
+        # Success response
+        # ----------------------------------------------------
 
         return Response(
             {
                 "success": True,
-                "inspection_number": inspection.inspection_number,
+                "message": "Inspection saved successfully.",
+                "inspection_id": inspection.id,
+                "inspection_number": (
+                    inspection.inspection_number
+                ),
             },
             status=status.HTTP_201_CREATED,
         )
 
 
+# ============================================================
+# INSPECTION HISTORY
+# ============================================================
+
 class InspectionHistoryAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
+
     serializer_class = InspectionHistorySerializer
 
     queryset = (
         InspectionLog.objects
         .select_related(
             "vehicle",
-            "vehicle__machinery_type",  # NEW: Optimizes fetching the machinery type
+            "vehicle__machinery_type",
             "engineer",
         )
         .prefetch_related(
-            "results__inspection_field" # NEW: Optimizes fetching all failed items in one batch
+            "results__inspection_field",
         )
         .order_by("-created_at")
     )
