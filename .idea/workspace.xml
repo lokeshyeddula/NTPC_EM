@@ -6,11 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="change in views.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/inspections/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/inspections/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/inspections/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/inspections/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/inspections/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/inspections/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/PendingReinspections.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/PendingReinspections.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/services/inspectionService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/inspectionService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/Checklist.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/types/inspection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/inspection.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -252,7 +249,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787340993568</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="change in views.py">
+      <option name="closed" value="true" />
+      <created>1787342176889</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1787342176889</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

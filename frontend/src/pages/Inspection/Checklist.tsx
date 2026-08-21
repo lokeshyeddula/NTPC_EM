@@ -1,190 +1,1127 @@
 import { useEffect, useState } from "react";
-import inspectionService, { type PendingReinspection } from "../../services/inspectionService";
+
+import inspectionService, {
+    type PendingReinspection,
+} from "../../services/inspectionService";
+
 import ChecklistItem from "./ChecklistItem";
-import type { ChecklistField } from "../../types/inspection";
 import Remarks from "./Remarks";
 import SubmitButton from "./SubmitButton";
 
+import type {
+    ChecklistField,
+    InspectionPayload,
+} from "../../types/inspection";
+
+
 interface Props {
-  machineryType: number;
-  vehicle: number;
-  relay: string;
-  pendingReinspection: PendingReinspection | null;
+
+    machineryType: number;
+
+    vehicle: number;
+
+    relay: string;
+
+    pendingReinspection:
+        PendingReinspection | null;
 }
 
-export default function Checklist({ machineryType, vehicle, relay, pendingReinspection }: Props) {
-  const [fields, setFields] = useState<ChecklistField[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<Record<number, "Pass" | "Fail">>({});
-  const [remarks, setRemarks] = useState("");
 
-  const [operatorName, setOperatorName] = useState("");
-  const [operatorEmployeeId, setOperatorEmployeeId] = useState("");
-  const [operatorAgency, setOperatorAgency] = useState("");
-  const [operatorMobile, setOperatorMobile] = useState("");
-  const [operatorChecklistFilled, setOperatorChecklistFilled] = useState(true);
-  const [operatorRemarks, setOperatorRemarks] = useState("");
-  const [saving, setSaving] = useState(false);
+export default function Checklist({
 
-  const completedCount = Object.keys(results).length;
-  const totalCount = fields.length;
-  const allCompleted = completedCount === totalCount && totalCount > 0;
+    machineryType,
+    vehicle,
+    relay,
+    pendingReinspection,
 
- const operationalStatus: "Fit" | "Unfit" | "Pending" =
-    Object.values(results).includes("Fail")
-        ? "Unfit"
-        : allCompleted
-        ? "Fit"
-        : "Pending";
+}: Props) {
 
-  const remarksRequired = operationalStatus === "Unfit";
-  const isReinspection = pendingReinspection?.is_unfit;
 
-  useEffect(() => {
-    async function loadChecklist() {
-      if (pendingReinspection?.is_unfit && pendingReinspection.failed_fields) {
-          setFields(pendingReinspection.failed_fields as ChecklistField[]);
-          setResults({});
-          setLoading(false);
-          return;
-      }
+    // =====================================================
+    // STATE
+    // =====================================================
 
-      try {
-        setLoading(true);
-        const data = await inspectionService.getChecklist(machineryType.toString());
-        setFields(data);
-        setResults({});
-      } catch (error) {
-        console.error("Failed to fetch checklist:", error);
-        setFields([]);
-      } finally {
-        setLoading(false);
-      }
+    const [
+        fields,
+        setFields,
+    ] = useState<ChecklistField[]>([]);
+
+
+    const [
+        loading,
+        setLoading,
+    ] = useState(true);
+
+
+    const [
+        results,
+        setResults,
+    ] = useState<
+        Record<
+            number,
+            "Pass" | "Fail"
+        >
+    >({});
+
+
+    const [
+        remarks,
+        setRemarks,
+    ] = useState("");
+
+
+    const [
+        operatorName,
+        setOperatorName,
+    ] = useState("");
+
+
+    const [
+        operatorEmployeeId,
+        setOperatorEmployeeId,
+    ] = useState("");
+
+
+    const [
+        operatorAgency,
+        setOperatorAgency,
+    ] = useState("");
+
+
+    const [
+        operatorMobile,
+        setOperatorMobile,
+    ] = useState("");
+
+
+    const [
+        operatorChecklistFilled,
+        setOperatorChecklistFilled,
+    ] = useState(true);
+
+
+    const [
+        operatorRemarks,
+        setOperatorRemarks,
+    ] = useState("");
+
+
+    const [
+        saving,
+        setSaving,
+    ] = useState(false);
+
+
+    // =====================================================
+    // DETERMINE REINSPECTION
+    // =====================================================
+
+    const isReinspection =
+        pendingReinspection?.is_unfit === true;
+
+
+    const parentInspectionId =
+        isReinspection
+            ? pendingReinspection
+                ?.original_inspection_id ?? null
+            : null;
+
+
+    // =====================================================
+    // CHECKLIST COUNTER
+    // =====================================================
+
+    const completedCount =
+        Object.keys(results).length;
+
+
+    const totalCount =
+        fields.length;
+
+
+    const allCompleted =
+        completedCount === totalCount &&
+        totalCount > 0;
+
+
+    // =====================================================
+    // OPERATIONAL STATUS
+    // =====================================================
+
+    const operationalStatus:
+        "Fit" |
+        "Unfit" |
+        "Pending" =
+
+        Object.values(results).includes(
+            "Fail"
+        )
+
+            ? "Unfit"
+
+            : allCompleted
+
+                ? "Fit"
+
+                : "Pending";
+
+
+    const remarksRequired =
+        operationalStatus === "Unfit";
+
+
+    // =====================================================
+    // LOAD CHECKLIST
+    // =====================================================
+
+    useEffect(() => {
+
+        let cancelled = false;
+
+
+        async function loadChecklist() {
+
+            setLoading(true);
+
+            setResults({});
+
+
+            // -------------------------------------------------
+            // REINSPECTION
+            // -------------------------------------------------
+
+            if (
+                pendingReinspection?.is_unfit === true &&
+                pendingReinspection.failed_fields
+            ) {
+
+                if (!cancelled) {
+
+                    setFields(
+                        pendingReinspection.failed_fields
+                            .map(
+                                (field) => ({
+                                    id: field.id,
+
+                                    field_name:
+                                        field.field_name,
+
+                                    display_order: 0,
+                                })
+                            )
+                    );
+
+                    setLoading(false);
+
+                }
+
+                return;
+            }
+
+
+            // -------------------------------------------------
+            // NORMAL INSPECTION
+            // -------------------------------------------------
+
+            try {
+
+                const data =
+                    await inspectionService.getChecklist(
+                        machineryType.toString()
+                    );
+
+
+                if (!cancelled) {
+
+                    setFields(
+                        data
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Failed to fetch checklist:",
+                    error
+                );
+
+                if (!cancelled) {
+
+                    setFields([]);
+
+                }
+
+            } finally {
+
+                if (!cancelled) {
+
+                    setLoading(false);
+
+                }
+
+            }
+        }
+
+
+        loadChecklist();
+
+
+        return () => {
+
+            cancelled = true;
+
+        };
+
+    }, [
+        machineryType,
+        pendingReinspection,
+    ]);
+
+
+    // =====================================================
+    // HANDLE RESULT
+    // =====================================================
+
+    function handleResult(
+
+        fieldId: number,
+
+        result:
+            "Pass" |
+            "Fail"
+
+    ) {
+
+        setResults(
+            (previous) => ({
+
+                ...previous,
+
+                [fieldId]:
+                    result,
+
+            })
+        );
+
     }
 
-    loadChecklist();
-  }, [machineryType, pendingReinspection]);
 
-  async function handleSubmit() {
-    if (!relay) { alert("Please select a Relay."); return; }
+    // =====================================================
+    // SUBMIT
+    // =====================================================
 
-    // Only validate operator fields if it is NOT a reinspection
-    if (!isReinspection) {
-        if (!operatorName.trim()) { alert("Please enter Operator Name."); return; }
-        if (!operatorEmployeeId.trim()) { alert("Please enter Employee ID."); return; }
-        if (!operatorAgency.trim()) { alert("Please enter Agency Name."); return; }
+    async function handleSubmit() {
+
+
+        // -------------------------------------------------
+        // RELAY
+        // -------------------------------------------------
+
+        if (!relay) {
+
+            alert(
+                "Please select a Relay."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // OPERATOR DETAILS
+        // -------------------------------------------------
+
+        if (!isReinspection) {
+
+            if (
+                !operatorName.trim()
+            ) {
+
+                alert(
+                    "Please enter Operator Name."
+                );
+
+                return;
+            }
+
+
+            if (
+                !operatorEmployeeId.trim()
+            ) {
+
+                alert(
+                    "Please enter Employee ID."
+                );
+
+                return;
+            }
+
+
+            if (
+                !operatorAgency.trim()
+            ) {
+
+                alert(
+                    "Please enter Agency Name."
+                );
+
+                return;
+            }
+
+        }
+
+
+        // -------------------------------------------------
+        // CHECKLIST
+        // -------------------------------------------------
+
+        if (!allCompleted) {
+
+            alert(
+                "Please complete all checklist items."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // REMARKS
+        // -------------------------------------------------
+
+        if (
+            remarksRequired &&
+            !remarks.trim()
+        ) {
+
+            alert(
+                "Remarks are mandatory for UNFIT inspection."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // IMPORTANT REINSPECTION VALIDATION
+        // -------------------------------------------------
+
+        if (
+            isReinspection &&
+            !parentInspectionId
+        ) {
+
+            alert(
+                "Original inspection information is missing. Please return to the Re-Inspection page and try again."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // RESULTS
+        // -------------------------------------------------
+
+        const inspectionResults =
+            fields.map(
+                (field) => ({
+
+                    inspection_field:
+                        field.id,
+
+                    result:
+                        results[field.id],
+
+                })
+            );
+
+
+        // -------------------------------------------------
+        // PAYLOAD
+        // -------------------------------------------------
+
+        const payload:
+            InspectionPayload = {
+
+            relay,
+
+            vehicle,
+
+            operational_status:
+                operationalStatus as
+                    "Fit" |
+                    "Unfit",
+
+            operator_name:
+                isReinspection
+                    ? "N/A (Reinspection)"
+                    : operatorName,
+
+            operator_employee_id:
+                isReinspection
+                    ? "N/A"
+                    : operatorEmployeeId,
+
+            operator_agency:
+                isReinspection
+                    ? "N/A"
+                    : operatorAgency,
+
+            operator_mobile:
+                isReinspection
+                    ? ""
+                    : operatorMobile,
+
+            operator_checklist_filled:
+                isReinspection
+                    ? true
+                    : operatorChecklistFilled,
+
+            operator_remarks:
+                isReinspection
+                    ? ""
+                    : operatorRemarks,
+
+            remarks,
+
+            results:
+                inspectionResults,
+
+            // -------------------------------------------------
+            // REINSPECTION INFORMATION
+            // -------------------------------------------------
+
+            is_reinspection:
+                isReinspection,
+
+            parent_inspection_id:
+                parentInspectionId,
+
+        };
+
+
+        // -------------------------------------------------
+        // SAVE
+        // -------------------------------------------------
+
+        try {
+
+            setSaving(true);
+
+
+            console.log(
+                "Submitting inspection:",
+                payload
+            );
+
+
+            const response =
+                await inspectionService
+                    .createInspection(
+                        payload
+                    );
+
+
+            alert(
+
+                `${
+                    isReinspection
+                        ? "Re-inspection"
+                        : "Inspection"
+                } Saved Successfully\n\n` +
+
+                `Inspection Number : ` +
+                response.inspection_number
+
+            );
+
+
+            /*
+             * Do NOT use window.location.reload().
+             *
+             * Reloading can cause the re-inspection URL/state
+             * to be processed again.
+             *
+             * Instead navigate back to the pending page.
+             */
+
+            window.location.href =
+                "/reinspection";
+
+
+        } catch (error: any) {
+
+            console.error(
+                "Inspection submission failed:",
+                error
+            );
+
+
+            // -------------------------------------------------
+            // SHOW BACKEND VALIDATION MESSAGE
+            // -------------------------------------------------
+
+            const backendError =
+                error?.response?.data;
+
+
+            if (
+                backendError
+            ) {
+
+                if (
+                    backendError
+                        .parent_inspection_id
+                ) {
+
+                    alert(
+                        backendError
+                            .parent_inspection_id
+                    );
+
+                } else if (
+                    backendError
+                        .remarks
+                ) {
+
+                    alert(
+                        backendError
+                            .remarks
+                    );
+
+                } else if (
+                    backendError
+                        .detail
+                ) {
+
+                    alert(
+                        backendError.detail
+                    );
+
+                } else if (
+                    backendError.error
+                ) {
+
+                    alert(
+                        backendError.error
+                    );
+
+                } else {
+
+                    alert(
+                        "Failed to save inspection."
+                    );
+
+                }
+
+            } else {
+
+                alert(
+                    "Failed to save inspection. Please try again."
+                );
+
+            }
+
+        } finally {
+
+            setSaving(false);
+
+        }
+
     }
 
-    if (!allCompleted) { alert("Please complete all checklist items."); return; }
-    if (remarksRequired && !remarks.trim()) { alert("Remarks are mandatory for UNFIT inspection."); return; }
 
-    const payload = {
-      relay,
-      vehicle,
-      operational_status: operationalStatus as "Fit" | "Unfit",
+    // =====================================================
+    // LOADING
+    // =====================================================
 
-      // Auto-fill dummy data for reinspections to satisfy backend requirements
-      operator_name: isReinspection ? "N/A (Reinspection)" : operatorName,
-      operator_employee_id: isReinspection ? "N/A" : operatorEmployeeId,
-      operator_agency: isReinspection ? "N/A" : operatorAgency,
-      operator_mobile: isReinspection ? "" : operatorMobile,
-      operator_checklist_filled: isReinspection ? true : operatorChecklistFilled,
-      operator_remarks: isReinspection ? "" : operatorRemarks,
+    if (loading) {
 
-      remarks,
-      is_reinspection: isReinspection || false,
-      parent_inspection_id: pendingReinspection?.original_inspection_id || null,
+        return (
 
-      results: fields.map((field) => ({
-        inspection_field: field.id,
-        result: results[field.id],
-      })),
-    };
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
 
-    try {
-      setSaving(true);
-      const response = await inspectionService.createInspection(payload);
-      alert(`Inspection Saved Successfully\n\nInspection Number : ${response.inspection_number}`);
-      window.location.reload();
-    } catch (error: any) {
-      console.error(error);
-      alert("Failed to save inspection. Please try again.");
-    } finally {
-      setSaving(false);
+                <p className="text-gray-600 font-medium">
+
+                    Loading checklist...
+
+                </p>
+
+            </div>
+
+        );
+
     }
-  }
 
-  function handleResult(fieldId: number, result: "Pass" | "Fail") {
-    setResults((prev) => ({ ...prev, [fieldId]: result }));
-  }
 
-  if (loading) {
-    return <div className="bg-white rounded-lg shadow p-4 sm:p-6"><p className="text-gray-600 font-medium">Loading checklist...</p></div>;
-  }
+    // =====================================================
+    // EMPTY CHECKLIST
+    // =====================================================
 
-  if (fields.length === 0) {
-    return <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 sm:p-6 text-sm sm:text-base">No checklist available.</div>;
-  }
+    if (fields.length === 0) {
 
-  return (
-    <div className="bg-white sm:rounded-lg sm:shadow px-4 py-2 sm:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="w-full sm:w-auto">
-          <h2 className="text-xl sm:text-2xl font-bold">
-              {isReinspection ? "Targeted Reinspection" : "Inspection Checklist"}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            {isReinspection
-                ? "Verify the following previously failed checkpoints."
-                : "Select PASS or FAIL for every checkpoint."}
-          </p>
+        return (
+
+            <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 sm:p-6">
+
+                No checklist available.
+
+            </div>
+
+        );
+
+    }
+
+
+    // =====================================================
+    // UI
+    // =====================================================
+
+    return (
+
+        <div className="bg-white sm:rounded-lg sm:shadow px-4 py-2 sm:p-6">
+
+
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+
+                <div>
+
+                    <h2 className="text-xl sm:text-2xl font-bold">
+
+                        {
+                            isReinspection
+                                ? "Targeted Re-inspection"
+                                : "Inspection Checklist"
+                        }
+
+                    </h2>
+
+
+                    <p className="text-sm text-gray-500 mt-1">
+
+                        {
+                            isReinspection
+
+                                ? "Verify the previously failed checkpoints."
+
+                                : "Select PASS or FAIL for every checkpoint."
+                        }
+
+                    </p>
+
+
+                    {
+                        isReinspection &&
+                        parentInspectionId &&
+
+                        <p className="text-xs text-orange-600 mt-2">
+
+                            Original Inspection ID:{" "}
+                            {parentInspectionId}
+
+                        </p>
+                    }
+
+                </div>
+
+
+                {/* STATUS */}
+
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto justify-between sm:justify-start">
+
+                    <div
+                        className={`
+                            px-4 sm:px-5
+                            py-2
+                            rounded-lg
+                            text-white
+                            text-sm sm:text-base
+                            font-bold
+                            w-1/2
+                            sm:w-auto
+                            text-center
+
+                            ${
+                                operationalStatus === "Fit"
+                                    ? "bg-green-600"
+                                    : operationalStatus === "Unfit"
+                                        ? "bg-red-600"
+                                        : "bg-yellow-500"
+                            }
+                        `}
+                    >
+
+                        {operationalStatus}
+
+                    </div>
+
+
+                    <div
+                        className={`
+                            px-3 sm:px-4
+                            py-1.5
+                            rounded-full
+                            text-xs sm:text-sm
+                            font-semibold
+                            text-white
+                            w-1/2
+                            sm:w-auto
+                            text-center
+
+                            ${
+                                allCompleted
+                                    ? "bg-green-600"
+                                    : "bg-orange-500"
+                            }
+                        `}
+                    >
+
+                        {completedCount} / {totalCount}
+
+                        {" "}Completed
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {/* =================================================
+                OPERATOR INFORMATION
+            ================================================= */}
+
+            {!isReinspection && (
+
+                <div className="mt-6 pt-6 border-t border-gray-200 sm:mt-8 sm:mb-8 sm:border sm:rounded-lg sm:p-6 sm:bg-gray-50">
+
+                    <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-5">
+
+                        Operator Information
+
+                    </h3>
+
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+
+
+                        {/* NAME */}
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+
+                                Operator Name
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                className="w-full border rounded-lg p-3"
+
+                                value={
+                                    operatorName
+                                }
+
+                                onChange={(event) =>
+                                    setOperatorName(
+                                        event.target.value
+                                    )
+                                }
+
+                            />
+
+                        </div>
+
+
+                        {/* EMPLOYEE ID */}
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+
+                                Employee ID
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                className="w-full border rounded-lg p-3"
+
+                                value={
+                                    operatorEmployeeId
+                                }
+
+                                onChange={(event) =>
+                                    setOperatorEmployeeId(
+                                        event.target.value
+                                    )
+                                }
+
+                            />
+
+                        </div>
+
+
+                        {/* AGENCY */}
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+
+                                Agency Name
+
+                            </label>
+
+                            <input
+
+                                type="text"
+
+                                className="w-full border rounded-lg p-3"
+
+                                value={
+                                    operatorAgency
+                                }
+
+                                onChange={(event) =>
+                                    setOperatorAgency(
+                                        event.target.value
+                                    )
+                                }
+
+                            />
+
+                        </div>
+
+
+                        {/* MOBILE */}
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+
+                                Mobile Number
+
+                            </label>
+
+                            <input
+
+                                type="tel"
+
+                                className="w-full border rounded-lg p-3"
+
+                                value={
+                                    operatorMobile
+                                }
+
+                                onChange={(event) =>
+                                    setOperatorMobile(
+                                        event.target.value
+                                    )
+                                }
+
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    {/* OPERATOR CHECKLIST */}
+
+                    <div className="mt-5">
+
+                        <label className="block mb-3 text-sm font-medium">
+
+                            Operator Checklist Filled
+
+                        </label>
+
+
+                        <div className="flex gap-8">
+
+                            <label className="flex items-center gap-2">
+
+                                <input
+
+                                    type="radio"
+
+                                    checked={
+                                        operatorChecklistFilled
+                                    }
+
+                                    onChange={() =>
+                                        setOperatorChecklistFilled(
+                                            true
+                                        )
+                                    }
+
+                                />
+
+                                Yes
+
+                            </label>
+
+
+                            <label className="flex items-center gap-2">
+
+                                <input
+
+                                    type="radio"
+
+                                    checked={
+                                        !operatorChecklistFilled
+                                    }
+
+                                    onChange={() =>
+                                        setOperatorChecklistFilled(
+                                            false
+                                        )
+                                    }
+
+                                />
+
+                                No
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* OPERATOR REMARKS */}
+
+                    <div className="mt-5">
+
+                        <label className="block mb-2 text-sm font-medium">
+
+                            Operator Remarks
+
+                        </label>
+
+                        <textarea
+
+                            rows={3}
+
+                            className="w-full border rounded-lg p-3 resize-none"
+
+                            placeholder="Enter operator-related observations..."
+
+                            value={
+                                operatorRemarks
+                            }
+
+                            onChange={(event) =>
+                                setOperatorRemarks(
+                                    event.target.value
+                                )
+                            }
+
+                        />
+
+                    </div>
+
+                </div>
+
+            )}
+
+
+            {/* =================================================
+                CHECKLIST ITEMS
+            ================================================= */}
+
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 mt-6">
+
+                {
+                    fields.map(
+                        (field) => (
+
+                            <ChecklistItem
+
+                                key={
+                                    field.id
+                                }
+
+                                fieldId={
+                                    field.id
+                                }
+
+                                fieldName={
+                                    field.field_name
+                                }
+
+                                value={
+                                    results[
+                                        field.id
+                                    ] || ""
+                                }
+
+                                onChange={
+                                    handleResult
+                                }
+
+                            />
+
+                        )
+                    )
+                }
+
+            </div>
+
+
+            {/* =================================================
+                REMARKS
+            ================================================= */}
+
+            <Remarks
+
+                remarks={
+                    remarks
+                }
+
+                setRemarks={
+                    setRemarks
+                }
+
+                required={
+                    remarksRequired
+                }
+
+            />
+
+
+            {/* =================================================
+                SUBMIT
+            ================================================= */}
+
+            <div className="mt-6 sm:mt-8">
+
+                <SubmitButton
+
+                    onSubmit={
+                        handleSubmit
+                    }
+
+                    loading={
+                        saving
+                    }
+
+                />
+
+            </div>
+
         </div>
 
-        <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto justify-between sm:justify-start">
-          <div className={`px-4 sm:px-5 py-2 rounded-lg text-white text-sm sm:text-base font-bold w-1/2 sm:w-auto text-center ${operationalStatus === "Fit" ? "bg-green-600" : operationalStatus === "Unfit" ? "bg-red-600" : "bg-yellow-500"}`}>
-            {operationalStatus}
-          </div>
-          <div className={`px-3 sm:px-4 py-1.5 sm:py-1 rounded-full text-xs sm:text-sm font-semibold text-white w-1/2 sm:w-auto text-center ${allCompleted ? "bg-green-600" : "bg-orange-500"}`}>
-            {completedCount} / {totalCount} Completed
-          </div>
-        </div>
-      </div>
-
-      {/* Conditionally render the entire Operator Information block */}
-      {!isReinspection && (
-          <div className="mt-6 pt-6 border-t border-gray-200 sm:mt-8 sm:mb-8 sm:border sm:rounded-lg sm:p-6 sm:bg-gray-50">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-5">Operator Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              <div><label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Operator Name</label><input type="text" className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} /></div>
-              <div><label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Employee ID</label><input type="text" className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none" value={operatorEmployeeId} onChange={(e) => setOperatorEmployeeId(e.target.value)} /></div>
-              <div><label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Agency Name</label><input type="text" className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none" value={operatorAgency} onChange={(e) => setOperatorAgency(e.target.value)} /></div>
-              <div><label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Mobile Number</label><input type="tel" className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none" value={operatorMobile} onChange={(e) => setOperatorMobile(e.target.value)} /></div>
-            </div>
-            <div className="mt-5 sm:mt-6">
-              <label className="block mb-2 sm:mb-3 text-sm sm:text-base font-medium">Operator Checklist Filled</label>
-              <div className="flex gap-6 sm:gap-8">
-                <label className="flex items-center gap-2 cursor-pointer p-1"><input type="radio" className="w-4 h-4 text-blue-600 focus:ring-blue-500" checked={operatorChecklistFilled} onChange={() => setOperatorChecklistFilled(true)} /><span className="text-sm sm:text-base">Yes</span></label>
-                <label className="flex items-center gap-2 cursor-pointer p-1"><input type="radio" className="w-4 h-4 text-blue-600 focus:ring-blue-500" checked={!operatorChecklistFilled} onChange={() => setOperatorChecklistFilled(false)} /><span className="text-sm sm:text-base">No</span></label>
-              </div>
-              <div className="mt-5 sm:mt-6">
-                <label className="block mb-1.5 sm:mb-2 text-sm sm:text-base font-medium">Operator Remarks</label>
-                <textarea rows={3} className="w-full border rounded-lg p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none" placeholder="Enter operator-related observations..." value={operatorRemarks} onChange={(e) => setOperatorRemarks(e.target.value)} />
-              </div>
-            </div>
-          </div>
-      )}
-
-      <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 mt-6">
-        {fields.map((field) => (
-          <ChecklistItem key={field.id} fieldId={field.id} fieldName={field.field_name} value={results[field.id] || ""} onChange={handleResult} />
-        ))}
-      </div>
-
-      <Remarks remarks={remarks} setRemarks={setRemarks} required={remarksRequired} />
-
-      <div className="mt-6 sm:mt-8">
-        <SubmitButton onSubmit={handleSubmit} loading={saving} />
-      </div>
-    </div>
-  );
+    );
 }

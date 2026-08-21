@@ -1,243 +1,695 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select, { type StylesConfig } from "react-select";
-import inspectionService, { type PendingReinspection } from "../../services/inspectionService";
+
+import inspectionService, {
+    type PendingReinspection,
+} from "../../services/inspectionService";
+
 import Checklist from "./Checklist";
-import type { MachineryType, Vehicle } from "../../types/inspection";
+
+import type {
+    MachineryType,
+    Vehicle,
+} from "../../types/inspection";
+
 
 interface SelectOption {
     value: string | number;
     label: string;
 }
 
+
 export default function InspectionForm() {
+
     const [searchParams] = useSearchParams();
 
     const [relay, setRelay] = useState("");
-    const [machineryTypes, setMachineryTypes] = useState<MachineryType[]>([]);
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
-    const [selectedMachinery, setSelectedMachinery] = useState<number | null>(null);
-    const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
+    const [machineryTypes, setMachineryTypes] =
+        useState<MachineryType[]>([]);
 
-    const [isLoadingMachinery, setIsLoadingMachinery] = useState(false);
-    const [isLoadingVehicles, setIsLoadingVehicles] = useState(false);
-    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+    const [vehicles, setVehicles] =
+        useState<Vehicle[]>([]);
 
-    const [pendingReinspection, setPendingReinspection] = useState<PendingReinspection | null>(null);
+    const [selectedMachinery, setSelectedMachinery] =
+        useState<number | null>(null);
+
+    const [selectedVehicle, setSelectedVehicle] =
+        useState<number | null>(null);
+
+    const [isLoadingMachinery, setIsLoadingMachinery] =
+        useState(false);
+
+    const [isLoadingVehicles, setIsLoadingVehicles] =
+        useState(false);
+
+    const [isCheckingStatus, setIsCheckingStatus] =
+        useState(false);
+
+    const [pendingReinspection, setPendingReinspection] =
+        useState<PendingReinspection | null>(null);
+
+
+    // =====================================================
+    // INITIAL LOAD
+    // =====================================================
 
     useEffect(() => {
+
         async function initializeForm() {
+
             setIsLoadingMachinery(true);
+
             try {
-                const mTypes = await inspectionService.getMachineryTypes();
-                setMachineryTypes(mTypes);
 
-                const urlMachineId = searchParams.get("machine_id");
-                const urlVehicleId = searchParams.get("vehicle_id");
+                const machinery =
+                    await inspectionService.getMachineryTypes();
 
-                if (urlMachineId && urlVehicleId) {
-                    const mId = Number(urlMachineId);
-                    const vId = Number(urlVehicleId);
+                setMachineryTypes(machinery);
 
-                    setSelectedMachinery(mId);
+
+                // ---------------------------------------------
+                // CHECK URL PARAMETERS
+                // ---------------------------------------------
+
+                const machineId =
+                    searchParams.get("machine_id");
+
+                const vehicleId =
+                    searchParams.get("vehicle_id");
+
+
+                // ---------------------------------------------
+                // OPENED FROM RE-INSPECTION PAGE
+                // ---------------------------------------------
+
+                if (machineId && vehicleId) {
+
+                    const machineryId =
+                        Number(machineId);
+
+                    const selectedVehicleId =
+                        Number(vehicleId);
+
+
+                    if (
+                        Number.isNaN(machineryId) ||
+                        Number.isNaN(selectedVehicleId)
+                    ) {
+                        return;
+                    }
+
+
+                    // Select machinery
+
+                    setSelectedMachinery(
+                        machineryId
+                    );
+
+
+                    // Load vehicles
 
                     setIsLoadingVehicles(true);
-                    const vList = await inspectionService.getVehicles(mId.toString());
-                    setVehicles(vList);
-                    setIsLoadingVehicles(false);
 
-                    setSelectedVehicle(vId);
-                    checkVehicleStatus(vId);
+                    try {
+
+                        const vehicleList =
+                            await inspectionService.getVehicles(
+                                machineryId.toString()
+                            );
+
+                        setVehicles(
+                            vehicleList
+                        );
+
+                    } finally {
+
+                        setIsLoadingVehicles(false);
+
+                    }
+
+
+                    // Select vehicle
+
+                    setSelectedVehicle(
+                        selectedVehicleId
+                    );
+
+
+                    // IMPORTANT:
+                    // Check whether vehicle is currently UNFIT
+
+                    await checkVehicleStatus(
+                        selectedVehicleId
+                    );
                 }
-            } catch (err) {
-                console.error(err);
+
+            } catch (error) {
+
+                console.error(
+                    "Failed to initialize inspection form:",
+                    error
+                );
+
             } finally {
+
                 setIsLoadingMachinery(false);
+
             }
         }
 
+
         initializeForm();
+
     }, [searchParams]);
 
-    async function checkVehicleStatus(vehicleId: number) {
+
+    // =====================================================
+    // CHECK VEHICLE STATUS
+    // =====================================================
+
+    async function checkVehicleStatus(
+        vehicleId: number
+    ) {
+
         setIsCheckingStatus(true);
+
         setPendingReinspection(null);
+
         try {
-            const status = await inspectionService.checkVehicleStatus(vehicleId.toString());
-            setPendingReinspection(status);
-        } catch (err) {
-            console.error("Failed to check vehicle status", err);
+
+            const response =
+                await inspectionService.checkVehicleStatus(
+                    vehicleId.toString()
+                );
+
+            /*
+             * Backend response:
+             *
+             * {
+             *   is_unfit: true,
+             *   original_inspection_id: 123,
+             *   failed_fields: [...]
+             * }
+             */
+
+            setPendingReinspection(
+                response
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to check vehicle status:",
+                error
+            );
+
+            setPendingReinspection(
+                null
+            );
+
         } finally {
+
             setIsCheckingStatus(false);
+
         }
     }
 
-    async function handleMachineryChange(option: SelectOption | null) {
+
+    // =====================================================
+    // MACHINERY CHANGE
+    // =====================================================
+
+    async function handleMachineryChange(
+        option: SelectOption | null
+    ) {
+
         if (!option) {
+
             setSelectedMachinery(null);
+
             setSelectedVehicle(null);
+
             setVehicles([]);
+
             setPendingReinspection(null);
+
             return;
         }
 
-        const machineryId = option.value as number;
-        setSelectedMachinery(machineryId);
+
+        const machineryId =
+            Number(option.value);
+
+
+        setSelectedMachinery(
+            machineryId
+        );
+
         setSelectedVehicle(null);
+
         setPendingReinspection(null);
+
         setIsLoadingVehicles(true);
 
+
         try {
-            const data = await inspectionService.getVehicles(machineryId.toString());
-            setVehicles(data);
-        } catch (err) {
-            console.error(err);
+
+            const vehicleList =
+                await inspectionService.getVehicles(
+                    machineryId.toString()
+                );
+
+            setVehicles(
+                vehicleList
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to load vehicles:",
+                error
+            );
+
+            setVehicles([]);
+
         } finally {
+
             setIsLoadingVehicles(false);
+
         }
     }
 
-    function handleVehicleChange(option: SelectOption | null) {
+
+    // =====================================================
+    // VEHICLE CHANGE
+    // =====================================================
+
+    function handleVehicleChange(
+        option: SelectOption | null
+    ) {
+
         if (!option) {
+
             setSelectedVehicle(null);
+
             setPendingReinspection(null);
+
             return;
         }
 
-        const vehicleId = option.value as number;
-        setSelectedVehicle(vehicleId);
-        checkVehicleStatus(vehicleId);
+
+        const vehicleId =
+            Number(option.value);
+
+
+        setSelectedVehicle(
+            vehicleId
+        );
+
+
+        checkVehicleStatus(
+            vehicleId
+        );
     }
 
+
+    // =====================================================
+    // OPTIONS
+    // =====================================================
+
     const relayOptions: SelectOption[] = [
-        { value: "Relay A", label: "Relay A" },
-        { value: "Relay B", label: "Relay B" },
-        { value: "Relay C", label: "Relay C" },
-        { value: "Relay D", label: "Relay D" },
-        { value: "General Shift", label: "General Shift" },
+
+        {
+            value: "Relay A",
+            label: "Relay A",
+        },
+
+        {
+            value: "Relay B",
+            label: "Relay B",
+        },
+
+        {
+            value: "Relay C",
+            label: "Relay C",
+        },
+
+        {
+            value: "Relay D",
+            label: "Relay D",
+        },
+
+        {
+            value: "General Shift",
+            label: "General Shift",
+        },
+
     ];
 
-    const machineryOptions: SelectOption[] = machineryTypes.map(item => ({
-        value: item.id,
-        label: item.name,
-    }));
 
-    const vehicleOptions: SelectOption[] = vehicles.map(item => ({
-        value: item.id,
-        label: item.machine_number,
-    }));
+    const machineryOptions: SelectOption[] =
+        machineryTypes.map(
+            (item) => ({
+                value: item.id,
+                label: item.name,
+            })
+        );
 
-    const customSelectStyles: StylesConfig<SelectOption, false> = {
-        control: (provided, state) => {
-            // Check screen width to make controls slightly shorter on mobile
-            const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
+    const vehicleOptions: SelectOption[] =
+        vehicles.map(
+            (item) => ({
+                value: item.id,
+                label: item.machine_number,
+            })
+        );
+
+
+    // =====================================================
+    // SELECT STYLES
+    // =====================================================
+
+    const customSelectStyles:
+        StylesConfig<SelectOption, false> = {
+
+        control: (
+            provided,
+            state
+        ) => {
+
+            const isMobile =
+                typeof window !== "undefined" &&
+                window.innerWidth < 640;
+
             return {
+
                 ...provided,
-                minHeight: isMobile ? '2.5rem' : '3rem', // Slimmer height on mobile
-                borderRadius: '0.5rem',
-                borderColor: state.isFocused ? '#2563eb' : '#d1d5db',
-                boxShadow: state.isFocused ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none',
-                backgroundColor: state.isDisabled ? '#f9fafb' : '#ffffff',
-                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease',
-                fontSize: isMobile ? '0.875rem' : '1rem', // Slightly smaller text on mobile
-                '&:hover': {
-                    borderColor: state.isFocused ? '#2563eb' : '#9ca3af'
-                }
+
+                minHeight:
+                    isMobile
+                        ? "2.5rem"
+                        : "3rem",
+
+                borderRadius:
+                    "0.5rem",
+
+                borderColor:
+                    state.isFocused
+                        ? "#2563eb"
+                        : "#d1d5db",
+
+                boxShadow:
+                    state.isFocused
+                        ? "0 0 0 2px rgba(37, 99, 235, 0.2)"
+                        : "none",
+
+                backgroundColor:
+                    state.isDisabled
+                        ? "#f9fafb"
+                        : "#ffffff",
+
+                cursor:
+                    state.isDisabled
+                        ? "not-allowed"
+                        : "pointer",
+
+                transition:
+                    "all 0.2s ease",
+
+                fontSize:
+                    isMobile
+                        ? "0.875rem"
+                        : "1rem",
+
             };
         },
-        option: (provided, state) => {
-            const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
+
+        option: (
+            provided,
+            state
+        ) => {
+
+            const isMobile =
+                typeof window !== "undefined" &&
+                window.innerWidth < 640;
+
             return {
+
                 ...provided,
-                backgroundColor: state.isSelected ? '#2563eb' : state.isFocused ? '#eff6ff' : 'transparent',
-                color: state.isSelected ? 'white' : '#1f2937',
-                cursor: 'pointer',
-                padding: isMobile ? '8px 12px' : '10px 14px', // Tighter dropdown padding on mobile
-                fontSize: isMobile ? '0.875rem' : '1rem',
-                '&:active': { backgroundColor: '#dbeafe' }
+
+                backgroundColor:
+                    state.isSelected
+                        ? "#2563eb"
+                        : state.isFocused
+                            ? "#eff6ff"
+                            : "transparent",
+
+                color:
+                    state.isSelected
+                        ? "white"
+                        : "#1f2937",
+
+                cursor:
+                    "pointer",
+
+                padding:
+                    isMobile
+                        ? "8px 12px"
+                        : "10px 14px",
+
+                fontSize:
+                    isMobile
+                        ? "0.875rem"
+                        : "1rem",
+
             };
         },
-        menu: (provided) => ({
+
+
+        menu: (
+            provided
+        ) => ({
+
             ...provided,
-            borderRadius: '0.5rem',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-            border: '1px solid #e5e7eb',
-            overflow: 'hidden',
-            zIndex: 50,
+
+            borderRadius:
+                "0.5rem",
+
+            boxShadow:
+                "0 10px 15px -3px rgba(0,0,0,0.1)",
+
+            border:
+                "1px solid #e5e7eb",
+
+            overflow:
+                "hidden",
+
+            zIndex:
+                50,
+
         }),
-        // Optional: Tighten value container padding slightly for mobile layout
-        valueContainer: (provided) => ({
+
+
+        valueContainer: (
+            provided
+        ) => ({
+
             ...provided,
-            padding: '0 8px',
-        })
+
+            padding:
+                "0 8px",
+
+        }),
     };
 
+
+    // =====================================================
+    // RENDER
+    // =====================================================
+
     return (
+
         <div className="space-y-6">
+
+            {/* =================================================
+                SELECTION CARD
+            ================================================= */}
+
             <div className="bg-white sm:rounded-lg sm:shadow px-4 py-4 sm:p-6">
 
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+
+                    {/* RELAY */}
+
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">Relay</label>
+
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">
+                            Relay
+                        </label>
+
                         <Select
                             options={relayOptions}
                             placeholder="Select Relay..."
                             isSearchable={false}
                             styles={customSelectStyles}
-                            value={relayOptions.find(x => x.value === relay) || null}
-                            onChange={(option) => setRelay(option ? (option.value as string) : "")}
+                            value={
+                                relayOptions.find(
+                                    (item) =>
+                                        item.value === relay
+                                ) || null
+                            }
+                            onChange={(option) =>
+                                setRelay(
+                                    option
+                                        ? String(option.value)
+                                        : ""
+                                )
+                            }
                         />
+
                     </div>
+
+
+                    {/* MACHINERY */}
+
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">Machinery Type</label>
+
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">
+                            Machinery Type
+                        </label>
+
                         <Select
                             options={machineryOptions}
                             placeholder="Search Machinery..."
                             isSearchable
-                            isLoading={isLoadingMachinery}
+                            isLoading={
+                                isLoadingMachinery
+                            }
                             styles={customSelectStyles}
-                            value={machineryOptions.find(x => x.value === selectedMachinery) || null}
-                            onChange={handleMachineryChange}
+                            value={
+                                machineryOptions.find(
+                                    (item) =>
+                                        item.value ===
+                                        selectedMachinery
+                                ) || null
+                            }
+                            onChange={
+                                handleMachineryChange
+                            }
                         />
+
                     </div>
+
+
+                    {/* VEHICLE */}
+
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">Door Number</label>
+
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">
+                            Door Number
+                        </label>
+
                         <Select
                             options={vehicleOptions}
                             placeholder="Search Door Number..."
                             isSearchable
-                            isDisabled={!selectedMachinery}
-                            isLoading={isLoadingVehicles || isCheckingStatus}
+                            isDisabled={
+                                !selectedMachinery
+                            }
+                            isLoading={
+                                isLoadingVehicles ||
+                                isCheckingStatus
+                            }
                             styles={customSelectStyles}
-                            value={vehicleOptions.find(x => x.value === selectedVehicle) || null}
-                            onChange={handleVehicleChange}
+                            value={
+                                vehicleOptions.find(
+                                    (item) =>
+                                        item.value ===
+                                        selectedVehicle
+                                ) || null
+                            }
+                            onChange={
+                                handleVehicleChange
+                            }
                         />
+
                     </div>
+
                 </div>
+
             </div>
 
-            {pendingReinspection?.is_unfit && selectedVehicle && (
-                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 sm:p-6 rounded-r-lg shadow-sm">
-                    <h3 className="text-lg font-bold text-orange-800 mb-1">
-                        ⚠️ Targeted Reinspection
-                    </h3>
-                    <p className="text-orange-700 text-sm sm:text-base">
-                        This vehicle is currently marked as UNFIT. You are now performing a targeted reinspection on the previously failed checkpoints.
-                    </p>
-                </div>
-            )}
 
-            {selectedMachinery && selectedVehicle && !isCheckingStatus && (
+            {/* =================================================
+                REINSPECTION WARNING
+            ================================================= */}
+
+            {
+                pendingReinspection?.is_unfit &&
+                selectedVehicle &&
+
+                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 sm:p-6 rounded-r-lg shadow-sm">
+
+                    <h3 className="text-lg font-bold text-orange-800 mb-1">
+                        ⚠️ Targeted Re-inspection
+                    </h3>
+
+                    <p className="text-orange-700 text-sm sm:text-base">
+                        This vehicle is currently marked as
+                        UNFIT. Only the previously failed
+                        checkpoints will be displayed for
+                        re-inspection.
+                    </p>
+
+                    {
+                        pendingReinspection.original_inspection_id &&
+
+                        <p className="text-xs text-orange-600 mt-2">
+                            Original Inspection ID:{" "}
+                            {
+                                pendingReinspection.original_inspection_id
+                            }
+                        </p>
+                    }
+
+                </div>
+            }
+
+
+            {/* =================================================
+                CHECKLIST
+            ================================================= */}
+
+            {
+                selectedMachinery &&
+                selectedVehicle &&
+                !isCheckingStatus &&
+
                 <Checklist
-                    machineryType={selectedMachinery}
-                    vehicle={selectedVehicle}
-                    relay={relay}
-                    pendingReinspection={pendingReinspection}
+
+                    machineryType={
+                        selectedMachinery
+                    }
+
+                    vehicle={
+                        selectedVehicle
+                    }
+
+                    relay={
+                        relay
+                    }
+
+                    pendingReinspection={
+                        pendingReinspection
+                    }
+
                 />
-            )}
+            }
+
         </div>
     );
 }

@@ -30,7 +30,9 @@ export interface InspectionPayload {
 
     vehicle: number;
 
-    operational_status: "Fit" | "Unfit";
+    operational_status:
+        "Fit" |
+        "Unfit";
 
     operator_name: string;
 
@@ -42,16 +44,15 @@ export interface InspectionPayload {
 
     operator_checklist_filled: boolean;
 
-    operator_remarks?: string;
+    operator_remarks: string;
 
     remarks: string;
 
     results: InspectionResult[];
 
-    // Re-inspection fields
-    is_reinspection?: boolean;
+    is_reinspection: boolean;
 
-    parent_inspection_id?: number | null;
+    parent_inspection_id: number | null;
 }
 
 
