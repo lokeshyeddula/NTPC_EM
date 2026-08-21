@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
@@ -81,11 +82,14 @@ class CheckVehicleStatusAPIView(APIView):
         try:
             latest_inspection = (
                 InspectionLog.objects
-                .filter(vehicle_id=vehicle_id)
+                .filter(
+                    vehicle_id=vehicle_id
+                )
                 .order_by("-created_at")
                 .first()
             )
 
+            # No previous inspection
             if not latest_inspection:
                 return Response(
                     {
@@ -94,9 +98,11 @@ class CheckVehicleStatusAPIView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
+            # Vehicle is currently UNFIT
             if (
                 latest_inspection.operational_status
-                and latest_inspection.operational_status.lower() == "unfit"
+                and latest_inspection.operational_status.lower()
+                == "unfit"
             ):
                 failed_results = (
                     InspectionResult.objects
@@ -104,13 +110,17 @@ class CheckVehicleStatusAPIView(APIView):
                         inspection=latest_inspection,
                         result__iexact="Fail",
                     )
-                    .select_related("inspection_field")
+                    .select_related(
+                        "inspection_field"
+                    )
                 )
 
                 failed_fields = [
                     {
                         "id": result.inspection_field.id,
-                        "field_name": result.inspection_field.field_name,
+                        "field_name": (
+                            result.inspection_field.field_name
+                        ),
                     }
                     for result in failed_results
                 ]
@@ -118,12 +128,15 @@ class CheckVehicleStatusAPIView(APIView):
                 return Response(
                     {
                         "is_unfit": True,
-                        "original_inspection_id": latest_inspection.id,
+                        "original_inspection_id": (
+                            latest_inspection.id
+                        ),
                         "failed_fields": failed_fields,
                     },
                     status=status.HTTP_200_OK,
                 )
 
+            # Vehicle is FIT
             return Response(
                 {
                     "is_unfit": False
@@ -156,12 +169,11 @@ class PendingReinspectionsAPIView(APIView):
         """
         Return vehicles whose MOST RECENT inspection is UNFIT.
 
-        IMPORTANT:
-        We deliberately do NOT filter operational_status='unfit'
-        before selecting the latest inspection.
+        We first identify the latest inspection for every vehicle
+        and only then check whether that inspection is UNFIT.
 
-        Otherwise, a vehicle that was previously UNFIT but later
-        became FIT would incorrectly appear as pending.
+        This prevents a vehicle that was previously UNFIT but
+        subsequently became FIT from appearing as pending.
         """
 
         latest_inspections = (
@@ -184,7 +196,10 @@ class PendingReinspectionsAPIView(APIView):
             if not inspection.operational_status:
                 continue
 
-            if inspection.operational_status.lower() != "unfit":
+            if (
+                inspection.operational_status.lower()
+                != "unfit"
+            ):
                 continue
 
             vehicle = inspection.vehicle
@@ -222,6 +237,10 @@ class InspectionCreateAPIView(APIView):
     @transaction.atomic
     def post(self, request):
 
+        # ----------------------------------------------------
+        # 1. Validate request
+        # ----------------------------------------------------
+
         serializer = InspectionCreateSerializer(
             data=request.data
         )
@@ -230,9 +249,25 @@ class InspectionCreateAPIView(APIView):
             raise_exception=True
         )
 
-        vehicle = Vehicle.objects.get(
-            id=serializer.validated_data["vehicle"]
-        )
+        # ----------------------------------------------------
+        # 2. Get vehicle
+        # ----------------------------------------------------
+
+        try:
+            vehicle = Vehicle.objects.get(
+                id=serializer.validated_data["vehicle"]
+            )
+        except Vehicle.DoesNotExist:
+            return Response(
+                {
+                    "error": "Vehicle not found."
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ----------------------------------------------------
+        # 3. Create inspection
+        # ----------------------------------------------------
 
         inspection = InspectionLog.objects.create(
 
@@ -248,92 +283,142 @@ class InspectionCreateAPIView(APIView):
 
             vehicle=vehicle,
 
-            operational_status=serializer.validated_data[
-                "operational_status"
-            ],
-
-            operator_name=serializer.validated_data[
-                "operator_name"
-            ],
-
-            operator_employee_id=serializer.validated_data[
-                "operator_employee_id"
-            ],
-
-            operator_agency=serializer.validated_data[
-                "operator_agency"
-            ],
-
-            operator_mobile=serializer.validated_data.get(
-                "operator_mobile",
-                "",
+            operational_status=(
+                serializer.validated_data[
+                    "operational_status"
+                ]
             ),
 
-            operator_checklist_filled=serializer.validated_data[
-                "operator_checklist_filled"
-            ],
-
-            operator_remarks=serializer.validated_data.get(
-                "operator_remarks",
-                "",
+            operator_name=(
+                serializer.validated_data[
+                    "operator_name"
+                ]
             ),
 
-            remarks=serializer.validated_data.get(
-                "remarks",
-                "",
+            operator_employee_id=(
+                serializer.validated_data[
+                    "operator_employee_id"
+                ]
+            ),
+
+            operator_agency=(
+                serializer.validated_data[
+                    "operator_agency"
+                ]
+            ),
+
+            operator_mobile=(
+                serializer.validated_data.get(
+                    "operator_mobile",
+                    "",
+                )
+            ),
+
+            operator_checklist_filled=(
+                serializer.validated_data[
+                    "operator_checklist_filled"
+                ]
+            ),
+
+            operator_remarks=(
+                serializer.validated_data.get(
+                    "operator_remarks",
+                    "",
+                )
+            ),
+
+            remarks=(
+                serializer.validated_data.get(
+                    "remarks",
+                    "",
+                )
             ),
         )
 
         # ----------------------------------------------------
-        # Save inspection results
+        # 4. Save inspection results
         # ----------------------------------------------------
 
-        for item in serializer.validated_data["results"]:
+        results = serializer.validated_data["results"]
+
+        for item in results:
 
             InspectionResult.objects.create(
                 inspection=inspection,
-                inspection_field_id=item["inspection_field"],
+                inspection_field_id=(
+                    item["inspection_field"]
+                ),
                 result=item["result"],
             )
+
+        # ----------------------------------------------------
+        # 5. Refresh inspection
+        # ----------------------------------------------------
 
         inspection.refresh_from_db()
 
         # ----------------------------------------------------
-        # Send failure notification
+        # 6. Optional Celery failure notification
         # ----------------------------------------------------
         #
         # IMPORTANT:
-        # Email/Celery must NEVER make the inspection itself
-        # fail.
         #
-        # If Redis/Celery is unavailable, the inspection should
-        # still be successfully saved.
+        # During development CELERY_ENABLED=False.
+        #
+        # Therefore Redis/Celery is NOT touched and cannot
+        # interfere with inspection submission.
+        #
+        # Later, when Redis is configured, set:
+        #
+        # CELERY_ENABLED=True
+        #
         # ----------------------------------------------------
 
-        def send_failure_notification():
-            try:
-                send_failure_email_task.delay(
-                    inspection.id
-                )
+        if getattr(
+            settings,
+            "CELERY_ENABLED",
+            False,
+        ):
 
-            except Exception:
-                logger.exception(
-                    "Unable to queue failure email for inspection %s",
-                    inspection.inspection_number,
-                )
+            def send_failure_notification():
 
-        transaction.on_commit(
-            send_failure_notification
-        )
+                try:
+
+                    send_failure_email_task.delay(
+                        inspection.id
+                    )
+
+                except Exception:
+
+                    logger.exception(
+                        "Unable to queue failure email "
+                        "for inspection %s",
+                        inspection.inspection_number,
+                    )
+
+            transaction.on_commit(
+                send_failure_notification,
+                robust=True,
+            )
+
+        else:
+
+            logger.info(
+                "Celery disabled. "
+                "Failure email skipped for inspection %s.",
+                inspection.inspection_number,
+            )
 
         # ----------------------------------------------------
-        # Success response
+        # 7. Success response
         # ----------------------------------------------------
 
         return Response(
             {
                 "success": True,
-                "message": "Inspection saved successfully.",
+                "message": (
+                    "Inspection saved successfully."
+                ),
                 "inspection_id": inspection.id,
                 "inspection_number": (
                     inspection.inspection_number
@@ -347,7 +432,9 @@ class InspectionCreateAPIView(APIView):
 # INSPECTION HISTORY
 # ============================================================
 
-class InspectionHistoryAPIView(generics.ListAPIView):
+class InspectionHistoryAPIView(
+    generics.ListAPIView
+):
     permission_classes = [IsAuthenticated]
 
     serializer_class = InspectionHistorySerializer

@@ -145,9 +145,24 @@ AUTH_PASSWORD_VALIDATORS = [
 # CELERY
 # -------------------------------------------------
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+# Celery is disabled until Redis is configured.
+# This prevents background tasks from breaking
+# normal inspection submission.
 
-CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+CELERY_ENABLED = os.getenv(
+    "CELERY_ENABLED",
+    "False"
+) == "True"
+
+CELERY_BROKER_URL = os.getenv(
+    "CELERY_BROKER_URL",
+    "redis://127.0.0.1:6379/0"
+)
+
+CELERY_RESULT_BACKEND = os.getenv(
+    "CELERY_RESULT_BACKEND",
+    "redis://127.0.0.1:6379/0"
+)
 
 CELERY_ACCEPT_CONTENT = ["json"]
 
