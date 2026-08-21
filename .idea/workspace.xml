@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="27/07/26">
+    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="uuid creation for inspection number">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/inspections/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/inspections/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/inspections/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/inspections/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,11 +231,20 @@
       <option name="project" value="LOCAL" />
       <updated>1787338394203</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="uuid creation for inspection number">
+      <option name="closed" value="true" />
+      <created>1787340318092</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1787340318092</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="27/07/26" />
-    <option name="LAST_COMMIT_MESSAGE" value="27/07/26" />
+    <MESSAGE value="uuid creation for inspection number" />
+    <option name="LAST_COMMIT_MESSAGE" value="uuid creation for inspection number" />
   </component>
 </project>

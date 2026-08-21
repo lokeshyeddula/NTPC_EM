@@ -89,7 +89,6 @@ class CheckVehicleStatusAPIView(APIView):
                 .first()
             )
 
-            # No previous inspection
             if not latest_inspection:
                 return Response(
                     {
@@ -98,7 +97,6 @@ class CheckVehicleStatusAPIView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-            # Vehicle is currently UNFIT
             if (
                 latest_inspection.operational_status
                 and latest_inspection.operational_status.lower()
@@ -136,7 +134,6 @@ class CheckVehicleStatusAPIView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-            # Vehicle is FIT
             return Response(
                 {
                     "is_unfit": False
@@ -277,7 +274,9 @@ class InspectionCreateAPIView(APIView):
 
             shift=get_current_shift(),
 
-            relay=serializer.validated_data["relay"],
+            relay=serializer.validated_data[
+                "relay"
+            ],
 
             engineer=request.user,
 
@@ -336,42 +335,45 @@ class InspectionCreateAPIView(APIView):
         )
 
         # ----------------------------------------------------
-        # 4. Save inspection results
+        # 4. Save ALL inspection results in bulk
+        # ----------------------------------------------------
+        #
+        # Previously each checklist result caused a separate
+        # INSERT query. bulk_create() reduces this to a bulk
+        # database operation.
         # ----------------------------------------------------
 
-        results = serializer.validated_data["results"]
+        results = serializer.validated_data[
+            "results"
+        ]
 
-        for item in results:
-
-            InspectionResult.objects.create(
+        inspection_results = [
+            InspectionResult(
                 inspection=inspection,
                 inspection_field_id=(
                     item["inspection_field"]
                 ),
                 result=item["result"],
             )
+            for item in results
+        ]
+
+        if inspection_results:
+            InspectionResult.objects.bulk_create(
+                inspection_results
+            )
 
         # ----------------------------------------------------
-        # 5. Refresh inspection
-        # ----------------------------------------------------
-
-        inspection.refresh_from_db()
-
-        # ----------------------------------------------------
-        # 6. Optional Celery failure notification
+        # 5. Optional Celery failure notification
         # ----------------------------------------------------
         #
-        # IMPORTANT:
+        # Celery must NEVER interfere with inspection saving.
         #
-        # During development CELERY_ENABLED=False.
+        # During development:
         #
-        # Therefore Redis/Celery is NOT touched and cannot
-        # interfere with inspection submission.
+        # CELERY_ENABLED=False
         #
-        # Later, when Redis is configured, set:
-        #
-        # CELERY_ENABLED=True
-        #
+        # Therefore Redis is not contacted.
         # ----------------------------------------------------
 
         if getattr(
@@ -383,13 +385,11 @@ class InspectionCreateAPIView(APIView):
             def send_failure_notification():
 
                 try:
-
                     send_failure_email_task.delay(
                         inspection.id
                     )
 
                 except Exception:
-
                     logger.exception(
                         "Unable to queue failure email "
                         "for inspection %s",
@@ -401,16 +401,8 @@ class InspectionCreateAPIView(APIView):
                 robust=True,
             )
 
-        else:
-
-            logger.info(
-                "Celery disabled. "
-                "Failure email skipped for inspection %s.",
-                inspection.inspection_number,
-            )
-
         # ----------------------------------------------------
-        # 7. Success response
+        # 6. Success response
         # ----------------------------------------------------
 
         return Response(
