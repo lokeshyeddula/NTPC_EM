@@ -7,15 +7,26 @@ from machinery.models import MachineryType, Vehicle
 
 class InspectionField(models.Model):
 
-    field_name = models.CharField(max_length=200, unique=True)
+    field_name = models.CharField(
+        max_length=200,
+        unique=True,
+    )
 
-    display_order = models.PositiveIntegerField(default=1)
+    display_order = models.PositiveIntegerField(
+        default=1,
+    )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True,
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
 
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
 
     class Meta:
         db_table = "inspection_fields"
@@ -38,10 +49,11 @@ class MachineryInspectionField(models.Model):
         on_delete=models.CASCADE,
     )
 
-    display_order = models.PositiveIntegerField(default=1)
+    display_order = models.PositiveIntegerField(
+        default=1,
+    )
 
     class Meta:
-
         db_table = "machinery_inspection_fields"
 
         ordering = [
@@ -55,7 +67,10 @@ class MachineryInspectionField(models.Model):
         )
 
     def __str__(self):
-        return f"{self.machinery_type.name} - {self.inspection_field.field_name}"
+        return (
+            f"{self.machinery_type.name} - "
+            f"{self.inspection_field.field_name}"
+        )
 
 
 class InspectionLog(models.Model):
@@ -80,12 +95,12 @@ class InspectionLog(models.Model):
     )
 
     inspection_number = models.CharField(
-        max_length=30,
+        max_length=40,
         unique=True,
     )
 
     inspection_date = models.DateField(
-        default=timezone.now,
+        default=timezone.localdate,
     )
 
     shift = models.CharField(
@@ -106,6 +121,18 @@ class InspectionLog(models.Model):
     vehicle = models.ForeignKey(
         Vehicle,
         on_delete=models.PROTECT,
+    )
+
+    # =====================================================
+    # RE-INSPECTION RELATIONSHIP
+    # =====================================================
+
+    parent_inspection = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reinspections",
     )
 
     operational_status = models.CharField(
@@ -140,13 +167,15 @@ class InspectionLog(models.Model):
     operator_checklist_filled = models.BooleanField(
         default=False,
     )
+
     operator_remarks = models.TextField(
         blank=True,
-        default=""
+        default="",
     )
 
     remarks = models.TextField(
         blank=True,
+        default="",
     )
 
     created_at = models.DateTimeField(
@@ -154,7 +183,6 @@ class InspectionLog(models.Model):
     )
 
     class Meta:
-
         db_table = "inspection_logs"
 
         ordering = [
@@ -190,7 +218,6 @@ class InspectionResult(models.Model):
     )
 
     class Meta:
-
         db_table = "inspection_results"
 
         unique_together = (
@@ -199,4 +226,7 @@ class InspectionResult(models.Model):
         )
 
     def __str__(self):
-        return f"{self.inspection.inspection_number} - {self.inspection_field.field_name}"
+        return (
+            f"{self.inspection.inspection_number} - "
+            f"{self.inspection_field.field_name}"
+        )

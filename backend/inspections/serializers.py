@@ -7,8 +7,13 @@ from .models import (
 )
 
 
-class MachineryInspectionFieldSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source="inspection_field.id")
+class MachineryInspectionFieldSerializer(
+    serializers.ModelSerializer
+):
+
+    id = serializers.ReadOnlyField(
+        source="inspection_field.id"
+    )
 
     field_name = serializers.CharField(
         source="inspection_field.field_name",
@@ -17,6 +22,7 @@ class MachineryInspectionFieldSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MachineryInspectionField
+
         fields = (
             "id",
             "field_name",
@@ -24,21 +30,29 @@ class MachineryInspectionFieldSerializer(serializers.ModelSerializer):
         )
 
 
-class InspectionResultSerializer(serializers.Serializer):
+class InspectionResultSerializer(
+    serializers.Serializer
+):
+
     inspection_field = serializers.IntegerField()
 
     result = serializers.ChoiceField(
-        choices=["Pass", "Fail"]
+        choices=[
+            "Pass",
+            "Fail",
+        ]
     )
 
 
-class InspectionHistorySerializer(serializers.ModelSerializer):
+class InspectionHistorySerializer(
+    serializers.ModelSerializer
+):
+
     vehicle = serializers.CharField(
         source="vehicle.machine_number",
         read_only=True,
     )
 
-    # NEW: Pull the machinery type name via the vehicle relationship
     machinery_type = serializers.CharField(
         source="vehicle.machinery_type.name",
         read_only=True,
@@ -49,8 +63,15 @@ class InspectionHistorySerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
-    # NEW: Custom field to extract only the failed checklist items
     failed_items = serializers.SerializerMethodField()
+
+    parent_inspection_number = serializers.CharField(
+        source="parent_inspection.inspection_number",
+        read_only=True,
+        allow_null=True,
+    )
+
+    is_reinspection = serializers.SerializerMethodField()
 
     class Meta:
         model = InspectionLog
@@ -62,7 +83,7 @@ class InspectionHistorySerializer(serializers.ModelSerializer):
             "shift",
             "relay",
             "vehicle",
-            "machinery_type",  # Added to fields
+            "machinery_type",
             "engineer",
             "operational_status",
             "operator_name",
@@ -70,26 +91,39 @@ class InspectionHistorySerializer(serializers.ModelSerializer):
             "operator_agency",
             "operator_mobile",
             "operator_checklist_filled",
+            "operator_remarks",
             "remarks",
-            "failed_items",  # Added to fields
+            "failed_items",
+            "parent_inspection_number",
+            "is_reinspection",
         )
 
     def get_failed_items(self, obj):
-        # We loop through the prefetched results and return the names of the failed fields
+
         return [
-            res.inspection_field.field_name
-            for res in obj.results.all()
-            if res.result.lower() == "fail"
+            result.inspection_field.field_name
+            for result in obj.results.all()
+            if result.result.lower() == "fail"
         ]
 
+    def get_is_reinspection(self, obj):
 
-class InspectionCreateSerializer(serializers.Serializer):
+        return obj.parent_inspection_id is not None
+
+
+class InspectionCreateSerializer(
+    serializers.Serializer
+):
+
     relay = serializers.CharField()
 
     vehicle = serializers.IntegerField()
 
     operational_status = serializers.ChoiceField(
-        choices=["Fit", "Unfit"]
+        choices=[
+            "Fit",
+            "Unfit",
+        ]
     )
 
     operator_name = serializers.CharField()
@@ -111,19 +145,23 @@ class InspectionCreateSerializer(serializers.Serializer):
     )
 
     remarks = serializers.CharField(
-        allow_blank=True,
         required=False,
+        allow_blank=True,
     )
 
-    # NEW FIELDS FOR REINSPECTION LOGIC
+    # =====================================================
+    # RE-INSPECTION
+    # =====================================================
+
     is_reinspection = serializers.BooleanField(
         required=False,
-        default=False
+        default=False,
     )
 
     parent_inspection_id = serializers.IntegerField(
         required=False,
-        allow_null=True
+        allow_null=True,
+        default=None,
     )
 
     results = InspectionResultSerializer(
@@ -131,43 +169,85 @@ class InspectionCreateSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
+
+        results = attrs.get(
+            "results",
+            []
+        )
+
         failed = any(
             item["result"] == "Fail"
-            for item in attrs.get("results", [])
+            for item in results
         )
 
         if failed and not attrs.get("remarks"):
+
             raise serializers.ValidationError(
                 {
                     "remarks":
-                        "Remarks are mandatory when any checklist item fails."
+                    "Remarks are mandatory when any checklist item fails."
                 }
             )
 
+        # =================================================
+        # RE-INSPECTION VALIDATION
+        # =================================================
+
+        is_reinspection = attrs.get(
+            "is_reinspection",
+            False,
+        )
+
+        parent_id = attrs.get(
+            "parent_inspection_id"
+        )
+
+        if is_reinspection:
+
+            if not parent_id:
+
+                raise serializers.ValidationError(
+                    {
+                        "parent_inspection_id":
+                        "Parent inspection is required for re-inspection."
+                    }
+                )
+
+            try:
+
+                parent = InspectionLog.objects.get(
+                    id=parent_id
+                )
+
+            except InspectionLog.DoesNotExist:
+
+                raise serializers.ValidationError(
+                    {
+                        "parent_inspection_id":
+                        "Original inspection not found."
+                    }
+                )
+
+            # Parent must belong to same vehicle
+
+            if parent.vehicle_id != attrs["vehicle"]:
+
+                raise serializers.ValidationError(
+                    {
+                        "parent_inspection_id":
+                        "Original inspection does not belong to this vehicle."
+                    }
+                )
+
+            # Parent must be UNFIT
+
+            if parent.operational_status != "Unfit":
+
+                raise serializers.ValidationError(
+                    {
+                        "parent_inspection_id":
+                        "Only an Unfit inspection can be re-inspected."
+                    }
+                )
+
         return attrs
-
-    def create(self, validated_data):
-        results_data = validated_data.pop("results")
-
-        # Pop out the new fields before passing to kwargs to avoid field errors
-        is_reinspection = validated_data.pop("is_reinspection", False)
-        parent_inspection_id = validated_data.pop("parent_inspection_id", None)
-
-        inspection_log = InspectionLog.objects.create(
-            **validated_data
-        )
-
-        bulk_results = [
-            InspectionResult(
-                inspection=inspection_log,
-                inspection_field_id=item["inspection_field"],
-                result=item["result"],
-            )
-            for item in results_data
-        ]
-
-        InspectionResult.objects.bulk_create(
-            bulk_results
-        )
-
-        return inspection_log
