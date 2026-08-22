@@ -8,18 +8,10 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-
-    const [isSidebarOpen, setIsSidebarOpen] =
-        useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="
-            flex
-            h-screen
-            min-h-0
-            overflow-hidden
-            bg-slate-100
-        ">
+        <div className="flex min-h-screen w-full max-w-full overflow-x-hidden bg-slate-100">
 
             {/* =====================================================
                 MOBILE OVERLAY
@@ -27,9 +19,7 @@ export default function Layout({ children }: Props) {
 
             {isSidebarOpen && (
                 <div
-                    onClick={() =>
-                        setIsSidebarOpen(false)
-                    }
+                    onClick={() => setIsSidebarOpen(false)}
                     className="
                         fixed
                         inset-0
@@ -52,6 +42,7 @@ export default function Layout({ children }: Props) {
                     inset-y-0
                     left-0
                     z-50
+                    w-auto
                     transform
                     transition-transform
                     duration-300
@@ -67,71 +58,72 @@ export default function Layout({ children }: Props) {
                     }
                 `}
             >
-
                 <Sidebar
-                    onClose={() =>
-                        setIsSidebarOpen(false)
-                    }
+                    onClose={() => setIsSidebarOpen(false)}
                 />
-
             </div>
 
 
             {/* =====================================================
-                MAIN APPLICATION AREA
+                MAIN APPLICATION
             ====================================================== */}
 
             <div className="
                 flex
-                min-h-0
+                min-h-screen
                 min-w-0
+                w-full
                 flex-1
                 flex-col
-                overflow-hidden
+                overflow-x-hidden
             ">
 
                 {/* =================================================
                     HEADER
                 ================================================== */}
 
-                <Header
-                    onMenuClick={() =>
-                        setIsSidebarOpen(true)
-                    }
-                />
+                <div className="w-full min-w-0 shrink-0">
+                    <Header
+                        onMenuClick={() => setIsSidebarOpen(true)}
+                    />
+                </div>
 
 
                 {/* =================================================
-                    SCROLLABLE CONTENT AREA
+                    CONTENT
                 ================================================== */}
 
-                <main className="
-                    min-h-0
-                    min-w-0
-                    flex-1
-                    overflow-y-auto
-                    overflow-x-hidden
-                    bg-white
-                    sm:bg-slate-100
-
-                    overscroll-contain
-                ">
-
-                    <div className="
+                <main
+                    className="
+                        min-h-0
+                        min-w-0
                         w-full
-                        min-h-full
-                        px-0
-                        py-0
+                        flex-1
+                        overflow-x-hidden
+                        overflow-y-auto
+                        bg-white
+                        sm:bg-slate-100
+                        overscroll-contain
+                    "
+                >
 
-                        sm:px-5
-                        sm:py-4
+                    <div
+                        className="
+                            box-border
+                            w-full
+                            max-w-full
+                            min-w-0
+                            px-0
+                            py-0
 
-                        lg:px-8
-                        lg:py-5
-                    ">
+                            sm:px-5
+                            sm:py-4
 
+                            lg:px-8
+                            lg:py-5
+                        "
+                    >
                         {children}
-
                     </div>
 
                 </main>
