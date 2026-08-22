@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select, { type StylesConfig } from "react-select";
+import {
+    ClipboardCheck,
+    Truck,
+    Radio,
+    Hash,
+    AlertTriangle,
+    RefreshCw,
+    ChevronRight,
+} from "lucide-react";
 
 import inspectionService, {
     type PendingReinspection,
@@ -14,17 +23,32 @@ import type {
 } from "../../types/inspection";
 
 
+/* ================================================================
+   TYPES
+================================================================ */
+
 interface SelectOption {
     value: string | number;
     label: string;
 }
 
 
+/* ================================================================
+   COMPONENT
+================================================================ */
+
 export default function InspectionForm() {
 
-    const [searchParams] = useSearchParams();
+    const [searchParams] =
+        useSearchParams();
 
-    const [relay, setRelay] = useState("");
+
+    /* ============================================================
+       FORM STATE
+    ============================================================ */
+
+    const [relay, setRelay] =
+        useState("");
 
     const [machineryTypes, setMachineryTypes] =
         useState<MachineryType[]>([]);
@@ -38,6 +62,11 @@ export default function InspectionForm() {
     const [selectedVehicle, setSelectedVehicle] =
         useState<number | null>(null);
 
+
+    /* ============================================================
+       LOADING STATE
+    ============================================================ */
+
     const [isLoadingMachinery, setIsLoadingMachinery] =
         useState(false);
 
@@ -47,13 +76,18 @@ export default function InspectionForm() {
     const [isCheckingStatus, setIsCheckingStatus] =
         useState(false);
 
+
+    /* ============================================================
+       REINSPECTION
+    ============================================================ */
+
     const [pendingReinspection, setPendingReinspection] =
         useState<PendingReinspection | null>(null);
 
 
-    // =====================================================
-    // INITIAL LOAD
-    // =====================================================
+    /* ============================================================
+       INITIAL LOAD
+    ============================================================ */
 
     useEffect(() => {
 
@@ -69,9 +103,9 @@ export default function InspectionForm() {
                 setMachineryTypes(machinery);
 
 
-                // ---------------------------------------------
-                // CHECK URL PARAMETERS
-                // ---------------------------------------------
+                /* ------------------------------------------------
+                   CHECK URL PARAMETERS
+                ------------------------------------------------ */
 
                 const machineId =
                     searchParams.get("machine_id");
@@ -80,9 +114,9 @@ export default function InspectionForm() {
                     searchParams.get("vehicle_id");
 
 
-                // ---------------------------------------------
-                // OPENED FROM RE-INSPECTION PAGE
-                // ---------------------------------------------
+                /* ------------------------------------------------
+                   OPENED FROM RE-INSPECTION
+                ------------------------------------------------ */
 
                 if (machineId && vehicleId) {
 
@@ -97,18 +131,20 @@ export default function InspectionForm() {
                         Number.isNaN(machineryId) ||
                         Number.isNaN(selectedVehicleId)
                     ) {
+
                         return;
+
                     }
 
 
-                    // Select machinery
+                    /* Select machinery */
 
                     setSelectedMachinery(
                         machineryId
                     );
 
 
-                    // Load vehicles
+                    /* Load vehicles */
 
                     setIsLoadingVehicles(true);
 
@@ -130,19 +166,19 @@ export default function InspectionForm() {
                     }
 
 
-                    // Select vehicle
+                    /* Select vehicle */
 
                     setSelectedVehicle(
                         selectedVehicleId
                     );
 
 
-                    // IMPORTANT:
-                    // Check whether vehicle is currently UNFIT
+                    /* Check current vehicle status */
 
                     await checkVehicleStatus(
                         selectedVehicleId
                     );
+
                 }
 
             } catch (error) {
@@ -157,6 +193,7 @@ export default function InspectionForm() {
                 setIsLoadingMachinery(false);
 
             }
+
         }
 
 
@@ -165,9 +202,9 @@ export default function InspectionForm() {
     }, [searchParams]);
 
 
-    // =====================================================
-    // CHECK VEHICLE STATUS
-    // =====================================================
+    /* ============================================================
+       CHECK VEHICLE STATUS
+    ============================================================ */
 
     async function checkVehicleStatus(
         vehicleId: number
@@ -184,15 +221,6 @@ export default function InspectionForm() {
                     vehicleId.toString()
                 );
 
-            /*
-             * Backend response:
-             *
-             * {
-             *   is_unfit: true,
-             *   original_inspection_id: 123,
-             *   failed_fields: [...]
-             * }
-             */
 
             setPendingReinspection(
                 response
@@ -214,12 +242,13 @@ export default function InspectionForm() {
             setIsCheckingStatus(false);
 
         }
+
     }
 
 
-    // =====================================================
-    // MACHINERY CHANGE
-    // =====================================================
+    /* ============================================================
+       MACHINERY CHANGE
+    ============================================================ */
 
     async function handleMachineryChange(
         option: SelectOption | null
@@ -236,6 +265,7 @@ export default function InspectionForm() {
             setPendingReinspection(null);
 
             return;
+
         }
 
 
@@ -279,12 +309,13 @@ export default function InspectionForm() {
             setIsLoadingVehicles(false);
 
         }
+
     }
 
 
-    // =====================================================
-    // VEHICLE CHANGE
-    // =====================================================
+    /* ============================================================
+       VEHICLE CHANGE
+    ============================================================ */
 
     function handleVehicleChange(
         option: SelectOption | null
@@ -297,6 +328,7 @@ export default function InspectionForm() {
             setPendingReinspection(null);
 
             return;
+
         }
 
 
@@ -312,12 +344,13 @@ export default function InspectionForm() {
         checkVehicleStatus(
             vehicleId
         );
+
     }
 
 
-    // =====================================================
-    // OPTIONS
-    // =====================================================
+    /* ============================================================
+       OPTIONS
+    ============================================================ */
 
     const relayOptions: SelectOption[] = [
 
@@ -367,9 +400,9 @@ export default function InspectionForm() {
         );
 
 
-    // =====================================================
-    // SELECT STYLES
-    // =====================================================
+    /* ============================================================
+       SELECT STYLES
+    ============================================================ */
 
     const customSelectStyles:
         StylesConfig<SelectOption, false> = {
@@ -377,96 +410,86 @@ export default function InspectionForm() {
         control: (
             provided,
             state
-        ) => {
+        ) => ({
 
-            const isMobile =
-                typeof window !== "undefined" &&
-                window.innerWidth < 640;
+            ...provided,
 
-            return {
+            minHeight:
+                "52px",
 
-                ...provided,
+            height:
+                "52px",
 
-                minHeight:
-                    isMobile
-                        ? "2.5rem"
-                        : "3rem",
+            borderRadius:
+                "12px",
 
-                borderRadius:
-                    "0.5rem",
+            borderColor:
+                state.isFocused
+                    ? "#2563eb"
+                    : "#cbd5e1",
+
+            boxShadow:
+                state.isFocused
+                    ? "0 0 0 4px rgba(37, 99, 235, 0.10)"
+                    : "none",
+
+            backgroundColor:
+                state.isDisabled
+                    ? "#f8fafc"
+                    : "#ffffff",
+
+            cursor:
+                state.isDisabled
+                    ? "not-allowed"
+                    : "pointer",
+
+            transition:
+                "all 0.2s ease",
+
+            fontSize:
+                "0.925rem",
+
+            "&:hover": {
 
                 borderColor:
-                    state.isFocused
-                        ? "#2563eb"
-                        : "#d1d5db",
-
-                boxShadow:
-                    state.isFocused
-                        ? "0 0 0 2px rgba(37, 99, 235, 0.2)"
-                        : "none",
-
-                backgroundColor:
                     state.isDisabled
-                        ? "#f9fafb"
-                        : "#ffffff",
+                        ? "#cbd5e1"
+                        : "#93c5fd",
 
-                cursor:
-                    state.isDisabled
-                        ? "not-allowed"
-                        : "pointer",
+            },
 
-                transition:
-                    "all 0.2s ease",
-
-                fontSize:
-                    isMobile
-                        ? "0.875rem"
-                        : "1rem",
-
-            };
-        },
+        }),
 
 
         option: (
             provided,
             state
-        ) => {
+        ) => ({
 
-            const isMobile =
-                typeof window !== "undefined" &&
-                window.innerWidth < 640;
+            ...provided,
 
-            return {
+            backgroundColor:
+                state.isSelected
+                    ? "#2563eb"
+                    : state.isFocused
+                        ? "#eff6ff"
+                        : "white",
 
-                ...provided,
+            color:
+                state.isSelected
+                    ? "white"
+                    : "#1e293b",
 
-                backgroundColor:
-                    state.isSelected
-                        ? "#2563eb"
-                        : state.isFocused
-                            ? "#eff6ff"
-                            : "transparent",
+            cursor:
+                "pointer",
 
-                color:
-                    state.isSelected
-                        ? "white"
-                        : "#1f2937",
+            padding:
+                "10px 14px",
 
-                cursor:
-                    "pointer",
+            fontSize:
+                "0.9rem",
 
-                padding:
-                    isMobile
-                        ? "8px 12px"
-                        : "10px 14px",
-
-                fontSize:
-                    isMobile
-                        ? "0.875rem"
-                        : "1rem",
-
-            };
-        },
+        }),
 
 
         menu: (
@@ -475,20 +498,38 @@ export default function InspectionForm() {
 
             ...provided,
 
+            marginTop:
+                "6px",
+
             borderRadius:
-                "0.5rem",
+                "12px",
 
             boxShadow:
-                "0 10px 15px -3px rgba(0,0,0,0.1)",
+                "0 15px 35px rgba(15, 23, 42, 0.14)",
 
             border:
-                "1px solid #e5e7eb",
+                "1px solid #e2e8f0",
 
             overflow:
                 "hidden",
 
             zIndex:
-                50,
+                100,
+
+        }),
+
+
+        menuList: (
+            provided
+        ) => ({
+
+            ...provided,
+
+            padding:
+                "6px",
+
+            maxHeight:
+                "240px",
 
         }),
 
@@ -500,76 +541,328 @@ export default function InspectionForm() {
             ...provided,
 
             padding:
-                "0 8px",
+                "0 12px",
 
         }),
+
+
+        placeholder: (
+            provided
+        ) => ({
+
+            ...provided,
+
+            color:
+                "#94a3b8",
+
+        }),
+
+
+        singleValue: (
+            provided
+        ) => ({
+
+            ...provided,
+
+            color:
+                "#0f172a",
+
+            fontWeight:
+                600,
+
+        }),
+
     };
 
 
-    // =====================================================
-    // RENDER
-    // =====================================================
+    /* ============================================================
+       CURRENT STEP
+    ============================================================ */
+
+    const currentStep =
+        !relay
+            ? 1
+            : !selectedMachinery
+                ? 2
+                : !selectedVehicle
+                    ? 3
+                    : 4;
+
 
     return (
 
-        <div className="space-y-6">
-
-            {/* =================================================
-                SELECTION CARD
-            ================================================= */}
-
-            <div className="bg-white sm:rounded-lg sm:shadow px-4 py-4 sm:p-6">
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="space-y-5 sm:space-y-6">
 
 
-                    {/* RELAY */}
+            {/* =====================================================
+                INSPECTION SETUP CARD
+            ====================================================== */}
 
-                    <div>
+            <section
+                className="
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    shadow-sm
+                "
+            >
 
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Relay
-                        </label>
+
+                {/* =================================================
+                    SECTION HEADER
+                ================================================= */}
+
+                <div
+                    className="
+                        border-b
+                        border-slate-200
+                        px-5
+                        py-5
+                        sm:px-7
+                    "
+                >
+
+                    <div
+                        className="
+                            flex
+                            items-center
+                            justify-between
+                            gap-4
+                        "
+                    >
+
+                        <div
+                            className="
+                                flex
+                                items-center
+                                gap-3
+                            "
+                        >
+
+                            <div
+                                className="
+                                    flex
+                                    h-10
+                                    w-10
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    bg-blue-50
+                                    text-blue-700
+                                "
+                            >
+
+                                <ClipboardCheck
+                                    size={21}
+                                />
+
+                            </div>
+
+
+                            <div>
+
+                                <h2
+                                    className="
+                                        text-base
+                                        font-bold
+                                        text-slate-900
+                                        sm:text-lg
+                                    "
+                                >
+                                    Inspection Setup
+                                </h2>
+
+                                <p
+                                    className="
+                                        text-xs
+                                        text-slate-500
+                                        sm:text-sm
+                                    "
+                                >
+                                    Select the inspection details
+                                    to continue.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* STEP INDICATOR */}
+
+                        <div
+                            className="
+                                hidden
+                                items-center
+                                gap-2
+                                sm:flex
+                            "
+                        >
+
+                            <span
+                                className="
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-slate-400
+                                "
+                            >
+                                Step
+                            </span>
+
+                            <span
+                                className="
+                                    flex
+                                    h-8
+                                    min-w-8
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-blue-600
+                                    px-2
+                                    text-xs
+                                    font-bold
+                                    text-white
+                                "
+                            >
+                                {Math.min(
+                                    currentStep,
+                                    4
+                                )}
+                            </span>
+
+                            <span
+                                className="
+                                    text-xs
+                                    text-slate-400
+                                "
+                            >
+                                / 4
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* =================================================
+                    STEPS
+                ================================================= */}
+
+                <div
+                    className="
+                        grid
+                        grid-cols-1
+                        gap-5
+                        px-5
+                        py-6
+
+                        sm:grid-cols-2
+                        sm:px-7
+
+                        lg:grid-cols-3
+                    "
+                >
+
+
+                    {/* =================================================
+                        STEP 1 — RELAY
+                    ================================================= */}
+
+                    <SelectionField
+                        step="01"
+                        icon={
+                            <Radio
+                                size={18}
+                            />
+                        }
+                        label="Relay"
+                        description="Select inspection relay"
+                        active={!!relay}
+                    >
 
                         <Select
-                            options={relayOptions}
+                            options={
+                                relayOptions
+                            }
+
                             placeholder="Select Relay..."
+
                             isSearchable={false}
-                            styles={customSelectStyles}
+
+                            styles={
+                                customSelectStyles
+                            }
+
                             value={
                                 relayOptions.find(
                                     (item) =>
-                                        item.value === relay
+                                        item.value ===
+                                        relay
                                 ) || null
                             }
-                            onChange={(option) =>
+
+                            onChange={(
+                                option
+                            ) =>
                                 setRelay(
                                     option
-                                        ? String(option.value)
+                                        ? String(
+                                            option.value
+                                        )
                                         : ""
                                 )
                             }
                         />
 
-                    </div>
+                    </SelectionField>
 
 
-                    {/* MACHINERY */}
+                    {/* =================================================
+                        STEP 2 — MACHINERY
+                    ================================================= */}
 
-                    <div>
-
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Machinery Type
-                        </label>
+                    <SelectionField
+                        step="02"
+                        icon={
+                            <Truck
+                                size={18}
+                            />
+                        }
+                        label="Machinery Type"
+                        description="Select machinery category"
+                        active={
+                            !!selectedMachinery
+                        }
+                    >
 
                         <Select
-                            options={machineryOptions}
-                            placeholder="Search Machinery..."
+                            options={
+                                machineryOptions
+                            }
+
+                            placeholder={
+                                isLoadingMachinery
+                                    ? "Loading machinery..."
+                                    : "Search Machinery..."
+                            }
+
                             isSearchable
+
                             isLoading={
                                 isLoadingMachinery
                             }
-                            styles={customSelectStyles}
+
+                            styles={
+                                customSelectStyles
+                            }
+
                             value={
                                 machineryOptions.find(
                                     (item) =>
@@ -577,34 +870,69 @@ export default function InspectionForm() {
                                         selectedMachinery
                                 ) || null
                             }
+
                             onChange={
                                 handleMachineryChange
                             }
                         />
 
-                    </div>
+                    </SelectionField>
 
 
-                    {/* VEHICLE */}
+                    {/* =================================================
+                        STEP 3 — DOOR NUMBER
+                    ================================================= */}
 
-                    <div>
-
-                        <label className="block mb-2 text-sm font-semibold text-gray-700">
-                            Door Number
-                        </label>
+                    <SelectionField
+                        step="03"
+                        icon={
+                            <Hash
+                                size={18}
+                            />
+                        }
+                        label="Door Number"
+                        description={
+                            selectedMachinery
+                                ? "Select the vehicle"
+                                : "Select machinery first"
+                        }
+                        active={
+                            !!selectedVehicle
+                        }
+                        disabled={
+                            !selectedMachinery
+                        }
+                    >
 
                         <Select
-                            options={vehicleOptions}
-                            placeholder="Search Door Number..."
+                            options={
+                                vehicleOptions
+                            }
+
+                            placeholder={
+                                !selectedMachinery
+                                    ? "Select machinery first..."
+                                    : isLoadingVehicles ||
+                                        isCheckingStatus
+                                        ? "Loading vehicles..."
+                                        : "Search Door Number..."
+                            }
+
                             isSearchable
+
                             isDisabled={
                                 !selectedMachinery
                             }
+
                             isLoading={
                                 isLoadingVehicles ||
                                 isCheckingStatus
                             }
-                            styles={customSelectStyles}
+
+                            styles={
+                                customSelectStyles
+                            }
+
                             value={
                                 vehicleOptions.find(
                                     (item) =>
@@ -612,84 +940,564 @@ export default function InspectionForm() {
                                         selectedVehicle
                                 ) || null
                             }
+
                             onChange={
                                 handleVehicleChange
                             }
                         />
 
+                    </SelectionField>
+
+                </div>
+
+
+                {/* =================================================
+                    PROGRESS / STATUS
+                ================================================= */}
+
+                <div
+                    className="
+                        border-t
+                        border-slate-100
+                        bg-slate-50
+                        px-5
+                        py-4
+                        sm:px-7
+                    "
+                >
+
+                    <div
+                        className="
+                            flex
+                            flex-col
+                            gap-3
+
+                            sm:flex-row
+                            sm:items-center
+                            sm:justify-between
+                        "
+                    >
+
+                        {/* Progress */}
+
+                        <div
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                            "
+                        >
+
+                            <StepDot
+                                number="1"
+                                active={
+                                    !!relay
+                                }
+                            />
+
+                            <ChevronRight
+                                size={14}
+                                className="text-slate-300"
+                            />
+
+                            <StepDot
+                                number="2"
+                                active={
+                                    !!selectedMachinery
+                                }
+                            />
+
+                            <ChevronRight
+                                size={14}
+                                className="text-slate-300"
+                            />
+
+                            <StepDot
+                                number="3"
+                                active={
+                                    !!selectedVehicle
+                                }
+                            />
+
+                        </div>
+
+
+                        {/* Status */}
+
+                        <div
+                            className="
+                                text-xs
+                                font-medium
+                                text-slate-500
+                            "
+                        >
+
+                            {!relay && (
+                                "Start by selecting a relay."
+                            )}
+
+                            {relay &&
+                                !selectedMachinery && (
+                                    "Now select the machinery type."
+                                )}
+
+                            {relay &&
+                                selectedMachinery &&
+                                !selectedVehicle && (
+                                    "Now select the door number."
+                                )}
+
+                            {relay &&
+                                selectedMachinery &&
+                                selectedVehicle &&
+                                !isCheckingStatus && (
+                                    "Vehicle selected. Checklist ready."
+                                )}
+
+                            {isCheckingStatus && (
+                                <span
+                                    className="
+                                        inline-flex
+                                        items-center
+                                        gap-2
+                                        text-blue-600
+                                    "
+                                >
+
+                                    <RefreshCw
+                                        size={14}
+                                        className="animate-spin"
+                                    />
+
+                                    Checking vehicle status...
+
+                                </span>
+                            )}
+
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
+            </section>
 
 
-            {/* =================================================
+            {/* =====================================================
                 REINSPECTION WARNING
-            ================================================= */}
+            ====================================================== */}
 
             {
                 pendingReinspection?.is_unfit &&
-                selectedVehicle &&
+                selectedVehicle && (
 
-                <div className="bg-orange-50 border-l-4 border-orange-500 p-4 sm:p-6 rounded-r-lg shadow-sm">
+                    <section
+                        className="
+                            overflow-hidden
+                            rounded-2xl
 
-                    <h3 className="text-lg font-bold text-orange-800 mb-1">
-                        ⚠️ Targeted Re-inspection
-                    </h3>
+                            border
+                            border-orange-200
 
-                    <p className="text-orange-700 text-sm sm:text-base">
-                        This vehicle is currently marked as
-                        UNFIT. Only the previously failed
-                        checkpoints will be displayed for
-                        re-inspection.
-                    </p>
+                            bg-orange-50
 
-                    {
-                        pendingReinspection.original_inspection_id &&
+                            shadow-sm
+                        "
+                    >
 
-                        <p className="text-xs text-orange-600 mt-2">
-                            Original Inspection ID:{" "}
-                            {
-                                pendingReinspection.original_inspection_id
-                            }
-                        </p>
-                    }
+                        <div
+                            className="
+                                border-l-4
+                                border-orange-500
+                                px-5
+                                py-5
 
-                </div>
+                                sm:px-6
+                            "
+                        >
+
+                            <div
+                                className="
+                                    flex
+                                    items-start
+                                    gap-3
+                                "
+                            >
+
+                                <div
+                                    className="
+                                        flex
+                                        h-10
+                                        w-10
+                                        shrink-0
+                                        items-center
+                                        justify-center
+
+                                        rounded-xl
+
+                                        bg-orange-100
+                                        text-orange-600
+                                    "
+                                >
+
+                                    <AlertTriangle
+                                        size={21}
+                                    />
+
+                                </div>
+
+
+                                <div
+                                    className="
+                                        min-w-0
+                                    "
+                                >
+
+                                    <h3
+                                        className="
+                                            text-base
+                                            font-bold
+                                            text-orange-900
+                                            sm:text-lg
+                                        "
+                                    >
+                                        Targeted Re-Inspection
+                                    </h3>
+
+
+                                    <p
+                                        className="
+                                            mt-1
+                                            text-sm
+                                            leading-6
+                                            text-orange-800
+                                        "
+                                    >
+                                        This vehicle is currently
+                                        marked as <strong>UNFIT</strong>.
+                                        Only the previously failed
+                                        checkpoints will be displayed
+                                        for re-inspection.
+                                    </p>
+
+
+                                    {
+                                        pendingReinspection
+                                            .original_inspection_id && (
+
+                                            <div
+                                                className="
+                                                    mt-3
+                                                    inline-flex
+                                                    items-center
+                                                    rounded-lg
+                                                    bg-orange-100
+                                                    px-3
+                                                    py-1.5
+                                                    text-xs
+                                                    font-semibold
+                                                    text-orange-800
+                                                "
+                                            >
+                                                Original Inspection ID:
+                                                <span className="ml-1">
+                                                    {
+                                                        pendingReinspection
+                                                            .original_inspection_id
+                                                    }
+                                                </span>
+                                            </div>
+
+                                        )
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                )
             }
 
 
-            {/* =================================================
+            {/* =====================================================
                 CHECKLIST
-            ================================================= */}
+            ====================================================== */}
 
             {
                 selectedMachinery &&
                 selectedVehicle &&
-                !isCheckingStatus &&
+                !isCheckingStatus && (
 
-                <Checklist
+                    <Checklist
 
-                    machineryType={
-                        selectedMachinery
-                    }
+                        machineryType={
+                            selectedMachinery
+                        }
 
-                    vehicle={
-                        selectedVehicle
-                    }
+                        vehicle={
+                            selectedVehicle
+                        }
 
-                    relay={
-                        relay
-                    }
+                        relay={
+                            relay
+                        }
 
-                    pendingReinspection={
-                        pendingReinspection
-                    }
+                        pendingReinspection={
+                            pendingReinspection
+                        }
 
-                />
+                    />
+
+                )
             }
 
+
+            {/* =====================================================
+                BOTTOM MOBILE SPACE
+            ====================================================== */}
+
+            <div className="h-4 sm:hidden" />
+
         </div>
+
+    );
+}
+
+
+/* ================================================================
+   SELECTION FIELD
+================================================================ */
+
+interface SelectionFieldProps {
+
+    step: string;
+
+    icon: React.ReactNode;
+
+    label: string;
+
+    description: string;
+
+    active: boolean;
+
+    disabled?: boolean;
+
+    children: React.ReactNode;
+
+}
+
+
+function SelectionField({
+    step,
+    icon,
+    label,
+    description,
+    active,
+    disabled = false,
+    children,
+}: SelectionFieldProps) {
+
+    return (
+
+        <div
+            className={`
+                min-w-0
+
+                rounded-xl
+
+                border
+
+                p-4
+
+                transition
+
+                ${
+                    disabled
+                        ? "border-slate-200 bg-slate-50/70"
+                        : active
+                            ? "border-blue-200 bg-blue-50/30"
+                            : "border-slate-200 bg-white"
+                }
+            `}
+        >
+
+            {/* FIELD HEADER */}
+
+            <div
+                className="
+                    mb-3
+                    flex
+                    items-start
+                    justify-between
+                    gap-3
+                "
+            >
+
+                <div
+                    className="
+                        flex
+                        min-w-0
+                        items-center
+                        gap-3
+                    "
+                >
+
+                    <div
+                        className={`
+                            flex
+                            h-9
+                            w-9
+                            shrink-0
+                            items-center
+                            justify-center
+
+                            rounded-lg
+
+                            ${
+                                disabled
+                                    ? "bg-slate-100 text-slate-400"
+                                    : active
+                                        ? "bg-blue-100 text-blue-700"
+                                        : "bg-slate-100 text-slate-600"
+                            }
+                        `}
+                    >
+                        {icon}
+                    </div>
+
+
+                    <div className="min-w-0">
+
+                        <div
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                            "
+                        >
+
+                            <span
+                                className="
+                                    text-[10px]
+                                    font-bold
+                                    tracking-widest
+                                    text-slate-400
+                                "
+                            >
+                                {step}
+                            </span>
+
+                            <span
+                                className="
+                                    truncate
+                                    text-sm
+                                    font-bold
+                                    text-slate-800
+                                "
+                            >
+                                {label}
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            className="
+                                mt-0.5
+                                text-xs
+                                text-slate-500
+                            "
+                        >
+                            {description}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {active && (
+
+                    <span
+                        className="
+                            shrink-0
+                            rounded-full
+                            bg-green-100
+                            px-2
+                            py-1
+                            text-[10px]
+                            font-bold
+                            uppercase
+                            tracking-wide
+                            text-green-700
+                        "
+                    >
+                        Selected
+                    </span>
+
+                )}
+
+            </div>
+
+
+            {/* SELECT */}
+
+            {children}
+
+        </div>
+
+    );
+}
+
+
+/* ================================================================
+   STEP DOT
+================================================================ */
+
+interface StepDotProps {
+
+    number: string;
+
+    active: boolean;
+
+}
+
+
+function StepDot({
+    number,
+    active,
+}: StepDotProps) {
+
+    return (
+
+        <div
+            className={`
+                flex
+                h-7
+                w-7
+                items-center
+                justify-center
+
+                rounded-full
+
+                text-[10px]
+                font-bold
+
+                ${
+                    active
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-200 text-slate-500"
+                }
+            `}
+        >
+
+            {number}
+
+        </div>
+
     );
 }
