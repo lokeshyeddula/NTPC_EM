@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import inspectionService, {
     type PendingReinspection,
@@ -15,26 +16,21 @@ import type {
 
 
 interface Props {
-
     machineryType: number;
-
     vehicle: number;
-
     relay: string;
-
-    pendingReinspection:
-        PendingReinspection | null;
+    pendingReinspection: PendingReinspection | null;
 }
 
 
 export default function Checklist({
-
     machineryType,
     vehicle,
     relay,
     pendingReinspection,
-
 }: Props) {
+
+    const navigate = useNavigate();
 
 
     // =====================================================
@@ -198,17 +194,13 @@ export default function Checklist({
                 if (!cancelled) {
 
                     setFields(
-                        pendingReinspection.failed_fields
-                            .map(
-                                (field) => ({
-                                    id: field.id,
-
-                                    field_name:
-                                        field.field_name,
-
-                                    display_order: 0,
-                                })
-                            )
+                        pendingReinspection.failed_fields.map(
+                            (field) => ({
+                                id: field.id,
+                                field_name: field.field_name,
+                                display_order: 0,
+                            })
+                        )
                     );
 
                     setLoading(false);
@@ -233,9 +225,7 @@ export default function Checklist({
 
                 if (!cancelled) {
 
-                    setFields(
-                        data
-                    );
+                    setFields(data);
 
                 }
 
@@ -245,6 +235,7 @@ export default function Checklist({
                     "Failed to fetch checklist:",
                     error
                 );
+
 
                 if (!cancelled) {
 
@@ -284,22 +275,15 @@ export default function Checklist({
     // =====================================================
 
     function handleResult(
-
         fieldId: number,
-
-        result:
-            "Pass" |
-            "Fail"
-
+        result: "Pass" | "Fail"
     ) {
 
         setResults(
             (previous) => ({
-
                 ...previous,
 
-                [fieldId]:
-                    result,
+                [fieldId]: result,
 
             })
         );
@@ -312,6 +296,14 @@ export default function Checklist({
     // =====================================================
 
     async function handleSubmit() {
+
+        // -------------------------------------------------
+        // PREVENT DOUBLE SUBMISSION
+        // -------------------------------------------------
+
+        if (saving) {
+            return;
+        }
 
 
         // -------------------------------------------------
@@ -334,9 +326,7 @@ export default function Checklist({
 
         if (!isReinspection) {
 
-            if (
-                !operatorName.trim()
-            ) {
+            if (!operatorName.trim()) {
 
                 alert(
                     "Please enter Operator Name."
@@ -346,9 +336,7 @@ export default function Checklist({
             }
 
 
-            if (
-                !operatorEmployeeId.trim()
-            ) {
+            if (!operatorEmployeeId.trim()) {
 
                 alert(
                     "Please enter Employee ID."
@@ -358,9 +346,7 @@ export default function Checklist({
             }
 
 
-            if (
-                !operatorAgency.trim()
-            ) {
+            if (!operatorAgency.trim()) {
 
                 alert(
                     "Please enter Agency Name."
@@ -404,7 +390,7 @@ export default function Checklist({
 
 
         // -------------------------------------------------
-        // IMPORTANT REINSPECTION VALIDATION
+        // REINSPECTION VALIDATION
         // -------------------------------------------------
 
         if (
@@ -518,37 +504,57 @@ export default function Checklist({
 
 
             const response =
-                await inspectionService
-                    .createInspection(
-                        payload
-                    );
+                await inspectionService.createInspection(
+                    payload
+                );
 
+
+            // -------------------------------------------------
+            // SUCCESS
+            // -------------------------------------------------
 
             alert(
-
                 `${
                     isReinspection
                         ? "Re-inspection"
                         : "Inspection"
                 } Saved Successfully\n\n` +
 
-                `Inspection Number : ` +
+                `Inspection Number: ` +
                 response.inspection_number
-
             );
 
 
             /*
-             * Do NOT use window.location.reload().
+             * IMPORTANT:
              *
-             * Reloading can cause the re-inspection URL/state
-             * to be processed again.
+             * Do NOT use:
              *
-             * Instead navigate back to the pending page.
+             * window.location.href
+             *
+             * because that performs a full browser navigation.
+             *
+             * Your App.tsx has:
+             *
+             * /Re-Inspection
+             *
+             * but does NOT have:
+             *
+             * /reinspection
+             *
+             * The old URL therefore went to the catch-all
+             * route and redirected to /login.
+             *
+             * React Router navigation keeps the current
+             * authentication state.
              */
 
-            window.location.href =
-                "/reinspection";
+            navigate(
+                "/Re-Inspection",
+                {
+                    replace: true,
+                }
+            );
 
 
         } catch (error: any) {
@@ -567,33 +573,26 @@ export default function Checklist({
                 error?.response?.data;
 
 
-            if (
-                backendError
-            ) {
+            if (backendError) {
 
                 if (
-                    backendError
-                        .parent_inspection_id
+                    backendError.parent_inspection_id
                 ) {
 
                     alert(
-                        backendError
-                            .parent_inspection_id
+                        backendError.parent_inspection_id
                     );
 
                 } else if (
-                    backendError
-                        .remarks
+                    backendError.remarks
                 ) {
 
                     alert(
-                        backendError
-                            .remarks
+                        backendError.remarks
                     );
 
                 } else if (
-                    backendError
-                        .detail
+                    backendError.detail
                 ) {
 
                     alert(
