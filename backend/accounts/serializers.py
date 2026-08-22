@@ -4,7 +4,26 @@ from rest_framework import serializers
 from .models import User
 
 
+def title_case(value):
+    """
+    Convert text to proper title case.
+
+    Example:
+    LOKESH YEDDULA -> Lokesh Yeddula
+    assistant manager -> Assistant Manager
+    """
+
+    if not value:
+        return value
+
+    return " ".join(
+        word.capitalize()
+        for word in value.strip().split()
+    )
+
+
 class RegisterSerializer(serializers.ModelSerializer):
+
     password = serializers.CharField(
         write_only=True,
         min_length=8,
@@ -31,19 +50,38 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
+
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError(
                 {
-                    "confirm_password": "Passwords do not match."
+                    "confirm_password":
+                        "Passwords do not match."
                 }
             )
+
+        # -----------------------------------------
+        # NORMALIZE NAME & DESIGNATION
+        # -----------------------------------------
+
+        attrs["full_name"] = title_case(
+            attrs["full_name"]
+        )
+
+        attrs["designation"] = title_case(
+            attrs["designation"]
+        )
 
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop("confirm_password")
 
-        password = validated_data.pop("password")
+        validated_data.pop(
+            "confirm_password"
+        )
+
+        password = validated_data.pop(
+            "password"
+        )
 
         user = User.objects.create_user(
             password=password,
@@ -54,6 +92,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+
     emp_id = serializers.CharField()
 
     password = serializers.CharField(
@@ -61,6 +100,7 @@ class LoginSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
+
         emp_id = attrs.get("emp_id")
         password = attrs.get("password")
 
@@ -70,6 +110,7 @@ class LoginSerializer(serializers.Serializer):
         )
 
         if not user:
+
             raise serializers.ValidationError(
                 "Invalid Employee ID or Password."
             )
@@ -80,6 +121,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+
     old_password = serializers.CharField()
 
     new_password = serializers.CharField(
@@ -87,7 +129,10 @@ class ChangePasswordSerializer(serializers.Serializer):
     )
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(
+    serializers.ModelSerializer
+):
+
     class Meta:
         model = User
 
@@ -105,7 +150,10 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class ProfileUpdateSerializer(serializers.ModelSerializer):
+class ProfileUpdateSerializer(
+    serializers.ModelSerializer
+):
+
     class Meta:
         model = User
 
@@ -117,3 +165,11 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "email",
             "mobile_number",
         )
+
+    def validate_full_name(self, value):
+
+        return title_case(value)
+
+    def validate_designation(self, value):
+
+        return title_case(value)
