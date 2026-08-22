@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="report changes">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="dashboard changes">
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -70,14 +69,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1784009060622</updated>
-    </task>
-    <task id="LOCAL-00005" summary="27/07/26">
-      <option name="closed" value="true" />
-      <created>1785151385982</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1785151385982</updated>
     </task>
     <task id="LOCAL-00006" summary="27/07/26">
       <option name="closed" value="true" />
@@ -463,7 +454,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787421714161</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="dashboard changes">
+      <option name="closed" value="true" />
+      <created>1787422507877</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1787422507877</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -478,6 +477,7 @@
     <MESSAGE value="dashboard page changes" />
     <MESSAGE value="page changes" />
     <MESSAGE value="report changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="report changes" />
+    <MESSAGE value="dashboard changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="dashboard changes" />
   </component>
 </project>

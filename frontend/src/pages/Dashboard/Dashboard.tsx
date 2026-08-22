@@ -18,25 +18,25 @@ export default function Dashboard() {
     return (
         <div className="w-full min-w-0 overflow-x-hidden space-y-6">
 
-            {/* =========================================================
-                WELCOME HEADER
-            ========================================================= */}
+            {/* =========================
+                WELCOME
+            ========================== */}
 
-            <section className="w-full rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md overflow-hidden">
-                <div className="px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+            <section className="w-full overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md">
+                <div className="px-5 py-7 sm:px-8 sm:py-9">
 
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="mb-3 flex items-center gap-2">
                         <ShieldCheck
                             size={18}
-                            className="text-blue-300 shrink-0"
+                            className="shrink-0 text-blue-300"
                         />
 
-                        <span className="text-xs sm:text-sm font-bold tracking-[0.18em] text-blue-200">
+                        <span className="text-xs font-bold tracking-[0.18em] text-blue-200 sm:text-sm">
                             NIRIKSHAN
                         </span>
                     </div>
 
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight">
+                    <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">
                         Welcome {name}
                     </h1>
 
@@ -44,88 +44,56 @@ export default function Dashboard() {
             </section>
 
 
-            {/* =========================================================
+            {/* =========================
                 QUICK ACTIONS
-            ========================================================= */}
+            ========================== */}
 
             <section className="w-full">
 
                 <div className="mb-4">
-                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+                    <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
                         Quick Actions
                     </h2>
 
-                    <p className="text-sm sm:text-base text-slate-500 mt-1">
+                    <p className="mt-1 text-sm text-slate-500 sm:text-base">
                         Start your next task
                     </p>
                 </div>
 
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 
-                    {/* NEW INSPECTION */}
+                    {/* New Inspection */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/inspection";
                         }}
-                        className="
-                            group
-                            w-full
-                            min-w-0
-                            bg-blue-600
-                            hover:bg-blue-700
-                            text-white
-                            rounded-2xl
-                            p-5
-                            sm:p-6
-                            shadow-sm
-                            transition-all
-                            duration-200
-                            text-left
-                        "
+                        className="group w-full min-w-0 rounded-2xl bg-blue-600 p-5 text-left text-white shadow-sm transition-all duration-200 hover:bg-blue-700 sm:p-6"
                     >
                         <div className="flex items-center gap-4">
 
-                            <div className="
-                                w-12
-                                h-12
-                                sm:w-14
-                                sm:h-14
-                                rounded-xl
-                                bg-white/15
-                                flex
-                                items-center
-                                justify-center
-                                shrink-0
-                            ">
-                                <ClipboardCheck
-                                    size={25}
-                                    strokeWidth={2}
-                                />
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 sm:h-14 sm:w-14">
+                                <ClipboardCheck size={25} />
                             </div>
 
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="font-bold text-lg sm:text-xl">
+                                    <h3 className="text-lg font-bold sm:text-xl">
                                         New Inspection
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="
-                                            shrink-0
-                                            transition-transform
-                                            group-hover:translate-x-1
-                                        "
+                                        className="shrink-0 transition-transform group-hover:translate-x-1"
                                     />
 
                                 </div>
 
-                                <p className="text-sm sm:text-base text-blue-100 mt-1">
+                                <p className="mt-1 text-sm text-blue-100 sm:text-base">
                                     Start a machinery safety inspection.
                                 </p>
 
@@ -135,73 +103,37 @@ export default function Dashboard() {
                     </button>
 
 
-                    {/* RE-INSPECTION */}
+                    {/* Re-Inspection */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/re-inspection";
                         }}
-                        className="
-                            group
-                            w-full
-                            min-w-0
-                            bg-white
-                            hover:bg-slate-50
-                            text-slate-900
-                            rounded-2xl
-                            p-5
-                            sm:p-6
-                            border
-                            border-slate-200
-                            shadow-sm
-                            transition-all
-                            duration-200
-                            text-left
-                        "
+                        className="group w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 text-left text-slate-900 shadow-sm transition-all duration-200 hover:bg-slate-50 sm:p-6"
                     >
                         <div className="flex items-center gap-4">
 
-                            <div className="
-                                w-12
-                                h-12
-                                sm:w-14
-                                sm:h-14
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                                flex
-                                items-center
-                                justify-center
-                                shrink-0
-                            ">
-                                <AlertTriangle
-                                    size={25}
-                                    strokeWidth={2}
-                                />
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
+                                <AlertTriangle size={25} />
                             </div>
 
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="font-bold text-lg sm:text-xl">
+                                    <h3 className="text-lg font-bold sm:text-xl">
                                         Re-Inspection
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="
-                                            shrink-0
-                                            text-slate-400
-                                            transition-transform
-                                            group-hover:translate-x-1
-                                        "
+                                        className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-1"
                                     />
 
                                 </div>
 
-                                <p className="text-sm sm:text-base text-slate-500 mt-1">
+                                <p className="mt-1 text-sm text-slate-500 sm:text-base">
                                     Review vehicles requiring re-inspection.
                                 </p>
 
@@ -211,73 +143,37 @@ export default function Dashboard() {
                     </button>
 
 
-                    {/* REPORTS */}
+                    {/* Reports */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/reports";
                         }}
-                        className="
-                            group
-                            w-full
-                            min-w-0
-                            bg-white
-                            hover:bg-slate-50
-                            text-slate-900
-                            rounded-2xl
-                            p-5
-                            sm:p-6
-                            border
-                            border-slate-200
-                            shadow-sm
-                            transition-all
-                            duration-200
-                            text-left
-                        "
+                        className="group w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 text-left text-slate-900 shadow-sm transition-all duration-200 hover:bg-slate-50 sm:p-6"
                     >
                         <div className="flex items-center gap-4">
 
-                            <div className="
-                                w-12
-                                h-12
-                                sm:w-14
-                                sm:h-14
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                                flex
-                                items-center
-                                justify-center
-                                shrink-0
-                            ">
-                                <FileBarChart
-                                    size={25}
-                                    strokeWidth={2}
-                                />
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
+                                <FileBarChart size={25} />
                             </div>
 
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="font-bold text-lg sm:text-xl">
+                                    <h3 className="text-lg font-bold sm:text-xl">
                                         Reports
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="
-                                            shrink-0
-                                            text-slate-400
-                                            transition-transform
-                                            group-hover:translate-x-1
-                                        "
+                                        className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-1"
                                     />
 
                                 </div>
 
-                                <p className="text-sm sm:text-base text-slate-500 mt-1">
+                                <p className="mt-1 text-sm text-slate-500 sm:text-base">
                                     Search and view completed inspections.
                                 </p>
 
@@ -291,86 +187,51 @@ export default function Dashboard() {
             </section>
 
 
-            {/* =========================================================
+            {/* =========================
                 INSPECTION OVERVIEW
-            ========================================================= */}
+            ========================== */}
 
             <section className="w-full">
 
-                <div className="flex items-start justify-between mb-4">
+                <div className="mb-4 flex items-start justify-between">
 
                     <div>
-                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+                        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
                             Inspection Overview
                         </h2>
 
-                        <p className="text-sm sm:text-base text-slate-500 mt-1">
+                        <p className="mt-1 text-sm text-slate-500 sm:text-base">
                             Operational metrics will appear here
                         </p>
                     </div>
 
                     <Activity
                         size={25}
-                        className="text-blue-600 hidden sm:block shrink-0"
+                        className="hidden shrink-0 text-blue-600 sm:block"
                     />
 
                 </div>
 
 
-                {/* IMPORTANT:
-                    1 column mobile
-                    2 columns tablet
-                    4 columns desktop
+                {/*
+                    Mobile  : 1 column
+                    Tablet  : 2 columns
+                    Desktop : 4 columns
                 */}
 
-                <div className="
-                    grid
-                    grid-cols-1
-                    sm:grid-cols-2
-                    xl:grid-cols-4
-                    gap-4
-                ">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
+                    {/* Total */}
 
-                    {/* TOTAL INSPECTIONS */}
-
-                    <div className="
-                        w-full
-                        min-w-0
-                        bg-white
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        shadow-sm
-                        p-5
-                        sm:p-6
-                    ">
+                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <ClipboardCheck
-                                    size={23}
-                                />
+                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <ClipboardCheck size={23} />
                             </div>
 
-                            <span className="
-                                text-[10px]
-                                sm:text-xs
-                                font-bold
-                                uppercase
-                                tracking-wide
-                                text-slate-400
-                            ">
+                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
                                 Coming Soon
                             </span>
 
@@ -389,43 +250,15 @@ export default function Dashboard() {
 
                     {/* FIT */}
 
-                    <div className="
-                        w-full
-                        min-w-0
-                        bg-white
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        shadow-sm
-                        p-5
-                        sm:p-6
-                    ">
+                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-green-50
-                                text-green-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <ShieldCheck
-                                    size={23}
-                                />
+                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                                <ShieldCheck size={23} />
                             </div>
 
-                            <span className="
-                                text-[10px]
-                                sm:text-xs
-                                font-bold
-                                uppercase
-                                tracking-wide
-                                text-slate-400
-                            ">
+                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
                                 Coming Soon
                             </span>
 
@@ -444,43 +277,15 @@ export default function Dashboard() {
 
                     {/* UNFIT */}
 
-                    <div className="
-                        w-full
-                        min-w-0
-                        bg-white
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        shadow-sm
-                        p-5
-                        sm:p-6
-                    ">
+                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-red-50
-                                text-red-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <AlertTriangle
-                                    size={23}
-                                />
+                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                                <AlertTriangle size={23} />
                             </div>
 
-                            <span className="
-                                text-[10px]
-                                sm:text-xs
-                                font-bold
-                                uppercase
-                                tracking-wide
-                                text-slate-400
-                            ">
+                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
                                 Coming Soon
                             </span>
 
@@ -497,45 +302,17 @@ export default function Dashboard() {
                     </div>
 
 
-                    {/* PENDING */}
+                    {/* Pending */}
 
-                    <div className="
-                        w-full
-                        min-w-0
-                        bg-white
-                        rounded-2xl
-                        border
-                        border-slate-200
-                        shadow-sm
-                        p-5
-                        sm:p-6
-                    ">
+                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <Clock3
-                                    size={23}
-                                />
+                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <Clock3 size={23} />
                             </div>
 
-                            <span className="
-                                text-[10px]
-                                sm:text-xs
-                                font-bold
-                                uppercase
-                                tracking-wide
-                                text-slate-400
-                            ">
+                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
                                 Coming Soon
                             </span>
 
@@ -556,54 +333,22 @@ export default function Dashboard() {
             </section>
 
 
-            {/* =========================================================
-                BOTTOM INFORMATION
-            ========================================================= */}
+            {/* =========================
+                TODAY'S ACTIVITY
+            ========================== */}
 
-            <section className="
-                grid
-                grid-cols-1
-                lg:grid-cols-2
-                gap-4
-                pb-6
-            ">
+            <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-                {/* TODAY'S ACTIVITY */}
+                {/* Activity */}
 
-                <div className="
-                    w-full
-                    min-w-0
-                    bg-white
-                    rounded-2xl
-                    border
-                    border-slate-200
-                    shadow-sm
-                    overflow-hidden
-                ">
+                <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-                    <div className="
-                        px-5
-                        sm:px-6
-                        py-5
-                        border-b
-                        border-slate-100
-                    ">
+                    <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
                         <div className="flex items-center gap-3">
 
-                            <div className="
-                                w-10
-                                h-10
-                                rounded-xl
-                                bg-blue-50
-                                text-blue-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <Activity
-                                    size={21}
-                                />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <Activity size={21} />
                             </div>
 
                             <div>
@@ -625,37 +370,18 @@ export default function Dashboard() {
 
                     <div className="p-5 sm:p-6">
 
-                        <div className="
-                            rounded-xl
-                            border
-                            border-dashed
-                            border-slate-200
-                            bg-slate-50
-                            p-8
-                            text-center
-                        ">
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
 
                             <Activity
                                 size={27}
-                                className="
-                                    mx-auto
-                                    mb-3
-                                    text-slate-300
-                                "
+                                className="mx-auto mb-3 text-slate-300"
                             />
 
-                            <p className="
-                                font-semibold
-                                text-slate-600
-                            ">
+                            <p className="font-semibold text-slate-600">
                                 Activity metrics coming soon
                             </p>
 
-                            <p className="
-                                text-sm
-                                text-slate-400
-                                mt-1
-                            ">
+                            <p className="mt-1 text-sm text-slate-400">
                                 Today's inspection statistics will appear here.
                             </p>
 
@@ -666,42 +392,16 @@ export default function Dashboard() {
                 </div>
 
 
-                {/* MOBILE FRIENDLY EMPTY SPACE / FUTURE PANEL */}
+                {/* System Information */}
 
-                <div className="
-                    w-full
-                    min-w-0
-                    bg-white
-                    rounded-2xl
-                    border
-                    border-slate-200
-                    shadow-sm
-                    overflow-hidden
-                ">
+                <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-                    <div className="
-                        px-5
-                        sm:px-6
-                        py-5
-                        border-b
-                        border-slate-100
-                    ">
+                    <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
                         <div className="flex items-center gap-3">
 
-                            <div className="
-                                w-10
-                                h-10
-                                rounded-xl
-                                bg-green-50
-                                text-green-600
-                                flex
-                                items-center
-                                justify-center
-                            ">
-                                <ShieldCheck
-                                    size={21}
-                                />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                                <ShieldCheck size={21} />
                             </div>
 
                             <div>
@@ -723,38 +423,19 @@ export default function Dashboard() {
 
                     <div className="p-5 sm:p-6">
 
-                        <div className="
-                            rounded-xl
-                            border
-                            border-slate-200
-                            bg-slate-50
-                            p-5
-                        ">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
 
                             <div className="flex items-center gap-3">
 
-                                <div className="
-                                    w-3
-                                    h-3
-                                    rounded-full
-                                    bg-green-500
-                                    shrink-0
-                                />
+                                <span className="h-3 w-3 shrink-0 rounded-full bg-green-500" />
 
                                 <div>
 
-                                    <p className="
-                                        font-bold
-                                        text-slate-800
-                                    ">
+                                    <p className="font-bold text-slate-800">
                                         System Ready
                                     </p>
 
-                                    <p className="
-                                        text-sm
-                                        text-slate-500
-                                        mt-1
-                                    ">
+                                    <p className="mt-1 text-sm text-slate-500">
                                         Inspection system is ready for use.
                                     </p>
 
