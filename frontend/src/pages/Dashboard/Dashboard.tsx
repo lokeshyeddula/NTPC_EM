@@ -1,8 +1,6 @@
 import {
     ClipboardCheck,
     AlertTriangle,
-    FileBarChart,
-    ArrowRight,
     Activity,
     ShieldCheck,
     Clock3,
@@ -49,7 +47,7 @@ export default function Dashboard() {
                     shadow-md
                 "
             >
-                <div className="box-border w-full px-5 py-7 sm:px-8 sm:py-9">
+                <div className="w-full px-5 py-7 sm:px-8 sm:py-9">
 
                     <div className="mb-3 flex items-center gap-2">
 
@@ -69,229 +67,6 @@ export default function Dashboard() {
                     </h1>
 
                 </div>
-            </section>
-
-
-            {/* =====================================================
-                QUICK ACTIONS
-            ====================================================== */}
-
-            <section
-                style={{
-                    width: "100%",
-                    maxWidth: "100%",
-                    minWidth: 0,
-                }}
-            >
-
-                <div className="mb-4">
-
-                    <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
-                        Quick Actions
-                    </h2>
-
-                    <p className="mt-1 text-sm text-slate-500 sm:text-base">
-                        Start your next task
-                    </p>
-
-                </div>
-
-
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        width: "100%",
-                        maxWidth: "100%",
-                        minWidth: 0,
-                        gap: "16px",
-                    }}
-                    className="md:grid md:grid-cols-3"
-                >
-
-                    {/* NEW INSPECTION */}
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            window.location.href = "/inspection";
-                        }}
-                        style={{
-                            width: "100%",
-                            maxWidth: "100%",
-                            minWidth: 0,
-                            boxSizing: "border-box",
-                        }}
-                        className="
-                            flex
-                            items-center
-                            rounded-2xl
-                            bg-blue-600
-                            p-5
-                            text-left
-                            text-white
-                            shadow-sm
-                            transition-colors
-                            hover:bg-blue-700
-                            sm:p-6
-                        "
-                    >
-
-                        <div className="flex w-full min-w-0 items-center gap-4">
-
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15">
-                                <ClipboardCheck size={25} />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-
-                                <div className="flex items-center justify-between gap-3">
-
-                                    <h3 className="text-lg font-bold sm:text-xl">
-                                        New Inspection
-                                    </h3>
-
-                                    <ArrowRight
-                                        size={24}
-                                        className="shrink-0"
-                                    />
-
-                                </div>
-
-                                <p className="mt-1 text-sm text-blue-100">
-                                    Start a machinery safety inspection.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </button>
-
-
-                    {/* RE-INSPECTION */}
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            window.location.href = "/re-inspection";
-                        }}
-                        style={{
-                            width: "100%",
-                            maxWidth: "100%",
-                            minWidth: 0,
-                            boxSizing: "border-box",
-                        }}
-                        className="
-                            flex
-                            items-center
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            bg-white
-                            p-5
-                            text-left
-                            shadow-sm
-                            transition-colors
-                            hover:bg-slate-50
-                            sm:p-6
-                        "
-                    >
-
-                        <div className="flex w-full min-w-0 items-center gap-4">
-
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                                <AlertTriangle size={25} />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-
-                                <div className="flex items-center justify-between gap-3">
-
-                                    <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
-                                        Re-Inspection
-                                    </h3>
-
-                                    <ArrowRight
-                                        size={24}
-                                        className="shrink-0 text-slate-400"
-                                    />
-
-                                </div>
-
-                                <p className="mt-1 text-sm text-slate-500">
-                                    Review vehicles requiring re-inspection.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </button>
-
-
-                    {/* REPORTS */}
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            window.location.href = "/reports";
-                        }}
-                        style={{
-                            width: "100%",
-                            maxWidth: "100%",
-                            minWidth: 0,
-                            boxSizing: "border-box",
-                        }}
-                        className="
-                            flex
-                            items-center
-                            rounded-2xl
-                            border
-                            border-slate-200
-                            bg-white
-                            p-5
-                            text-left
-                            shadow-sm
-                            transition-colors
-                            hover:bg-slate-50
-                            sm:p-6
-                        "
-                    >
-
-                        <div className="flex w-full min-w-0 items-center gap-4">
-
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                                <FileBarChart size={25} />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-
-                                <div className="flex items-center justify-between gap-3">
-
-                                    <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
-                                        Reports
-                                    </h3>
-
-                                    <ArrowRight
-                                        size={24}
-                                        className="shrink-0 text-slate-400"
-                                    />
-
-                                </div>
-
-                                <p className="mt-1 text-sm text-slate-500">
-                                    Search and view completed inspections.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </button>
-
-                </div>
-
             </section>
 
 
@@ -329,9 +104,9 @@ export default function Dashboard() {
                 </div>
 
 
-                {/* =================================================
-                    MOBILE: FORCED SINGLE COLUMN
-                ================================================== */}
+                {/* Mobile = 1 column
+                    Tablet = 2 columns
+                    Desktop = 4 columns */}
 
                 <div
                     style={{
@@ -345,16 +120,11 @@ export default function Dashboard() {
                     className="md:grid md:grid-cols-2 xl:grid-cols-4"
                 >
 
-                    {/* TOTAL */}
-
                     <OverviewCard
                         icon={<ClipboardCheck size={23} />}
                         iconClass="bg-blue-50 text-blue-600"
                         title="Total Inspections"
                     />
-
-
-                    {/* FIT */}
 
                     <OverviewCard
                         icon={<ShieldCheck size={23} />}
@@ -362,17 +132,11 @@ export default function Dashboard() {
                         title="FIT"
                     />
 
-
-                    {/* UNFIT */}
-
                     <OverviewCard
                         icon={<AlertTriangle size={23} />}
                         iconClass="bg-red-50 text-red-600"
                         title="UNFIT"
                     />
-
-
-                    {/* PENDING */}
 
                     <OverviewCard
                         icon={<Clock3 size={23} />}
@@ -395,7 +159,7 @@ export default function Dashboard() {
                     maxWidth: "100%",
                     minWidth: 0,
                 }}
-                className="flex flex-col gap-4 lg:grid lg:grid-cols-2"
+                className="flex w-full flex-col gap-4 lg:grid lg:grid-cols-2"
             >
 
                 {/* TODAY'S ACTIVITY */}
@@ -440,6 +204,7 @@ export default function Dashboard() {
                         </div>
 
                     </div>
+
 
                     <div className="p-5 sm:p-6">
 
@@ -508,6 +273,7 @@ export default function Dashboard() {
 
                     </div>
 
+
                     <div className="p-5 sm:p-6">
 
                         <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
@@ -565,7 +331,6 @@ function OverviewCard({
                 maxWidth: "100%",
                 minWidth: 0,
                 boxSizing: "border-box",
-                flex: "0 0 auto",
             }}
             className="
                 rounded-2xl
