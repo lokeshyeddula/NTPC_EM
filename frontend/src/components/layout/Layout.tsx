@@ -14,10 +14,18 @@ export default function Layout({ children }: Props) {
 
     return (
 
-        <div className="flex h-screen overflow-hidden bg-slate-100">
+        <div
+            className="
+                min-h-[100dvh]
+                bg-slate-100
+                flex
+                overflow-x-hidden
+                relative
+            "
+        >
 
             {/* =====================================================
-                MOBILE SIDEBAR OVERLAY
+                MOBILE OVERLAY
             ====================================================== */}
 
             {isSidebarOpen && (
@@ -27,9 +35,11 @@ export default function Layout({ children }: Props) {
                         setIsSidebarOpen(false)
                     }
                     className="
-                        fixed inset-0 z-40
-                        bg-slate-950/50
-                        backdrop-blur-[2px]
+                        fixed
+                        inset-0
+                        z-40
+                        bg-black/40
+                        backdrop-blur-sm
                         md:hidden
                     "
                 />
@@ -43,8 +53,10 @@ export default function Layout({ children }: Props) {
 
             <div
                 className={`
-                    fixed inset-y-0 left-0 z-50
-                    transform
+                    fixed
+                    inset-y-0
+                    left-0
+                    z-50
                     transition-transform
                     duration-300
                     ease-in-out
@@ -73,12 +85,21 @@ export default function Layout({ children }: Props) {
                 MAIN APPLICATION AREA
             ====================================================== */}
 
-            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <div
+                className="
+                    flex
+                    min-w-0
+                    flex-1
+                    flex-col
+
+                    min-h-[100dvh]
+                "
+            >
 
 
                 {/* =================================================
                     HEADER
-                ================================================== */}
+                ================================================= */}
 
                 <Header
                     onMenuClick={() =>
@@ -88,29 +109,41 @@ export default function Layout({ children }: Props) {
 
 
                 {/* =================================================
-                    PAGE CONTENT
-                ================================================== */}
+                    CONTENT
+                ================================================= */}
 
                 <main
                     className="
                         flex-1
-                        overflow-y-auto
+
                         bg-slate-100
+
+                        overflow-y-auto
+                        overflow-x-hidden
+
+                        overscroll-contain
+
+                        scroll-smooth
+
+                        [-webkit-overflow-scrolling:touch]
                     "
                 >
 
                     <div
                         className="
-                            min-h-full
                             w-full
-                            px-0
-                            py-0
+
+                            px-3
+                            py-4
 
                             sm:px-5
                             sm:py-5
 
-                            lg:px-7
+                            lg:px-8
                             lg:py-6
+
+                            pb-24
+                            sm:pb-8
                         "
                     >
 
@@ -123,6 +156,5 @@ export default function Layout({ children }: Props) {
             </div>
 
         </div>
-
     );
 }

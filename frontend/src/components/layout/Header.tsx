@@ -1,132 +1,301 @@
-import {
-    Menu,
-    LogOut,
-    ShieldCheck,
-} from "lucide-react";
+import { Menu, LogOut, ShieldCheck } from "lucide-react";
 
 import useAuth from "../../hooks/useAuth";
-
-import ntpcLogo from "../../assets/Ntpc_logo.png";
-import nmlLogo from "../../assets/nml_logo.png";
-
 
 interface Props {
     onMenuClick?: () => void;
 }
 
-
 export default function Header({
     onMenuClick,
 }: Props) {
 
-    const {
-        user,
-        logout,
-    } = useAuth();
+    const { user, logout } = useAuth();
 
 
     const initials =
         user?.full_name
-            ?.split(" ")
+            ?.trim()
+            .split(/\s+/)
             .filter(Boolean)
-            .map(
-                (name) =>
-                    name[0]
-            )
+            .map((name) => name[0])
             .join("")
-            .toUpperCase()
-            .slice(0, 2) || "U";
+            .slice(0, 2)
+            .toUpperCase() || "U";
 
 
     return (
 
-        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-sm">
+        <header
+            className="
+                sticky
+                top-0
+                z-30
 
-            <div className="px-4 sm:px-5 lg:px-7">
+                w-full
 
-                <div className="flex h-[72px] items-center justify-between">
+                border-b
+                border-slate-200
+
+                bg-white/95
+                backdrop-blur-md
+
+                shadow-sm
+            "
+        >
+
+            <div
+                className="
+                    flex
+                    h-[68px]
+                    items-center
+                    justify-between
+
+                    px-3
+
+                    sm:h-[72px]
+                    sm:px-5
+
+                    lg:px-6
+                "
+            >
+
+
+                {/* =================================================
+                    LEFT SIDE
+                ================================================= */}
+
+                <div
+                    className="
+                        flex
+                        min-w-0
+                        items-center
+                        gap-3
+                    "
+                >
+
+
+                    {/* MOBILE MENU */}
+
+                    <button
+                        type="button"
+                        onClick={onMenuClick}
+                        aria-label="Open menu"
+                        className="
+                            flex
+                            h-11
+                            w-11
+                            shrink-0
+                            items-center
+                            justify-center
+
+                            rounded-xl
+
+                            bg-blue-600
+                            text-white
+
+                            shadow-md
+                            shadow-blue-900/20
+
+                            transition
+
+                            hover:bg-blue-700
+
+                            active:scale-95
+
+                            md:hidden
+                        "
+                    >
+
+                        <Menu size={23} />
+
+                    </button>
 
 
                     {/* =================================================
-                        LEFT SECTION
+                        MOBILE NIRIKSHAN BRAND
                     ================================================= */}
 
-                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                    <div
+                        className="
+                            flex
+                            items-center
+                            gap-2
 
+                            md:hidden
+                        "
+                    >
 
-                        {/* Mobile Menu */}
+                        <div
+                            className="
+                                flex
+                                h-9
+                                w-9
+                                items-center
+                                justify-center
 
-                        <button
-                            type="button"
-                            onClick={onMenuClick}
-                            aria-label="Open menu"
-                            className="md:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white shadow-md shadow-blue-900/20 transition hover:bg-blue-800 active:scale-95"
+                                rounded-lg
+
+                                bg-blue-50
+                                text-blue-700
+                            "
                         >
 
-                            <Menu size={22} />
-
-                        </button>
-
-
-                        {/* Organisation Logos */}
-
-                        <div className="hidden sm:flex items-center gap-2.5">
-
-                            <div className="flex h-11 items-center rounded-lg border border-slate-200 bg-white px-2 shadow-sm">
-
-                                <img
-                                    src={ntpcLogo}
-                                    className="h-8 w-auto"
-                                    alt="NTPC"
-                                />
-
-                            </div>
-
-
-                            <div className="flex h-11 items-center rounded-lg border border-slate-200 bg-white px-2 shadow-sm">
-
-                                <img
-                                    src={nmlLogo}
-                                    className="h-8 w-auto"
-                                    alt="NML"
-                                />
-
-                            </div>
+                            <ShieldCheck size={21} />
 
                         </div>
 
 
-                        {/* Divider */}
+                        <span
+                            className="
+                                text-[19px]
+                                font-extrabold
+                                tracking-tight
+                                text-slate-900
+                            "
+                        >
+                            NIRIKSHAN
+                        </span>
 
-                        <div className="hidden sm:block h-9 w-px bg-slate-200" />
+                    </div>
 
 
-                        {/* NIRIKSHAN Branding */}
+                    {/* =================================================
+                        DESKTOP BRAND
+                    ================================================= */}
+
+                    <div
+                        className="
+                            hidden
+                            items-center
+                            gap-4
+                            md:flex
+                        "
+                    >
+
+                        <div
+                            className="
+                                flex
+                                h-10
+                                w-10
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-700
+                            "
+                        >
+
+                            <ShieldCheck size={22} />
+
+                        </div>
+
+
+                        <div>
+
+                            <h1
+                                className="
+                                    text-xl
+                                    font-extrabold
+                                    tracking-tight
+                                    text-slate-900
+                                "
+                            >
+                                NIRIKSHAN
+                            </h1>
+
+                            <p
+                                className="
+                                    text-xs
+                                    font-medium
+                                    text-slate-500
+                                "
+                            >
+                                Digital Machinery Inspection
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* =================================================
+                    RIGHT SIDE
+                ================================================= */}
+
+                <div
+                    className="
+                        flex
+                        items-center
+                        gap-2
+
+                        sm:gap-4
+                    "
+                >
+
+
+                    {/* =================================================
+                        DESKTOP USER
+                    ================================================= */}
+
+                    <div
+                        className="
+                            hidden
+                            items-center
+                            gap-3
+                            md:flex
+                        "
+                    >
+
+                        <div
+                            className="
+                                flex
+                                h-11
+                                w-11
+                                items-center
+                                justify-center
+
+                                rounded-full
+
+                                bg-blue-600
+
+                                text-sm
+                                font-bold
+                                text-white
+
+                                shadow-sm
+                            "
+                        >
+                            {initials}
+                        </div>
+
 
                         <div className="min-w-0">
 
-                            <div className="flex items-center gap-2">
+                            <p
+                                className="
+                                    truncate
+                                    max-w-[160px]
+                                    text-sm
+                                    font-bold
+                                    text-slate-900
+                                "
+                            >
+                                {user?.full_name || "User"}
+                            </p>
 
-                                <h1 className="truncate text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
-
-                                    NIRIKSHAN
-
-                                </h1>
-
-
-                                <span className="hidden lg:inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700">
-
-                                    E&M
-
-                                </span>
-
-                            </div>
-
-
-                            <p className="hidden sm:block truncate text-xs sm:text-sm text-slate-500">
-
-                                Digital Machinery Inspection Management System
-
+                            <p
+                                className="
+                                    truncate
+                                    max-w-[160px]
+                                    text-xs
+                                    font-medium
+                                    text-slate-500
+                                "
+                            >
+                                {user?.designation || "Employee"}
                             </p>
 
                         </div>
@@ -135,92 +304,65 @@ export default function Header({
 
 
                     {/* =================================================
-                        RIGHT SECTION
+                        LOGOUT
                     ================================================= */}
 
-                    <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+                    <button
+                        type="button"
+                        onClick={logout}
+                        aria-label="Logout"
+                        className="
+                            flex
+                            h-11
+                            w-11
+                            shrink-0
+                            items-center
+                            justify-center
 
+                            rounded-xl
 
-                        {/* User Profile */}
+                            border
+                            border-red-200
 
-                        <div className="hidden md:flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                            bg-red-50
+                            text-red-600
 
-                            {/* Avatar */}
+                            transition
 
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-800 text-sm font-bold text-white shadow-sm">
+                            hover:bg-red-100
+                            hover:text-red-700
 
-                                {initials}
+                            active:scale-95
 
-                            </div>
+                            md:h-auto
+                            md:w-auto
+                            md:gap-2
+                            md:px-4
+                            md:py-2.5
 
+                            md:bg-red-600
+                            md:text-white
 
-                            {/* User Details */}
+                            md:border-transparent
 
-                            <div className="max-w-[190px]">
+                            md:hover:bg-red-700
+                            md:hover:text-white
+                        "
+                    >
 
-                                <p className="truncate text-sm font-bold text-slate-800">
+                        <LogOut size={20} />
 
-                                    {user?.full_name || "User"}
-
-                                </p>
-
-
-                                <div className="flex items-center gap-1.5">
-
-                                    <ShieldCheck
-                                        size={13}
-                                        className="shrink-0 text-blue-600"
-                                    />
-
-                                    <p className="truncate text-xs font-medium text-slate-500">
-
-                                        {user?.designation || "Engineer"}
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* Divider */}
-
-                        <div className="hidden md:block h-8 w-px bg-slate-200" />
-
-
-                        {/* Desktop Logout */}
-
-                        <button
-                            type="button"
-                            onClick={logout}
-                            className="hidden md:flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-100 hover:text-red-700 active:scale-[0.98]"
+                        <span
+                            className="
+                                hidden
+                                md:inline
+                                font-semibold
+                            "
                         >
+                            Logout
+                        </span>
 
-                            <LogOut size={17} />
-
-                            <span>
-                                Logout
-                            </span>
-
-                        </button>
-
-
-                        {/* Mobile Logout */}
-
-                        <button
-                            type="button"
-                            onClick={logout}
-                            aria-label="Logout"
-                            className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl border border-red-200 bg-red-50 text-red-600 shadow-sm transition hover:bg-red-100 active:scale-95"
-                        >
-
-                            <LogOut size={20} />
-
-                        </button>
-
-                    </div>
+                    </button>
 
                 </div>
 
@@ -229,5 +371,4 @@ export default function Header({
         </header>
 
     );
-
 }

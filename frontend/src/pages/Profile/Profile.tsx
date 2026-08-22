@@ -1,7 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import {
-    Eye,
-    EyeOff,
     User,
     Mail,
     Phone,
@@ -11,14 +9,23 @@ import {
     KeyRound,
     CheckCircle2,
     AlertCircle,
+    Eye,
+    EyeOff,
+    BadgeCheck,
 } from "lucide-react";
 
 import useAuth from "../../hooks/useAuth";
 import inspectionService from "../../services/inspectionService";
 
+
 export default function Profile() {
 
     const { user } = useAuth();
+
+
+    /* ============================================================
+       PASSWORD STATE
+    ============================================================ */
 
     const [currentPassword, setCurrentPassword] =
         useState("");
@@ -30,6 +37,10 @@ export default function Profile() {
         useState("");
 
 
+    /* ============================================================
+       PASSWORD VISIBILITY
+    ============================================================ */
+
     const [showCurrentPassword, setShowCurrentPassword] =
         useState(false);
 
@@ -40,9 +51,12 @@ export default function Profile() {
         useState(false);
 
 
+    /* ============================================================
+       UI STATE
+    ============================================================ */
+
     const [loading, setLoading] =
         useState(false);
-
 
     const [message, setMessage] =
         useState<{
@@ -50,6 +64,10 @@ export default function Profile() {
             text: string;
         } | null>(null);
 
+
+    /* ============================================================
+       INITIALS
+    ============================================================ */
 
     const initials =
         user?.full_name
@@ -62,6 +80,10 @@ export default function Profile() {
             .toUpperCase() || "U";
 
 
+    /* ============================================================
+       CHANGE PASSWORD
+    ============================================================ */
+
     async function handlePasswordChange(
         e: FormEvent<HTMLFormElement>
     ) {
@@ -71,7 +93,9 @@ export default function Profile() {
         setMessage(null);
 
 
-        if (!currentPassword) {
+        /* Current password */
+
+        if (!currentPassword.trim()) {
 
             setMessage({
                 type: "error",
@@ -79,9 +103,10 @@ export default function Profile() {
             });
 
             return;
-
         }
 
+
+        /* Minimum password length */
 
         if (newPassword.length < 8) {
 
@@ -91,9 +116,10 @@ export default function Profile() {
             });
 
             return;
-
         }
 
+
+        /* Password confirmation */
 
         if (newPassword !== confirmPassword) {
 
@@ -103,9 +129,10 @@ export default function Profile() {
             });
 
             return;
-
         }
 
+
+        /* Prevent same password */
 
         if (currentPassword === newPassword) {
 
@@ -115,7 +142,6 @@ export default function Profile() {
             });
 
             return;
-
         }
 
 
@@ -125,19 +151,32 @@ export default function Profile() {
 
 
             await inspectionService.changePassword({
-                current_password: currentPassword,
-                new_password: newPassword,
+
+                current_password:
+                    currentPassword,
+
+                new_password:
+                    newPassword,
+
             });
 
 
             setMessage({
+
                 type: "success",
-                text: "Password changed successfully.",
+
+                text:
+                    "Password changed successfully.",
+
             });
 
 
+            /* Clear fields */
+
             setCurrentPassword("");
+
             setNewPassword("");
+
             setConfirmPassword("");
 
 
@@ -149,7 +188,7 @@ export default function Profile() {
             );
 
 
-            const responseData =
+            const data =
                 error?.response?.data;
 
 
@@ -157,51 +196,46 @@ export default function Profile() {
                 "Failed to change password. Please check your current password.";
 
 
-            if (
-                responseData?.detail
-            ) {
+            if (data?.detail) {
 
                 errorMessage =
-                    String(
-                        responseData.detail
-                    );
+                    String(data.detail);
 
-            } else if (
-                responseData?.old_password
-            ) {
+            } else if (data?.old_password) {
 
                 errorMessage =
                     Array.isArray(
-                        responseData.old_password
+                        data.old_password
                     )
                         ? String(
-                            responseData.old_password[0]
+                            data.old_password[0]
                         )
                         : String(
-                            responseData.old_password
+                            data.old_password
                         );
 
-            } else if (
-                responseData?.new_password
-            ) {
+            } else if (data?.new_password) {
 
                 errorMessage =
                     Array.isArray(
-                        responseData.new_password
+                        data.new_password
                     )
                         ? String(
-                            responseData.new_password[0]
+                            data.new_password[0]
                         )
                         : String(
-                            responseData.new_password
+                            data.new_password
                         );
 
             }
 
 
             setMessage({
+
                 type: "error",
+
                 text: errorMessage,
+
             });
 
 
@@ -216,125 +250,224 @@ export default function Profile() {
 
     return (
 
-        <div className="mx-auto w-full max-w-6xl space-y-6">
+        <div
+            className="
+                mx-auto
+                w-full
+                max-w-6xl
+                space-y-5
+                sm:space-y-6
+            "
+        >
 
 
             {/* =====================================================
-                PAGE HEADER
+                PROFILE HERO
             ====================================================== */}
 
-            <div className="
-                overflow-hidden
-                rounded-2xl
-                bg-gradient-to-r
-                from-slate-950
-                via-blue-950
-                to-blue-900
-                shadow-lg
-            ">
+            <section
+                className="
+                    relative
+                    overflow-hidden
+                    rounded-2xl
 
-                <div className="
-                    flex
-                    flex-col
-                    gap-5
-                    px-6
-                    py-7
-                    sm:flex-row
-                    sm:items-center
-                    sm:justify-between
-                    sm:px-8
-                ">
+                    bg-gradient-to-br
+                    from-slate-950
+                    via-blue-950
+                    to-blue-800
 
+                    shadow-lg
+                "
+            >
+
+                {/* Decorative background */}
+
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        -right-20
+                        -top-20
+                        h-48
+                        w-48
+                        rounded-full
+                        bg-blue-500/10
+                        blur-2xl
+                    "
+                />
+
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        -bottom-24
+                        -left-16
+                        h-48
+                        w-48
+                        rounded-full
+                        bg-blue-400/10
+                        blur-2xl
+                    "
+                />
+
+
+                <div
+                    className="
+                        relative
+                        flex
+                        flex-col
+                        gap-5
+
+                        px-5
+                        py-6
+
+                        sm:px-8
+                        sm:py-7
+
+                        lg:flex-row
+                        lg:items-center
+                        lg:justify-between
+                    "
+                >
+
+
+                    {/* LEFT */}
 
                     <div>
 
-                        <div className="
-                            mb-2
-                            flex
-                            items-center
-                            gap-2
-                        ">
+                        <div
+                            className="
+                                mb-2
+                                flex
+                                items-center
+                                gap-2
+                            "
+                        >
 
                             <ShieldCheck
-                                size={20}
+                                size={19}
                                 className="text-blue-300"
                             />
 
-                            <span className="
-                                text-xs
-                                font-bold
-                                uppercase
-                                tracking-[0.18em]
-                                text-blue-300
-                            ">
+                            <span
+                                className="
+                                    text-xs
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.18em]
+                                    text-blue-300
+                                "
+                            >
                                 NIRIKSHAN
                             </span>
 
                         </div>
 
 
-                        <h1 className="
-                            text-2xl
-                            font-bold
-                            text-white
-                            sm:text-3xl
-                        ">
+                        <h1
+                            className="
+                                text-[26px]
+                                font-bold
+                                leading-tight
+                                text-white
+
+                                sm:text-3xl
+                            "
+                        >
                             My Profile
                         </h1>
 
 
-                        <p className="
-                            mt-1
-                            text-sm
-                            text-slate-300
-                        ">
-                            Manage your account information
-                            and security settings.
+                        <p
+                            className="
+                                mt-2
+                                max-w-xl
+                                text-sm
+                                leading-6
+                                text-slate-300
+
+                                sm:text-base
+                            "
+                        >
+                            Manage your employee information
+                            and account security.
                         </p>
 
                     </div>
 
 
-                    {/* USER AVATAR */}
+                    {/* USER */}
 
-                    <div className="
-                        flex
-                        items-center
-                        gap-3
-                    ">
-
-                        <div className="
+                    <div
+                        className="
                             flex
-                            h-14
-                            w-14
-                            shrink-0
                             items-center
-                            justify-center
-                            rounded-full
-                            bg-blue-600
-                            text-lg
-                            font-bold
-                            text-white
-                            ring-4
-                            ring-white/10
-                        ">
+                            gap-3
+                        "
+                    >
+
+                        {/* Avatar */}
+
+                        <div
+                            className="
+                                flex
+                                h-14
+                                w-14
+                                shrink-0
+                                items-center
+                                justify-center
+
+                                rounded-full
+
+                                bg-blue-600
+
+                                text-lg
+                                font-bold
+                                text-white
+
+                                ring-4
+                                ring-white/10
+
+                                sm:h-16
+                                sm:w-16
+                                sm:text-xl
+                            "
+                        >
+
                             {initials}
+
                         </div>
 
 
-                        <div>
+                        {/* Name */}
 
-                            <p className="
-                                font-semibold
-                                text-white
-                            ">
+                        <div
+                            className="
+                                min-w-0
+                            "
+                        >
+
+                            <p
+                                className="
+                                    truncate
+                                    text-base
+                                    font-bold
+                                    text-white
+
+                                    sm:text-lg
+                                "
+                            >
                                 {user?.full_name || "User"}
                             </p>
 
-                            <p className="
-                                text-sm
-                                text-blue-200
-                            ">
+
+                            <p
+                                className="
+                                    truncate
+                                    text-sm
+                                    text-blue-200
+                                "
+                            >
                                 {user?.designation || "Employee"}
                             </p>
 
@@ -344,89 +477,118 @@ export default function Profile() {
 
                 </div>
 
-            </div>
+            </section>
 
 
             {/* =====================================================
-                PROFILE INFORMATION
+                PERSONAL INFORMATION
             ====================================================== */}
 
-            <div className="
-                overflow-hidden
-                rounded-2xl
-                border
-                border-slate-200
-                bg-white
-                shadow-sm
-            ">
+            <section
+                className="
+                    overflow-hidden
+                    rounded-2xl
 
-
-                <div className="
-                    border-b
+                    border
                     border-slate-200
-                    px-6
-                    py-5
-                    sm:px-8
-                ">
 
-                    <div className="
+                    bg-white
+
+                    shadow-sm
+                "
+            >
+
+
+                {/* SECTION HEADER */}
+
+                <div
+                    className="
                         flex
                         items-center
                         gap-3
-                    ">
 
-                        <div className="
+                        border-b
+                        border-slate-200
+
+                        px-5
+                        py-5
+
+                        sm:px-7
+                    "
+                >
+
+                    <div
+                        className="
                             flex
                             h-10
                             w-10
+                            shrink-0
                             items-center
                             justify-center
+
                             rounded-xl
+
                             bg-blue-50
                             text-blue-700
-                        ">
+                        "
+                    >
 
-                            <User size={20} />
+                        <User size={20} />
 
-                        </div>
+                    </div>
 
 
-                        <div>
+                    <div>
 
-                            <h2 className="
+                        <h2
+                            className="
+                                text-base
                                 font-bold
                                 text-slate-900
-                            ">
-                                Personal Information
-                            </h2>
 
-                            <p className="
+                                sm:text-lg
+                            "
+                        >
+                            Personal Information
+                        </h2>
+
+
+                        <p
+                            className="
                                 text-xs
                                 text-slate-500
-                            ">
-                                Your registered employee details
-                            </p>
 
-                        </div>
+                                sm:text-sm
+                            "
+                        >
+                            Your registered employee details
+                        </p>
 
                     </div>
 
                 </div>
 
 
-                <div className="
-                    grid
-                    grid-cols-1
-                    gap-6
-                    px-6
-                    py-6
-                    sm:grid-cols-2
-                    sm:px-8
-                    lg:grid-cols-3
-                ">
+                {/* INFORMATION */}
 
+                <div
+                    className="
+                        grid
+                        grid-cols-1
 
-                    {/* EMPLOYEE ID */}
+                        gap-x-8
+                        gap-y-6
+
+                        px-5
+                        py-6
+
+                        sm:grid-cols-2
+                        sm:px-7
+
+                        lg:grid-cols-3
+                    "
+                >
+
 
                     <ProfileItem
                         icon={<User size={18} />}
@@ -435,16 +597,12 @@ export default function Profile() {
                     />
 
 
-                    {/* FULL NAME */}
-
                     <ProfileItem
                         icon={<User size={18} />}
                         label="Full Name"
                         value={user?.full_name}
                     />
 
-
-                    {/* DESIGNATION */}
 
                     <ProfileItem
                         icon={<BriefcaseBusiness size={18} />}
@@ -453,16 +611,12 @@ export default function Profile() {
                     />
 
 
-                    {/* DEPARTMENT */}
-
                     <ProfileItem
                         icon={<Building2 size={18} />}
                         label="Department"
                         value={user?.department}
                     />
 
-
-                    {/* COMPANY */}
 
                     <ProfileItem
                         icon={<Building2 size={18} />}
@@ -471,16 +625,12 @@ export default function Profile() {
                     />
 
 
-                    {/* EMAIL */}
-
                     <ProfileItem
                         icon={<Mail size={18} />}
                         label="Official Email"
                         value={user?.email}
                     />
 
-
-                    {/* MOBILE */}
 
                     <ProfileItem
                         icon={<Phone size={18} />}
@@ -493,42 +643,27 @@ export default function Profile() {
 
                     <div>
 
-                        <div className="
-                            mb-2
-                            flex
-                            items-center
-                            gap-2
-                        ">
-
-                            <div className="
-                                text-blue-600
-                            ">
-
-                                <ShieldCheck size={18} />
-
-                            </div>
-
-                            <span className="
-                                text-xs
-                                font-semibold
-                                uppercase
-                                tracking-wide
-                                text-slate-500
-                            ">
-                                Access Level
-                            </span>
-
-                        </div>
+                        <ProfileLabel
+                            icon={
+                                <ShieldCheck
+                                    size={18}
+                                />
+                            }
+                            label="Access Level"
+                        />
 
 
-                        <div>
-
-                            <span className={`
+                        <span
+                            className={`
                                 inline-flex
                                 items-center
+                                gap-1.5
+
                                 rounded-full
+
                                 px-3
-                                py-1
+                                py-1.5
+
                                 text-xs
                                 font-bold
 
@@ -537,15 +672,16 @@ export default function Profile() {
                                         ? "bg-purple-100 text-purple-700"
                                         : "bg-blue-100 text-blue-700"
                                 }
-                            `}>
+                            `}
+                        >
 
-                                {user?.is_admin
-                                    ? "Administrator"
-                                    : "Engineer"}
+                            <BadgeCheck size={14} />
 
-                            </span>
+                            {user?.is_admin
+                                ? "Administrator"
+                                : "Engineer"}
 
-                        </div>
+                        </span>
 
                     </div>
 
@@ -554,53 +690,43 @@ export default function Profile() {
 
                     <div>
 
-                        <div className="
-                            mb-2
-                            flex
-                            items-center
-                            gap-2
-                        ">
-
-                            <div className="
-                                text-blue-600
-                            ">
-
-                                <CheckCircle2 size={18} />
-
-                            </div>
-
-                            <span className="
-                                text-xs
-                                font-semibold
-                                uppercase
-                                tracking-wide
-                                text-slate-500
-                            ">
-                                Account Status
-                            </span>
-
-                        </div>
+                        <ProfileLabel
+                            icon={
+                                <CheckCircle2
+                                    size={18}
+                                />
+                            }
+                            label="Account Status"
+                        />
 
 
-                        <span className="
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-full
-                            bg-green-100
-                            px-3
-                            py-1
-                            text-xs
-                            font-bold
-                            text-green-700
-                        ">
+                        <span
+                            className="
+                                inline-flex
+                                items-center
+                                gap-2
 
-                            <span className="
-                                h-1.5
-                                w-1.5
                                 rounded-full
-                                bg-green-500
-                            " />
+
+                                bg-green-100
+
+                                px-3
+                                py-1.5
+
+                                text-xs
+                                font-bold
+                                text-green-700
+                            "
+                        >
+
+                            <span
+                                className="
+                                    h-1.5
+                                    w-1.5
+                                    rounded-full
+                                    bg-green-500
+                                "
+                            />
 
                             Active
 
@@ -610,127 +736,168 @@ export default function Profile() {
 
                 </div>
 
-            </div>
+            </section>
 
 
             {/* =====================================================
-                CHANGE PASSWORD
+                SECURITY
             ====================================================== */}
 
-            <div className="
-                overflow-hidden
-                rounded-2xl
-                border
-                border-slate-200
-                bg-white
-                shadow-sm
-            ">
+            <section
+                className="
+                    overflow-hidden
+                    rounded-2xl
 
-
-                <div className="
-                    border-b
+                    border
                     border-slate-200
-                    px-6
-                    py-5
-                    sm:px-8
-                ">
 
-                    <div className="
+                    bg-white
+
+                    shadow-sm
+                "
+            >
+
+
+                {/* HEADER */}
+
+                <div
+                    className="
                         flex
                         items-center
                         gap-3
-                    ">
 
-                        <div className="
+                        border-b
+                        border-slate-200
+
+                        px-5
+                        py-5
+
+                        sm:px-7
+                    "
+                >
+
+                    <div
+                        className="
                             flex
                             h-10
                             w-10
+                            shrink-0
                             items-center
                             justify-center
+
                             rounded-xl
+
                             bg-blue-50
                             text-blue-700
-                        ">
+                        "
+                    >
 
-                            <KeyRound size={20} />
+                        <KeyRound size={20} />
 
-                        </div>
+                    </div>
 
 
-                        <div>
+                    <div>
 
-                            <h2 className="
+                        <h2
+                            className="
+                                text-base
                                 font-bold
                                 text-slate-900
-                            ">
-                                Change Password
-                            </h2>
 
-                            <p className="
+                                sm:text-lg
+                            "
+                        >
+                            Account Security
+                        </h2>
+
+
+                        <p
+                            className="
                                 text-xs
                                 text-slate-500
-                            ">
-                                Keep your NIRIKSHAN account secure.
-                            </p>
 
-                        </div>
+                                sm:text-sm
+                            "
+                        >
+                            Change your NIRIKSHAN password
+                        </p>
 
                     </div>
 
                 </div>
 
 
-                <div className="
-                    px-6
-                    py-6
-                    sm:px-8
-                ">
+                {/* SECURITY CONTENT */}
+
+                <div
+                    className="
+                        px-5
+                        py-6
+
+                        sm:px-7
+                    "
+                >
 
 
                     {/* MESSAGE */}
 
                     {message && (
 
-                        <div className={`
-                            mb-6
-                            flex
-                            items-start
-                            gap-3
-                            rounded-xl
-                            border
-                            px-4
-                            py-3
+                        <div
+                            className={`
+                                mb-6
+                                flex
+                                items-start
+                                gap-3
 
-                            ${
-                                message.type === "success"
-                                    ? "border-green-200 bg-green-50 text-green-700"
-                                    : "border-red-200 bg-red-50 text-red-700"
-                            }
-                        `}>
+                                rounded-xl
+
+                                border
+
+                                px-4
+                                py-3
+
+                                ${
+                                    message.type === "success"
+                                        ? "border-green-200 bg-green-50 text-green-700"
+                                        : "border-red-200 bg-red-50 text-red-700"
+                                }
+                            `}
+                        >
 
                             {message.type === "success" ? (
 
                                 <CheckCircle2
                                     size={20}
-                                    className="mt-0.5 shrink-0"
+                                    className="
+                                        mt-0.5
+                                        shrink-0
+                                    "
                                 />
 
                             ) : (
 
                                 <AlertCircle
                                     size={20}
-                                    className="mt-0.5 shrink-0"
+                                    className="
+                                        mt-0.5
+                                        shrink-0
+                                    "
                                 />
 
                             )}
 
 
-                            <span className="
-                                text-sm
-                                font-medium
-                            ">
+                            <p
+                                className="
+                                    text-sm
+                                    font-medium
+                                    leading-5
+                                "
+                            >
                                 {message.text}
-                            </span>
+                            </p>
 
                         </div>
 
@@ -738,7 +905,9 @@ export default function Profile() {
 
 
                     <form
-                        onSubmit={handlePasswordChange}
+                        onSubmit={
+                            handlePasswordChange
+                        }
                         className="
                             max-w-2xl
                             space-y-5
@@ -746,67 +915,106 @@ export default function Profile() {
                     >
 
 
-                        {/* CURRENT PASSWORD */}
-
                         <PasswordField
                             label="Current Password"
                             value={currentPassword}
-                            onChange={setCurrentPassword}
-                            visible={showCurrentPassword}
-                            setVisible={setShowCurrentPassword}
+                            onChange={
+                                setCurrentPassword
+                            }
+                            visible={
+                                showCurrentPassword
+                            }
+                            setVisible={
+                                setShowCurrentPassword
+                            }
                             autoComplete="current-password"
                         />
 
 
-                        {/* NEW PASSWORD */}
-
                         <PasswordField
                             label="New Password"
                             value={newPassword}
-                            onChange={setNewPassword}
-                            visible={showNewPassword}
-                            setVisible={setShowNewPassword}
+                            onChange={
+                                setNewPassword
+                            }
+                            visible={
+                                showNewPassword
+                            }
+                            setVisible={
+                                setShowNewPassword
+                            }
                             autoComplete="new-password"
                         />
 
-
-                        {/* CONFIRM PASSWORD */}
 
                         <PasswordField
                             label="Confirm New Password"
                             value={confirmPassword}
-                            onChange={setConfirmPassword}
-                            visible={showConfirmPassword}
-                            setVisible={setShowConfirmPassword}
+                            onChange={
+                                setConfirmPassword
+                            }
+                            visible={
+                                showConfirmPassword
+                            }
+                            setVisible={
+                                setShowConfirmPassword
+                            }
                             autoComplete="new-password"
                         />
 
 
-                        {/* PASSWORD REQUIREMENT */}
+                        {/* PASSWORD INFO */}
 
-                        <div className="
-                            rounded-xl
-                            bg-slate-50
-                            border
-                            border-slate-200
-                            px-4
-                            py-3
-                        ">
+                        <div
+                            className="
+                                rounded-xl
 
-                            <p className="
-                                text-xs
-                                font-semibold
-                                text-slate-600
-                            ">
-                                Password requirement
-                            </p>
+                                border
+                                border-slate-200
 
-                            <p className="
-                                mt-1
-                                text-xs
-                                text-slate-500
-                            ">
-                                Use at least 8 characters.
+                                bg-slate-50
+
+                                px-4
+                                py-3
+                            "
+                        >
+
+                            <div
+                                className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                "
+                            >
+
+                                <ShieldCheck
+                                    size={16}
+                                    className="text-blue-600"
+                                />
+
+                                <p
+                                    className="
+                                        text-xs
+                                        font-semibold
+                                        text-slate-700
+                                    "
+                                >
+                                    Password requirement
+                                </p>
+
+                            </div>
+
+
+                            <p
+                                className="
+                                    mt-1
+                                    pl-6
+                                    text-xs
+                                    text-slate-500
+                                "
+                            >
+                                Password must contain at least
+                                8 characters.
                             </p>
 
                         </div>
@@ -818,23 +1026,35 @@ export default function Profile() {
                             type="submit"
                             disabled={loading}
                             className="
-                                inline-flex
+                                flex
+                                w-full
                                 items-center
                                 justify-center
                                 gap-2
+
                                 rounded-xl
+
                                 bg-blue-700
+
                                 px-5
                                 py-3
+
                                 font-semibold
                                 text-white
+
                                 shadow-md
                                 shadow-blue-900/20
+
                                 transition
+
                                 hover:bg-blue-800
+
                                 active:scale-[0.99]
+
                                 disabled:cursor-not-allowed
                                 disabled:opacity-60
+
+                                sm:w-auto
                             "
                         >
 
@@ -850,7 +1070,14 @@ export default function Profile() {
 
                 </div>
 
-            </div>
+            </section>
+
+
+            {/* =====================================================
+                MOBILE BOTTOM SPACE
+            ====================================================== */}
+
+            <div className="h-4 sm:hidden" />
 
         </div>
 
@@ -858,13 +1085,69 @@ export default function Profile() {
 }
 
 
-/* ================================================================
+/* =================================================================
+   PROFILE LABEL
+================================================================= */
+
+interface ProfileLabelProps {
+
+    icon: ReactNode;
+
+    label: string;
+
+}
+
+
+function ProfileLabel({
+    icon,
+    label,
+}: ProfileLabelProps) {
+
+    return (
+
+        <div
+            className="
+                mb-2
+                flex
+                items-center
+                gap-2
+            "
+        >
+
+            <span
+                className="
+                    text-blue-600
+                "
+            >
+                {icon}
+            </span>
+
+
+            <span
+                className="
+                    text-xs
+                    font-semibold
+                    uppercase
+                    tracking-wide
+                    text-slate-500
+                "
+            >
+                {label}
+            </span>
+
+        </div>
+
+    );
+}
+
+
+/* =================================================================
    PROFILE ITEM
-================================================================ */
+================================================================= */
 
 interface ProfileItemProps {
 
-    icon: React.ReactNode;
+    icon: ReactNode;
 
     label: string;
 
@@ -881,40 +1164,26 @@ function ProfileItem({
 
     return (
 
-        <div>
+        <div className="min-w-0">
 
-            <div className="
-                mb-2
-                flex
-                items-center
-                gap-2
-            ">
+            <ProfileLabel
+                icon={icon}
+                label={label}
+            />
 
-                <div className="
-                    text-blue-600
-                ">
-                    {icon}
-                </div>
 
-                <span className="
-                    text-xs
+            <p
+                className="
+                    break-words
+
+                    text-sm
                     font-semibold
-                    uppercase
-                    tracking-wide
-                    text-slate-500
-                ">
-                    {label}
-                </span>
+                    leading-6
+                    text-slate-900
 
-            </div>
-
-
-            <p className="
-                break-words
-                text-sm
-                font-semibold
-                text-slate-900
-            ">
+                    sm:text-base
+                "
+            >
                 {value || "N/A"}
             </p>
 
@@ -924,9 +1193,9 @@ function ProfileItem({
 }
 
 
-/* ================================================================
+/* =================================================================
    PASSWORD FIELD
-================================================================ */
+================================================================= */
 
 interface PasswordFieldProps {
 
@@ -934,7 +1203,9 @@ interface PasswordFieldProps {
 
     value: string;
 
-    onChange: (value: string) => void;
+    onChange: (
+        value: string
+    ) => void;
 
     visible: boolean;
 
@@ -960,13 +1231,16 @@ function PasswordField({
 
         <div>
 
-            <label className="
-                mb-2
-                block
-                text-sm
-                font-semibold
-                text-slate-700
-            ">
+            <label
+                className="
+                    mb-2
+                    block
+
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                "
+            >
                 {label}
             </label>
 
@@ -979,27 +1253,42 @@ function PasswordField({
                             ? "text"
                             : "password"
                     }
+
                     required
+
                     value={value}
+
                     onChange={(e) =>
                         onChange(
                             e.target.value
                         )
                     }
-                    autoComplete={autoComplete}
+
+                    autoComplete={
+                        autoComplete
+                    }
+
                     placeholder="Enter password"
+
                     className="
                         w-full
+
                         rounded-xl
+
                         border
                         border-slate-300
+
                         bg-slate-50
+
                         px-4
                         py-3
                         pr-12
+
                         text-sm
                         text-slate-900
+
                         outline-none
+
                         transition
 
                         placeholder:text-slate-400
@@ -1014,21 +1303,32 @@ function PasswordField({
 
                 <button
                     type="button"
+
                     onClick={() =>
-                        setVisible(!visible)
+                        setVisible(
+                            !visible
+                        )
                     }
+
                     className="
                         absolute
                         right-3
                         top-1/2
+
                         -translate-y-1/2
+
                         rounded-lg
+
                         p-1.5
+
                         text-slate-400
+
                         transition
+
                         hover:bg-blue-50
                         hover:text-blue-700
                     "
+
                     aria-label={
                         visible
                             ? "Hide password"
