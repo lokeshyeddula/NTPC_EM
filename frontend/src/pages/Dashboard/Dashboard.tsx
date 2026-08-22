@@ -16,14 +16,15 @@ export default function Dashboard() {
     const name = user?.full_name || "User";
 
     return (
-        <div className="w-full min-w-0 overflow-x-hidden space-y-6">
+        <div className="box-border w-full max-w-full overflow-x-hidden">
 
-            {/* =========================
+            {/* =====================================================
                 WELCOME
-            ========================== */}
+            ====================================================== */}
 
-            <section className="w-full overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md">
-                <div className="px-5 py-7 sm:px-8 sm:py-9">
+            <section className="mb-6 w-full max-w-full overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md">
+
+                <div className="box-border w-full px-5 py-7 sm:px-8 sm:py-9">
 
                     <div className="mb-3 flex items-center gap-2">
                         <ShieldCheck
@@ -36,19 +37,20 @@ export default function Dashboard() {
                         </span>
                     </div>
 
-                    <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">
+                    <h1 className="break-words text-3xl font-extrabold leading-tight sm:text-4xl">
                         Welcome {name}
                     </h1>
 
                 </div>
+
             </section>
 
 
-            {/* =========================
+            {/* =====================================================
                 QUICK ACTIONS
-            ========================== */}
+            ====================================================== */}
 
-            <section className="w-full">
+            <section className="mb-6 w-full max-w-full">
 
                 <div className="mb-4">
                     <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
@@ -61,18 +63,20 @@ export default function Dashboard() {
                 </div>
 
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {/* MOBILE = ALWAYS ONE COLUMN */}
+                <div className="flex w-full max-w-full flex-col gap-4 md:grid md:grid-cols-3">
 
-                    {/* New Inspection */}
+                    {/* NEW INSPECTION */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/inspection";
                         }}
-                        className="group w-full min-w-0 rounded-2xl bg-blue-600 p-5 text-left text-white shadow-sm transition-all duration-200 hover:bg-blue-700 sm:p-6"
+                        className="box-border flex w-full max-w-full items-center rounded-2xl bg-blue-600 p-5 text-left text-white shadow-sm transition-colors hover:bg-blue-700 sm:p-6"
                     >
-                        <div className="flex items-center gap-4">
+
+                        <div className="flex w-full min-w-0 items-center gap-4">
 
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 sm:h-14 sm:w-14">
                                 <ClipboardCheck size={25} />
@@ -82,13 +86,13 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="text-lg font-bold sm:text-xl">
+                                    <h3 className="truncate text-lg font-bold sm:text-xl">
                                         New Inspection
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="shrink-0 transition-transform group-hover:translate-x-1"
+                                        className="shrink-0"
                                     />
 
                                 </div>
@@ -100,19 +104,21 @@ export default function Dashboard() {
                             </div>
 
                         </div>
+
                     </button>
 
 
-                    {/* Re-Inspection */}
+                    {/* RE-INSPECTION */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/re-inspection";
                         }}
-                        className="group w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 text-left text-slate-900 shadow-sm transition-all duration-200 hover:bg-slate-50 sm:p-6"
+                        className="box-border flex w-full max-w-full items-center rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-colors hover:bg-slate-50 sm:p-6"
                     >
-                        <div className="flex items-center gap-4">
+
+                        <div className="flex w-full min-w-0 items-center gap-4">
 
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
                                 <AlertTriangle size={25} />
@@ -122,13 +128,13 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="text-lg font-bold sm:text-xl">
+                                    <h3 className="truncate text-lg font-bold text-slate-900 sm:text-xl">
                                         Re-Inspection
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-1"
+                                        className="shrink-0 text-slate-400"
                                     />
 
                                 </div>
@@ -140,19 +146,21 @@ export default function Dashboard() {
                             </div>
 
                         </div>
+
                     </button>
 
 
-                    {/* Reports */}
+                    {/* REPORTS */}
 
                     <button
                         type="button"
                         onClick={() => {
                             window.location.href = "/reports";
                         }}
-                        className="group w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 text-left text-slate-900 shadow-sm transition-all duration-200 hover:bg-slate-50 sm:p-6"
+                        className="box-border flex w-full max-w-full items-center rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-colors hover:bg-slate-50 sm:p-6"
                     >
-                        <div className="flex items-center gap-4">
+
+                        <div className="flex w-full min-w-0 items-center gap-4">
 
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
                                 <FileBarChart size={25} />
@@ -162,13 +170,13 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="text-lg font-bold sm:text-xl">
+                                    <h3 className="truncate text-lg font-bold text-slate-900 sm:text-xl">
                                         Reports
                                     </h3>
 
                                     <ArrowRight
                                         size={24}
-                                        className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-1"
+                                        className="shrink-0 text-slate-400"
                                     />
 
                                 </div>
@@ -180,6 +188,7 @@ export default function Dashboard() {
                             </div>
 
                         </div>
+
                     </button>
 
                 </div>
@@ -187,15 +196,16 @@ export default function Dashboard() {
             </section>
 
 
-            {/* =========================
+            {/* =====================================================
                 INSPECTION OVERVIEW
-            ========================== */}
+            ====================================================== */}
 
-            <section className="w-full">
+            <section className="mb-6 w-full max-w-full">
 
-                <div className="mb-4 flex items-start justify-between">
+                <div className="mb-4 flex w-full items-start justify-between">
 
-                    <div>
+                    <div className="min-w-0">
+
                         <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
                             Inspection Overview
                         </h2>
@@ -203,31 +213,36 @@ export default function Dashboard() {
                         <p className="mt-1 text-sm text-slate-500 sm:text-base">
                             Operational metrics will appear here
                         </p>
+
                     </div>
 
                     <Activity
                         size={25}
-                        className="hidden shrink-0 text-blue-600 sm:block"
+                        className="ml-3 hidden shrink-0 text-blue-600 sm:block"
                     />
 
                 </div>
 
 
-                {/*
-                    Mobile  : 1 column
-                    Tablet  : 2 columns
-                    Desktop : 4 columns
-                */}
+                {/* =================================================
+                    CRITICAL MOBILE FIX
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    Mobile:
+                    flex column
 
-                    {/* Total */}
+                    Tablet/Desktop:
+                    grid
+                ================================================== */}
 
-                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <div className="flex w-full max-w-full flex-col gap-4 md:grid md:grid-cols-2 xl:grid-cols-4">
+
+                    {/* TOTAL INSPECTIONS */}
+
+                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                 <ClipboardCheck size={23} />
                             </div>
 
@@ -250,11 +265,11 @@ export default function Dashboard() {
 
                     {/* FIT */}
 
-                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
                                 <ShieldCheck size={23} />
                             </div>
 
@@ -277,11 +292,11 @@ export default function Dashboard() {
 
                     {/* UNFIT */}
 
-                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
                                 <AlertTriangle size={23} />
                             </div>
 
@@ -302,13 +317,13 @@ export default function Dashboard() {
                     </div>
 
 
-                    {/* Pending */}
+                    {/* PENDING */}
 
-                    <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
                         <div className="flex items-center justify-between">
 
-                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                 <Clock3 size={23} />
                             </div>
 
@@ -333,25 +348,25 @@ export default function Dashboard() {
             </section>
 
 
-            {/* =========================
-                TODAY'S ACTIVITY
-            ========================== */}
+            {/* =====================================================
+                BOTTOM PANELS
+            ====================================================== */}
 
-            <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <section className="flex w-full max-w-full flex-col gap-4 lg:grid lg:grid-cols-2">
 
-                {/* Activity */}
+                {/* TODAY'S ACTIVITY */}
 
-                <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="box-border w-full max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                     <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
                         <div className="flex items-center gap-3">
 
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                 <Activity size={21} />
                             </div>
 
-                            <div>
+                            <div className="min-w-0">
 
                                 <h3 className="font-bold text-slate-900">
                                     Today's Activity
@@ -392,19 +407,19 @@ export default function Dashboard() {
                 </div>
 
 
-                {/* System Information */}
+                {/* SYSTEM */}
 
-                <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="box-border w-full max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                     <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
                         <div className="flex items-center gap-3">
 
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
                                 <ShieldCheck size={21} />
                             </div>
 
-                            <div>
+                            <div className="min-w-0">
 
                                 <h3 className="font-bold text-slate-900">
                                     Inspection System
@@ -429,7 +444,7 @@ export default function Dashboard() {
 
                                 <span className="h-3 w-3 shrink-0 rounded-full bg-green-500" />
 
-                                <div>
+                                <div className="min-w-0">
 
                                     <p className="font-bold text-slate-800">
                                         System Ready
