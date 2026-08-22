@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="Layout changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Inspection/InspectionHeader.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -329,7 +327,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787411891824</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Layout changes">
+      <option name="closed" value="true" />
+      <created>1787412364420</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1787412364420</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
