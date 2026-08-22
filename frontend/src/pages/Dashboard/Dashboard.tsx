@@ -16,17 +16,43 @@ export default function Dashboard() {
     const name = user?.full_name || "User";
 
     return (
-        <div className="box-border w-full max-w-full overflow-x-hidden">
+        <div
+            style={{
+                width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
+                overflowX: "hidden",
+                boxSizing: "border-box",
+            }}
+            className="space-y-6"
+        >
 
             {/* =====================================================
                 WELCOME
             ====================================================== */}
 
-            <section className="mb-6 w-full max-w-full overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md">
-
+            <section
+                style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                    boxSizing: "border-box",
+                }}
+                className="
+                    overflow-hidden
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-slate-950
+                    via-blue-950
+                    to-blue-700
+                    text-white
+                    shadow-md
+                "
+            >
                 <div className="box-border w-full px-5 py-7 sm:px-8 sm:py-9">
 
                     <div className="mb-3 flex items-center gap-2">
+
                         <ShieldCheck
                             size={18}
                             className="shrink-0 text-blue-300"
@@ -35,6 +61,7 @@ export default function Dashboard() {
                         <span className="text-xs font-bold tracking-[0.18em] text-blue-200 sm:text-sm">
                             NIRIKSHAN
                         </span>
+
                     </div>
 
                     <h1 className="break-words text-3xl font-extrabold leading-tight sm:text-4xl">
@@ -42,7 +69,6 @@ export default function Dashboard() {
                     </h1>
 
                 </div>
-
             </section>
 
 
@@ -50,9 +76,16 @@ export default function Dashboard() {
                 QUICK ACTIONS
             ====================================================== */}
 
-            <section className="mb-6 w-full max-w-full">
+            <section
+                style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                }}
+            >
 
                 <div className="mb-4">
+
                     <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
                         Quick Actions
                     </h2>
@@ -60,11 +93,21 @@ export default function Dashboard() {
                     <p className="mt-1 text-sm text-slate-500 sm:text-base">
                         Start your next task
                     </p>
+
                 </div>
 
 
-                {/* MOBILE = ALWAYS ONE COLUMN */}
-                <div className="flex w-full max-w-full flex-col gap-4 md:grid md:grid-cols-3">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width: "100%",
+                        maxWidth: "100%",
+                        minWidth: 0,
+                        gap: "16px",
+                    }}
+                    className="md:grid md:grid-cols-3"
+                >
 
                     {/* NEW INSPECTION */}
 
@@ -73,12 +116,30 @@ export default function Dashboard() {
                         onClick={() => {
                             window.location.href = "/inspection";
                         }}
-                        className="box-border flex w-full max-w-full items-center rounded-2xl bg-blue-600 p-5 text-left text-white shadow-sm transition-colors hover:bg-blue-700 sm:p-6"
+                        style={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            minWidth: 0,
+                            boxSizing: "border-box",
+                        }}
+                        className="
+                            flex
+                            items-center
+                            rounded-2xl
+                            bg-blue-600
+                            p-5
+                            text-left
+                            text-white
+                            shadow-sm
+                            transition-colors
+                            hover:bg-blue-700
+                            sm:p-6
+                        "
                     >
 
                         <div className="flex w-full min-w-0 items-center gap-4">
 
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 sm:h-14 sm:w-14">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15">
                                 <ClipboardCheck size={25} />
                             </div>
 
@@ -86,7 +147,7 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="truncate text-lg font-bold sm:text-xl">
+                                    <h3 className="text-lg font-bold sm:text-xl">
                                         New Inspection
                                     </h3>
 
@@ -97,7 +158,7 @@ export default function Dashboard() {
 
                                 </div>
 
-                                <p className="mt-1 text-sm text-blue-100 sm:text-base">
+                                <p className="mt-1 text-sm text-blue-100">
                                     Start a machinery safety inspection.
                                 </p>
 
@@ -115,12 +176,31 @@ export default function Dashboard() {
                         onClick={() => {
                             window.location.href = "/re-inspection";
                         }}
-                        className="box-border flex w-full max-w-full items-center rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-colors hover:bg-slate-50 sm:p-6"
+                        style={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            minWidth: 0,
+                            boxSizing: "border-box",
+                        }}
+                        className="
+                            flex
+                            items-center
+                            rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            p-5
+                            text-left
+                            shadow-sm
+                            transition-colors
+                            hover:bg-slate-50
+                            sm:p-6
+                        "
                     >
 
                         <div className="flex w-full min-w-0 items-center gap-4">
 
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                 <AlertTriangle size={25} />
                             </div>
 
@@ -128,7 +208,7 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="truncate text-lg font-bold text-slate-900 sm:text-xl">
+                                    <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
                                         Re-Inspection
                                     </h3>
 
@@ -139,7 +219,7 @@ export default function Dashboard() {
 
                                 </div>
 
-                                <p className="mt-1 text-sm text-slate-500 sm:text-base">
+                                <p className="mt-1 text-sm text-slate-500">
                                     Review vehicles requiring re-inspection.
                                 </p>
 
@@ -157,12 +237,31 @@ export default function Dashboard() {
                         onClick={() => {
                             window.location.href = "/reports";
                         }}
-                        className="box-border flex w-full max-w-full items-center rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-colors hover:bg-slate-50 sm:p-6"
+                        style={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            minWidth: 0,
+                            boxSizing: "border-box",
+                        }}
+                        className="
+                            flex
+                            items-center
+                            rounded-2xl
+                            border
+                            border-slate-200
+                            bg-white
+                            p-5
+                            text-left
+                            shadow-sm
+                            transition-colors
+                            hover:bg-slate-50
+                            sm:p-6
+                        "
                     >
 
                         <div className="flex w-full min-w-0 items-center gap-4">
 
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:h-14 sm:w-14">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                 <FileBarChart size={25} />
                             </div>
 
@@ -170,7 +269,7 @@ export default function Dashboard() {
 
                                 <div className="flex items-center justify-between gap-3">
 
-                                    <h3 className="truncate text-lg font-bold text-slate-900 sm:text-xl">
+                                    <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
                                         Reports
                                     </h3>
 
@@ -181,7 +280,7 @@ export default function Dashboard() {
 
                                 </div>
 
-                                <p className="mt-1 text-sm text-slate-500 sm:text-base">
+                                <p className="mt-1 text-sm text-slate-500">
                                     Search and view completed inspections.
                                 </p>
 
@@ -200,9 +299,15 @@ export default function Dashboard() {
                 INSPECTION OVERVIEW
             ====================================================== */}
 
-            <section className="mb-6 w-full max-w-full">
+            <section
+                style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                }}
+            >
 
-                <div className="mb-4 flex w-full items-start justify-between">
+                <div className="mb-4 flex items-start justify-between">
 
                     <div className="min-w-0">
 
@@ -225,123 +330,55 @@ export default function Dashboard() {
 
 
                 {/* =================================================
-                    CRITICAL MOBILE FIX
-
-                    Mobile:
-                    flex column
-
-                    Tablet/Desktop:
-                    grid
+                    MOBILE: FORCED SINGLE COLUMN
                 ================================================== */}
 
-                <div className="flex w-full max-w-full flex-col gap-4 md:grid md:grid-cols-2 xl:grid-cols-4">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width: "100%",
+                        maxWidth: "100%",
+                        minWidth: 0,
+                        gap: "16px",
+                    }}
+                    className="md:grid md:grid-cols-2 xl:grid-cols-4"
+                >
 
-                    {/* TOTAL INSPECTIONS */}
+                    {/* TOTAL */}
 
-                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-
-                        <div className="flex items-center justify-between">
-
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                                <ClipboardCheck size={23} />
-                            </div>
-
-                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
-                                Coming Soon
-                            </span>
-
-                        </div>
-
-                        <p className="mt-5 text-sm font-semibold text-slate-500">
-                            Total Inspections
-                        </p>
-
-                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
-                            —
-                        </p>
-
-                    </div>
+                    <OverviewCard
+                        icon={<ClipboardCheck size={23} />}
+                        iconClass="bg-blue-50 text-blue-600"
+                        title="Total Inspections"
+                    />
 
 
                     {/* FIT */}
 
-                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-
-                        <div className="flex items-center justify-between">
-
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">
-                                <ShieldCheck size={23} />
-                            </div>
-
-                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
-                                Coming Soon
-                            </span>
-
-                        </div>
-
-                        <p className="mt-5 text-sm font-semibold text-slate-500">
-                            FIT
-                        </p>
-
-                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
-                            —
-                        </p>
-
-                    </div>
+                    <OverviewCard
+                        icon={<ShieldCheck size={23} />}
+                        iconClass="bg-green-50 text-green-600"
+                        title="FIT"
+                    />
 
 
                     {/* UNFIT */}
 
-                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-
-                        <div className="flex items-center justify-between">
-
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
-                                <AlertTriangle size={23} />
-                            </div>
-
-                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
-                                Coming Soon
-                            </span>
-
-                        </div>
-
-                        <p className="mt-5 text-sm font-semibold text-slate-500">
-                            UNFIT
-                        </p>
-
-                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
-                            —
-                        </p>
-
-                    </div>
+                    <OverviewCard
+                        icon={<AlertTriangle size={23} />}
+                        iconClass="bg-red-50 text-red-600"
+                        title="UNFIT"
+                    />
 
 
                     {/* PENDING */}
 
-                    <div className="box-border w-full max-w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-
-                        <div className="flex items-center justify-between">
-
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                                <Clock3 size={23} />
-                            </div>
-
-                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
-                                Coming Soon
-                            </span>
-
-                        </div>
-
-                        <p className="mt-5 text-sm font-semibold text-slate-500">
-                            Pending
-                        </p>
-
-                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
-                            —
-                        </p>
-
-                    </div>
+                    <OverviewCard
+                        icon={<Clock3 size={23} />}
+                        iconClass="bg-blue-50 text-blue-600"
+                        title="Pending"
+                    />
 
                 </div>
 
@@ -352,11 +389,33 @@ export default function Dashboard() {
                 BOTTOM PANELS
             ====================================================== */}
 
-            <section className="flex w-full max-w-full flex-col gap-4 lg:grid lg:grid-cols-2">
+            <section
+                style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    minWidth: 0,
+                }}
+                className="flex flex-col gap-4 lg:grid lg:grid-cols-2"
+            >
 
                 {/* TODAY'S ACTIVITY */}
 
-                <div className="box-border w-full max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div
+                    style={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        minWidth: 0,
+                        boxSizing: "border-box",
+                    }}
+                    className="
+                        overflow-hidden
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        bg-white
+                        shadow-sm
+                    "
+                >
 
                     <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
@@ -381,7 +440,6 @@ export default function Dashboard() {
                         </div>
 
                     </div>
-
 
                     <div className="p-5 sm:p-6">
 
@@ -409,7 +467,22 @@ export default function Dashboard() {
 
                 {/* SYSTEM */}
 
-                <div className="box-border w-full max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div
+                    style={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        minWidth: 0,
+                        boxSizing: "border-box",
+                    }}
+                    className="
+                        overflow-hidden
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        bg-white
+                        shadow-sm
+                    "
+                >
 
                     <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
 
@@ -434,7 +507,6 @@ export default function Dashboard() {
                         </div>
 
                     </div>
-
 
                     <div className="p-5 sm:p-6">
 
@@ -465,6 +537,77 @@ export default function Dashboard() {
                 </div>
 
             </section>
+
+        </div>
+    );
+}
+
+
+/* =============================================================
+   OVERVIEW CARD
+============================================================= */
+
+interface OverviewCardProps {
+    icon: React.ReactNode;
+    iconClass: string;
+    title: string;
+}
+
+function OverviewCard({
+    icon,
+    iconClass,
+    title,
+}: OverviewCardProps) {
+    return (
+        <div
+            style={{
+                width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
+                boxSizing: "border-box",
+                flex: "0 0 auto",
+            }}
+            className="
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                p-5
+                shadow-sm
+                sm:p-6
+            "
+        >
+
+            <div className="flex items-center justify-between">
+
+                <div
+                    className={`
+                        flex
+                        h-11
+                        w-11
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-xl
+                        ${iconClass}
+                    `}
+                >
+                    {icon}
+                </div>
+
+                <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400 sm:text-xs">
+                    Coming Soon
+                </span>
+
+            </div>
+
+            <p className="mt-5 text-sm font-semibold text-slate-500">
+                {title}
+            </p>
+
+            <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                —
+            </p>
 
         </div>
     );
