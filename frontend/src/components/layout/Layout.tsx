@@ -13,23 +13,19 @@ export default function Layout({ children }: Props) {
         useState(false);
 
     return (
-
-        <div
-            className="
-                min-h-[100dvh]
-                bg-slate-100
-                flex
-                overflow-x-hidden
-                relative
-            "
-        >
+        <div className="
+            flex
+            h-screen
+            min-h-0
+            overflow-hidden
+            bg-slate-100
+        ">
 
             {/* =====================================================
                 MOBILE OVERLAY
             ====================================================== */}
 
             {isSidebarOpen && (
-
                 <div
                     onClick={() =>
                         setIsSidebarOpen(false)
@@ -43,7 +39,6 @@ export default function Layout({ children }: Props) {
                         md:hidden
                     "
                 />
-
             )}
 
 
@@ -57,6 +52,7 @@ export default function Layout({ children }: Props) {
                     inset-y-0
                     left-0
                     z-50
+                    transform
                     transition-transform
                     duration-300
                     ease-in-out
@@ -85,21 +81,18 @@ export default function Layout({ children }: Props) {
                 MAIN APPLICATION AREA
             ====================================================== */}
 
-            <div
-                className="
-                    flex
-                    min-w-0
-                    flex-1
-                    flex-col
-
-                    min-h-[100dvh]
-                "
-            >
-
+            <div className="
+                flex
+                min-h-0
+                min-w-0
+                flex-1
+                flex-col
+                overflow-hidden
+            ">
 
                 {/* =================================================
                     HEADER
-                ================================================= */}
+                ================================================== */}
 
                 <Header
                     onMenuClick={() =>
@@ -109,43 +102,33 @@ export default function Layout({ children }: Props) {
 
 
                 {/* =================================================
-                    CONTENT
-                ================================================= */}
+                    SCROLLABLE CONTENT AREA
+                ================================================== */}
 
-                <main
-                    className="
-                        flex-1
+                <main className="
+                    min-h-0
+                    min-w-0
+                    flex-1
+                    overflow-y-auto
+                    overflow-x-hidden
+                    bg-white
+                    sm:bg-slate-100
 
-                        bg-slate-100
+                    overscroll-contain
+                ">
 
-                        overflow-y-auto
-                        overflow-x-hidden
+                    <div className="
+                        w-full
+                        min-h-full
+                        px-0
+                        py-0
 
-                        overscroll-contain
+                        sm:px-5
+                        sm:py-4
 
-                        scroll-smooth
-
-                        [-webkit-overflow-scrolling:touch]
-                    "
-                >
-
-                    <div
-                        className="
-                            w-full
-
-                            px-3
-                            py-4
-
-                            sm:px-5
-                            sm:py-5
-
-                            lg:px-8
-                            lg:py-6
-
-                            pb-24
-                            sm:pb-8
-                        "
-                    >
+                        lg:px-8
+                        lg:py-5
+                    ">
 
                         {children}
 
