@@ -1,10 +1,12 @@
 import os
 from io import BytesIO
+from datetime import datetime
 
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm
 from reportlab.platypus import (
     Image,
     Paragraph,
@@ -17,635 +19,2694 @@ from reportlab.platypus import (
 from inspections.models import InspectionResult
 
 
+# ============================================================
+# COMMON SETTINGS
+# ============================================================
+
+NAVY = colors.HexColor("#102A72")
+BLUE = colors.HexColor("#1D4ED8")
+LIGHT_BLUE = colors.HexColor("#EAF2FF")
+VERY_LIGHT_BLUE = colors.HexColor("#F5F8FF")
+
+GREEN = colors.HexColor("#15803D")
+LIGHT_GREEN = colors.HexColor("#DCFCE7")
+
+RED = colors.HexColor("#DC2626")
+LIGHT_RED = colors.HexColor("#FEE2E2")
+
+GRAY = colors.HexColor("#64748B")
+LIGHT_GRAY = colors.HexColor("#F8FAFC")
+BORDER = colors.HexColor("#CBD5E1")
+DARK = colors.HexColor("#172033")
+WHITE = colors.white
+
+
+# ============================================================
+# ASSET PATHS
+# ============================================================
+
+def get_asset_paths():
+    """
+    First looks for logos inside reporting/assets.
+    Falls back to frontend/src/assets so existing deployment
+    structure continues to work.
+    """
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Preferred location
+    reporting_assets = os.path.join(
+        current_dir,
+        "assets",
+    )
+
+    ntpc_logo = os.path.join(
+        reporting_assets,
+        "Ntpc_logo.png",
+    )
+
+    nml_logo = os.path.join(
+        reporting_assets,
+        "nml_logo.png",
+    )
+
+    # Fallback to existing frontend assets
+    if not os.path.exists(ntpc_logo) or not os.path.exists(nml_logo):
+
+        frontend_assets = os.path.abspath(
+            os.path.join(
+                current_dir,
+                "..",
+                "..",
+                "frontend",
+                "src",
+                "assets",
+            )
+        )
+
+        fallback_ntpc = os.path.join(
+            frontend_assets,
+            "Ntpc_logo.png",
+        )
+
+        fallback_nml = os.path.join(
+            frontend_assets,
+            "nml_logo.png",
+        )
+
+        if os.path.exists(fallback_ntpc):
+            ntpc_logo = fallback_ntpc
+
+        if os.path.exists(fallback_nml):
+            nml_logo = fallback_nml
+
+    return ntpc_logo, nml_logo
+
+
+# ============================================================
+# COMMON STYLES
+# ============================================================
+
+def get_pdf_styles():
+
+    styles = getSampleStyleSheet()
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFTitle",
+            parent=styles["Heading1"],
+            fontName="Helvetica-Bold",
+            fontSize=17,
+            leading=20,
+            alignment=TA_CENTER,
+            textColor=NAVY,
+            spaceAfter=3,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFSubtitle",
+            parent=styles["Normal"],
+            fontName="Helvetica",
+            fontSize=8.5,
+            leading=11,
+            alignment=TA_CENTER,
+            textColor=GRAY,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFReportTitle",
+            parent=styles["Normal"],
+            fontName="Helvetica-Bold",
+            fontSize=11,
+            leading=14,
+            alignment=TA_CENTER,
+            textColor=DARK,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFSection",
+            parent=styles["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=10.5,
+            leading=13,
+            alignment=TA_LEFT,
+            textColor=NAVY,
+            spaceBefore=3,
+            spaceAfter=6,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFBody",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=8.5,
+            leading=11,
+            textColor=DARK,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFSmall",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=7.5,
+            leading=9,
+            textColor=DARK,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFSmallCenter",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=7.5,
+            leading=9,
+            alignment=TA_CENTER,
+            textColor=DARK,
+        )
+    )
+
+    styles.add(
+        ParagraphStyle(
+            name="PDFTableHeader",
+            parent=styles["BodyText"],
+            fontName="Helvetica-Bold",
+            fontSize=7.5,
+            leading=9,
+            alignment=TA_CENTER,
+            textColor=WHITE,
+        )
+    )
+
+    return styles
+
+
+# ============================================================
+# PAGE NUMBER / FOOTER
+# ============================================================
+
+def add_page_number(canvas, doc):
+
+    canvas.saveState()
+
+    width, height = doc.pagesize
+
+    canvas.setStrokeColor(BORDER)
+    canvas.setLineWidth(0.5)
+
+    canvas.line(
+        doc.leftMargin,
+        12 * mm,
+        width - doc.rightMargin,
+        12 * mm,
+    )
+
+    canvas.setFont("Helvetica", 7)
+
+    canvas.setFillColor(GRAY)
+
+    canvas.drawString(
+        doc.leftMargin,
+        7 * mm,
+        "NIRIKSHAN | Digital Machinery Inspection System",
+    )
+
+    canvas.drawRightString(
+        width - doc.rightMargin,
+        7 * mm,
+        f"Page {doc.page}",
+    )
+
+    canvas.restoreState()
+
+
+# ============================================================
+# COMMON HEADER
+# ============================================================
+
+def create_report_header(
+    report_title,
+    styles,
+    logo_height=20 * mm,
+):
+
+    ntpc_logo, nml_logo = get_asset_paths()
+
+    left_logo = (
+        Image(ntpc_logo, width=25 * mm, height=20 * mm)
+        if os.path.exists(ntpc_logo)
+        else ""
+    )
+
+    right_logo = (
+        Image(nml_logo, width=25 * mm, height=20 * mm)
+        if os.path.exists(nml_logo)
+        else ""
+    )
+
+    header_text = [
+        Paragraph(
+            "NTPC MINING LIMITED",
+            styles["PDFTitle"],
+        ),
+        Paragraph(
+            "(A Subsidiary of NTPC Limited)",
+            styles["PDFSubtitle"],
+        ),
+        Spacer(1, 2),
+        Paragraph(
+            "Talaipalli Coal Mining Project",
+            styles["PDFReportTitle"],
+        ),
+        Paragraph(
+            report_title,
+            styles["PDFReportTitle"],
+        ),
+    ]
+
+    center_cell = Table(
+        [[item] for item in header_text],
+        colWidths=[125 * mm],
+    )
+
+    center_cell.setStyle(
+        TableStyle(
+            [
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 2),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+                ("TOPPADDING", (0, 0), (-1, -1), 1),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
+            ]
+        )
+    )
+
+    header = Table(
+        [
+            [
+                left_logo,
+                center_cell,
+                right_logo,
+            ]
+        ],
+        colWidths=[
+            35 * mm,
+            125 * mm,
+            35 * mm,
+        ],
+    )
+
+    header.setStyle(
+        TableStyle(
+            [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 3),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                (
+                    "LINEBELOW",
+                    (0, 0),
+                    (-1, -1),
+                    1.2,
+                    NAVY,
+                ),
+            ]
+        )
+    )
+
+    return header
+
+
+# ============================================================
+# STATUS HELPERS
+# ============================================================
+
+def is_fit_status(status):
+
+    return str(status or "").strip().lower() in [
+        "fit",
+        "pass",
+    ]
+
+
+def status_text(status):
+
+    return "FIT" if is_fit_status(status) else "UNFIT"
+
+
+def status_style(status):
+
+    if is_fit_status(status):
+
+        return (
+            GREEN,
+            LIGHT_GREEN,
+        )
+
+    return (
+        RED,
+        LIGHT_RED,
+    )
+
+
+# ============================================================
+# GENERATE INDIVIDUAL INSPECTION PDF
+# ============================================================
+
 def generate_inspection_pdf(inspection):
+
     buffer = BytesIO()
 
     doc = SimpleDocTemplate(
         buffer,
-        rightMargin=30,
-        leftMargin=30,
-        topMargin=30,
-        bottomMargin=30,
+        pagesize=A4,
+        rightMargin=15 * mm,
+        leftMargin=15 * mm,
+        topMargin=12 * mm,
+        bottomMargin=18 * mm,
+        title=f"Inspection Report - {inspection.inspection_number}",
+        author="NIRIKSHAN",
     )
 
-    styles = getSampleStyleSheet()
-
-    title_style = styles["Heading1"]
-    title_style.alignment = TA_CENTER
-    title_style.textColor = colors.HexColor("#163A8A")
-
-    section_style = styles["Heading2"]
-    section_style.alignment = TA_CENTER
-
-    body_style = styles["BodyText"]
-
-    # --- PATH LOGIC ---
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    FRONTEND_ASSETS_DIR = os.path.abspath(
-        os.path.join(CURRENT_DIR, "..", "..", "frontend", "src", "assets")
-    )
-
-    ntpc_logo = os.path.join(FRONTEND_ASSETS_DIR, "Ntpc_logo.png")
-    nml_logo = os.path.join(FRONTEND_ASSETS_DIR, "nml_logo.png")
-    # --------------------------
+    styles = get_pdf_styles()
 
     body = []
 
-    # -------------------------------------------------
+    # --------------------------------------------------------
     # HEADER
-    # -------------------------------------------------
+    # --------------------------------------------------------
 
-    header_text = """
-    <para align="center">
-    <font size="22" color="#163A8A"><b>NTPC MINING LIMITED</b></font><br/>
-    <font size="12">(A Subsidiary of NTPC Limited)</font><br/><br/>
-    <font size="16"><b>Talaipalli Coal Mining Project</b></font><br/><br/>
-    <font size="15">Machinery Safety Inspection Report</font>
-    </para>
-    """
-
-    left_logo = Image(ntpc_logo, width=80, height=65) if os.path.exists(ntpc_logo) else ""
-    right_logo = Image(nml_logo, width=80, height=65) if os.path.exists(nml_logo) else ""
-
-    header = Table(
-        [[left_logo, Paragraph(header_text, body_style), right_logo]],
-        colWidths=[90, 330, 90],
+    body.append(
+        create_report_header(
+            "Machinery Safety Inspection Report",
+            styles,
+        )
     )
 
-    header.setStyle(
-        TableStyle([
-            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 15),
-        ])
+    body.append(
+        Spacer(
+            1,
+            5 * mm,
+        )
     )
 
-    body.append(header)
-    body.append(Spacer(1, 0.30 * inch))
+    # --------------------------------------------------------
+    # REPORT INFORMATION
+    # --------------------------------------------------------
 
-    # -------------------------------------------------
-    # INSPECTION INFORMATION
-    # -------------------------------------------------
-    body.append(Paragraph("<b>Inspection Information</b>", section_style))
-    body.append(Spacer(1, 0.10 * inch))
+    body.append(
+        Paragraph(
+            "INSPECTION INFORMATION",
+            styles["PDFSection"],
+        )
+    )
 
-    op_status = str(inspection.operational_status or "")
+    op_status = str(
+        inspection.operational_status or ""
+    )
+
+    engineer_name = (
+        inspection.engineer.full_name
+        if inspection.engineer
+        else ""
+    )
+
+    designation = (
+        inspection.engineer.designation
+        if inspection.engineer
+        else ""
+    )
+
+    vehicle_number = (
+        inspection.vehicle.machine_number
+        if inspection.vehicle
+        else ""
+    )
+
+    machinery_type = (
+        inspection.vehicle.machinery_type.name
+        if inspection.vehicle
+        and inspection.vehicle.machinery_type
+        else ""
+    )
 
     info = [
         [
             "Inspection No.",
-            inspection.inspection_number,
+            str(inspection.inspection_number or ""),
             "Inspection Date",
-            str(inspection.inspection_date),
+            str(inspection.inspection_date or ""),
         ],
         [
             "Engineer",
-            inspection.engineer.full_name if inspection.engineer else "",
+            engineer_name,
             "Designation",
-            inspection.engineer.designation if inspection.engineer else "",
+            designation,
         ],
         [
             "Vehicle No.",
-            inspection.vehicle.machine_number if inspection.vehicle else "",
+            vehicle_number,
             "Machinery Type",
-            inspection.vehicle.machinery_type.name if inspection.vehicle and inspection.vehicle.machinery_type else "",
+            machinery_type,
         ],
         [
             "Shift",
-            inspection.shift,
+            str(inspection.shift or ""),
             "Relay",
-            inspection.relay,
+            str(inspection.relay or ""),
         ],
         [
-            "Status",
-            op_status,
+            "Operational Status",
+            status_text(op_status),
             "",
             "",
         ],
     ]
 
-    info_table = Table(info, colWidths=[100, 170, 100, 170])
+    info_table = Table(
+        info,
+        colWidths=[
+            35 * mm,
+            55 * mm,
+            35 * mm,
+            55 * mm,
+        ],
+    )
 
     info_styles = [
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#EAF2FF")),
-        ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#EAF2FF")),
-        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            BORDER,
+        ),
+        (
+            "BACKGROUND",
+            (0, 0),
+            (0, -1),
+            LIGHT_BLUE,
+        ),
+        (
+            "BACKGROUND",
+            (2, 0),
+            (2, -1),
+            LIGHT_BLUE,
+        ),
+        (
+            "FONTNAME",
+            (0, 0),
+            (0, -1),
+            "Helvetica-Bold",
+        ),
+        (
+            "FONTNAME",
+            (2, 0),
+            (2, -1),
+            "Helvetica-Bold",
+        ),
+        (
+            "FONTSIZE",
+            (0, 0),
+            (-1, -1),
+            8,
+        ),
+        (
+            "TEXTCOLOR",
+            (0, 0),
+            (-1, -1),
+            DARK,
+        ),
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE",
+        ),
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            6,
+        ),
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            6,
+        ),
     ]
 
-    if op_status.lower() in ["pass", "fit"]:
-        info_styles.append(("TEXTCOLOR", (1, 4), (1, 4), colors.green))
-        info_styles.append(("FONTNAME", (1, 4), (1, 4), "Helvetica-Bold"))
-    elif op_status.lower() in ["fail", "unfit"]:
-        info_styles.append(("TEXTCOLOR", (1, 4), (1, 4), colors.red))
-        info_styles.append(("FONTNAME", (1, 4), (1, 4), "Helvetica-Bold"))
+    status_color, status_bg = status_style(op_status)
 
-    info_table.setStyle(TableStyle(info_styles))
+    info_styles.extend(
+        [
+            (
+                "BACKGROUND",
+                (1, 4),
+                (1, 4),
+                status_bg,
+            ),
+            (
+                "TEXTCOLOR",
+                (1, 4),
+                (1, 4),
+                status_color,
+            ),
+            (
+                "FONTNAME",
+                (1, 4),
+                (1, 4),
+                "Helvetica-Bold",
+            ),
+            (
+                "ALIGN",
+                (1, 4),
+                (1, 4),
+                "CENTER",
+            ),
+        ]
+    )
+
+    info_table.setStyle(
+        TableStyle(info_styles)
+    )
 
     body.append(info_table)
-    body.append(Spacer(1, 0.30 * inch))
 
-    # -------------------------------------------------
+    body.append(
+        Spacer(
+            1,
+            5 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # SUMMARY
+    # --------------------------------------------------------
+
+    results = (
+        InspectionResult.objects
+        .filter(
+            inspection=inspection
+        )
+        .select_related(
+            "inspection_field"
+        )
+    )
+
+    total = results.count()
+
+    passed = results.filter(
+        result="Pass"
+    ).count()
+
+    failed = results.filter(
+        result="Fail"
+    ).count()
+
+    summary_data = [
+        [
+            Paragraph(
+                "<b>TOTAL CHECKPOINTS</b>",
+                styles["PDFSmallCenter"],
+            ),
+            Paragraph(
+                "<b>PASSED</b>",
+                styles["PDFSmallCenter"],
+            ),
+            Paragraph(
+                "<b>FAILED</b>",
+                styles["PDFSmallCenter"],
+            ),
+            Paragraph(
+                "<b>STATUS</b>",
+                styles["PDFSmallCenter"],
+            ),
+        ],
+        [
+            str(total),
+            str(passed),
+            str(failed),
+            status_text(op_status),
+        ],
+    ]
+
+    summary_table = Table(
+        summary_data,
+        colWidths=[
+            45 * mm,
+            45 * mm,
+            45 * mm,
+            45 * mm,
+        ],
+    )
+
+    summary_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "GRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    BORDER,
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (-1, 0),
+                    VERY_LIGHT_BLUE,
+                ),
+                (
+                    "ALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "CENTER",
+                ),
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "MIDDLE",
+                ),
+                (
+                    "FONTNAME",
+                    (0, 1),
+                    (-1, 1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 1),
+                    (-1, 1),
+                    12,
+                ),
+                (
+                    "TEXTCOLOR",
+                    (1, 1),
+                    (1, 1),
+                    GREEN,
+                ),
+                (
+                    "TEXTCOLOR",
+                    (2, 1),
+                    (2, 1),
+                    RED,
+                ),
+                (
+                    "TEXTCOLOR",
+                    (3, 1),
+                    (3, 1),
+                    status_color,
+                ),
+                (
+                    "BACKGROUND",
+                    (3, 1),
+                    (3, 1),
+                    status_bg,
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    6,
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    6,
+                ),
+            ]
+        )
+    )
+
+    body.append(summary_table)
+
+    body.append(
+        Spacer(
+            1,
+            5 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
     # CHECKLIST
-    # -------------------------------------------------
-    body.append(Paragraph("<b>Inspection Checklist</b>", section_style))
-    body.append(Spacer(1, 0.10 * inch))
+    # --------------------------------------------------------
 
-    checklist = [["Sl. No.", "Inspection Item", "Result"]]
+    body.append(
+        Paragraph(
+            "INSPECTION CHECKLIST",
+            styles["PDFSection"],
+        )
+    )
 
-    results = InspectionResult.objects.filter(inspection=inspection).select_related("inspection_field")
+    checklist = [
+        [
+            Paragraph(
+                "Sl. No.",
+                styles["PDFTableHeader"],
+            ),
+            Paragraph(
+                "Inspection Point",
+                styles["PDFTableHeader"],
+            ),
+            Paragraph(
+                "Result",
+                styles["PDFTableHeader"],
+            ),
+        ]
+    ]
 
     checklist_styles = [
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            BORDER,
+        ),
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            NAVY,
+        ),
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE",
+        ),
+        (
+            "ALIGN",
+            (0, 0),
+            (0, -1),
+            "CENTER",
+        ),
+        (
+            "ALIGN",
+            (2, 0),
+            (2, -1),
+            "CENTER",
+        ),
+        (
+            "FONTSIZE",
+            (0, 1),
+            (-1, -1),
+            8,
+        ),
+        (
+            "TOPPADDING",
+            (0, 1),
+            (-1, -1),
+            5,
+        ),
+        (
+            "BOTTOMPADDING",
+            (0, 1),
+            (-1, -1),
+            5,
+        ),
     ]
 
-    for index, item in enumerate(results, start=1):
-        result_val = str(item.result or "")
-        checklist.append([str(index), item.inspection_field.field_name, result_val])
+    for index, item in enumerate(
+        results,
+        start=1,
+    ):
 
-        if result_val.lower() in ["pass", "fit"]:
-            checklist_styles.append(("TEXTCOLOR", (2, index), (2, index), colors.green))
-            checklist_styles.append(("FONTNAME", (2, index), (2, index), "Helvetica-Bold"))
-        elif result_val.lower() in ["fail", "unfit"]:
-            checklist_styles.append(("TEXTCOLOR", (2, index), (2, index), colors.red))
-            checklist_styles.append(("FONTNAME", (2, index), (2, index), "Helvetica-Bold"))
+        result_val = str(
+            item.result or ""
+        )
 
-    checklist_table = Table(checklist, colWidths=[50, 340, 120])
-    checklist_table.setStyle(TableStyle(checklist_styles))
+        field_name = str(
+            item.inspection_field.field_name
+        )
+
+        checklist.append(
+            [
+                str(index),
+                Paragraph(
+                    field_name,
+                    styles["PDFSmall"],
+                ),
+                result_val.upper(),
+            ]
+        )
+
+        if result_val.lower() == "pass":
+
+            checklist_styles.extend(
+                [
+                    (
+                        "TEXTCOLOR",
+                        (2, index),
+                        (2, index),
+                        GREEN,
+                    ),
+                    (
+                        "BACKGROUND",
+                        (2, index),
+                        (2, index),
+                        LIGHT_GREEN,
+                    ),
+                    (
+                        "FONTNAME",
+                        (2, index),
+                        (2, index),
+                        "Helvetica-Bold",
+                    ),
+                ]
+            )
+
+        elif result_val.lower() == "fail":
+
+            checklist_styles.extend(
+                [
+                    (
+                        "TEXTCOLOR",
+                        (2, index),
+                        (2, index),
+                        RED,
+                    ),
+                    (
+                        "BACKGROUND",
+                        (2, index),
+                        (2, index),
+                        LIGHT_RED,
+                    ),
+                    (
+                        "FONTNAME",
+                        (2, index),
+                        (2, index),
+                        "Helvetica-Bold",
+                    ),
+                ]
+            )
+
+        if index % 2 == 0:
+
+            checklist_styles.append(
+                (
+                    "BACKGROUND",
+                    (0, index),
+                    (1, index),
+                    LIGHT_GRAY,
+                )
+            )
+
+    checklist_table = Table(
+        checklist,
+        colWidths=[
+            18 * mm,
+            127 * mm,
+            35 * mm,
+        ],
+        repeatRows=1,
+    )
+
+    checklist_table.setStyle(
+        TableStyle(checklist_styles)
+    )
 
     body.append(checklist_table)
-    body.append(Spacer(1, 0.30 * inch))
 
-    # -------------------------------------------------
-    # REMARKS & SIGNATURES
-    # -------------------------------------------------
-    body.append(Paragraph("<b>Remarks</b>", section_style))
-    body.append(Spacer(1, 0.10 * inch))
-    body.append(Paragraph(inspection.remarks if inspection.remarks else "Nil", body_style))
-    body.append(Spacer(1, 0.50 * inch))
-
-    sign_table = Table(
-        [["____________________", "____________________"], ["Inspection Engineer", "Supervisor"]],
-        colWidths=[250, 250],
+    body.append(
+        Spacer(
+            1,
+            5 * mm,
+        )
     )
-    sign_table.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER"), ("TOPPADDING", (0, 1), (-1, 1), 10)]))
 
-    body.append(sign_table)
-    doc.build(body)
+    # --------------------------------------------------------
+    # FLAGGED DEFECTS
+    # --------------------------------------------------------
+
+    failed_items = [
+        str(
+            item.inspection_field.field_name
+        )
+        for item in results
+        if str(item.result or "").lower()
+        == "fail"
+    ]
+
+    body.append(
+        Paragraph(
+            "FLAGGED DEFECTS",
+            styles["PDFSection"],
+        )
+    )
+
+    if failed_items:
+
+        defect_rows = []
+
+        for index, defect in enumerate(
+            failed_items,
+            start=1,
+        ):
+
+            defect_rows.append(
+                [
+                    str(index),
+                    Paragraph(
+                        defect,
+                        styles["PDFSmall"],
+                    ),
+                ]
+            )
+
+        defect_table = Table(
+            defect_rows,
+            colWidths=[
+                15 * mm,
+                165 * mm,
+            ],
+        )
+
+        defect_table.setStyle(
+            TableStyle(
+                [
+                    (
+                        "GRID",
+                        (0, 0),
+                        (-1, -1),
+                        0.5,
+                        colors.HexColor("#FCA5A5"),
+                    ),
+                    (
+                        "BACKGROUND",
+                        (0, 0),
+                        (-1, -1),
+                        LIGHT_RED,
+                    ),
+                    (
+                        "TEXTCOLOR",
+                        (0, 0),
+                        (-1, -1),
+                        RED,
+                    ),
+                    (
+                        "FONTNAME",
+                        (0, 0),
+                        (0, -1),
+                        "Helvetica-Bold",
+                    ),
+                    (
+                        "ALIGN",
+                        (0, 0),
+                        (0, -1),
+                        "CENTER",
+                    ),
+                    (
+                        "VALIGN",
+                        (0, 0),
+                        (-1, -1),
+                        "MIDDLE",
+                    ),
+                    (
+                        "TOPPADDING",
+                        (0, 0),
+                        (-1, -1),
+                        5,
+                    ),
+                    (
+                        "BOTTOMPADDING",
+                        (0, 0),
+                        (-1, -1),
+                        5,
+                    ),
+                ]
+            )
+        )
+
+        body.append(defect_table)
+
+    else:
+
+        no_defects = Table(
+            [
+                [
+                    Paragraph(
+                        "No defects identified during this inspection.",
+                        styles["PDFBody"],
+                    )
+                ]
+            ],
+            colWidths=[180 * mm],
+        )
+
+        no_defects.setStyle(
+            TableStyle(
+                [
+                    (
+                        "BACKGROUND",
+                        (0, 0),
+                        (-1, -1),
+                        LIGHT_GREEN,
+                    ),
+                    (
+                        "BOX",
+                        (0, 0),
+                        (-1, -1),
+                        0.5,
+                        colors.HexColor("#86EFAC"),
+                    ),
+                    (
+                        "TEXTCOLOR",
+                        (0, 0),
+                        (-1, -1),
+                        GREEN,
+                    ),
+                    (
+                        "LEFTPADDING",
+                        (0, 0),
+                        (-1, -1),
+                        8,
+                    ),
+                    (
+                        "TOPPADDING",
+                        (0, 0),
+                        (-1, -1),
+                        7,
+                    ),
+                    (
+                        "BOTTOMPADDING",
+                        (0, 0),
+                        (-1, -1),
+                        7,
+                    ),
+                ]
+            )
+        )
+
+        body.append(no_defects)
+
+    body.append(
+        Spacer(
+            1,
+            5 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # REMARKS
+    # --------------------------------------------------------
+
+    body.append(
+        Paragraph(
+            "ENGINEER REMARKS",
+            styles["PDFSection"],
+        )
+    )
+
+    remarks_text = (
+        inspection.remarks
+        if inspection.remarks
+        else "Nil"
+    )
+
+    remarks_table = Table(
+        [
+            [
+                Paragraph(
+                    str(remarks_text),
+                    styles["PDFBody"],
+                )
+            ]
+        ],
+        colWidths=[180 * mm],
+    )
+
+    remarks_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "BOX",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    BORDER,
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (-1, -1),
+                    LIGHT_GRAY,
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+            ]
+        )
+    )
+
+    body.append(remarks_table)
+
+    body.append(
+        Spacer(
+            1,
+            12 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # SIGNATURES
+    # --------------------------------------------------------
+
+    signature_table = Table(
+        [
+            [
+                "____________________________",
+                "____________________________",
+            ],
+            [
+                "Inspection Engineer",
+                "Supervisor / Approving Authority",
+            ],
+        ],
+        colWidths=[
+            90 * mm,
+            90 * mm,
+        ],
+    )
+
+    signature_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "ALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "CENTER",
+                ),
+                (
+                    "FONTNAME",
+                    (0, 1),
+                    (-1, 1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 1),
+                    (-1, 1),
+                    8,
+                ),
+                (
+                    "TEXTCOLOR",
+                    (0, 1),
+                    (-1, 1),
+                    GRAY,
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 1),
+                    (-1, 1),
+                    5,
+                ),
+            ]
+        )
+    )
+
+    body.append(signature_table)
+
+    doc.build(
+        body,
+        onFirstPage=add_page_number,
+        onLaterPages=add_page_number,
+    )
+
     pdf = buffer.getvalue()
+
     buffer.close()
 
     return pdf
 
 
-# -------------------------------------------------
+# ============================================================
 # GENERATE SHIFT PDF
-# -------------------------------------------------
+# ============================================================
 
-def generate_shift_pdf(queryset, date_str, shift_str):
+def generate_shift_pdf(
+    queryset,
+    date_str,
+    shift_str,
+):
+
     buffer = BytesIO()
 
     doc = SimpleDocTemplate(
         buffer,
-        rightMargin=20,
-        leftMargin=20,
-        topMargin=30,
-        bottomMargin=30,
+        pagesize=landscape(A4),
+        rightMargin=12 * mm,
+        leftMargin=12 * mm,
+        topMargin=12 * mm,
+        bottomMargin=18 * mm,
+        title="Shift-wise Machinery Inspection Report",
+        author="NIRIKSHAN",
     )
 
-    styles = getSampleStyleSheet()
+    styles = get_pdf_styles()
 
-    # Left-aligned style for text blobs
-    cell_style = styles["BodyText"]
-    cell_style.fontSize = 9
-    cell_style.leading = 11
+    cell_style = styles["PDFSmall"]
 
-    # Centered style for IDs/Names
-    cell_style_center = styles["Normal"]
-    cell_style_center.fontSize = 9
-    cell_style_center.leading = 11
-    cell_style_center.alignment = TA_CENTER
-
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    FRONTEND_ASSETS_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "frontend", "src", "assets"))
-    ntpc_logo = os.path.join(FRONTEND_ASSETS_DIR, "Ntpc_logo.png")
-    nml_logo = os.path.join(FRONTEND_ASSETS_DIR, "nml_logo.png")
+    cell_style_center = styles["PDFSmallCenter"]
 
     body = []
 
-    header_text = """
-    <para align="center">
-    <font size="20" color="#163A8A"><b>NTPC MINING LIMITED</b></font><br/>
-    <font size="11">(A Subsidiary of NTPC Limited)</font><br/><br/>
-    <font size="14"><b>Talaipalli Coal Mining Project</b></font><br/><br/>
-    <font size="14">Machinery Safety Inspection Report</font>
-    </para>
-    """
+    body.append(
+        create_report_header(
+            "Shift-wise Machinery Inspection Report",
+            styles,
+        )
+    )
 
-    left_logo = Image(ntpc_logo, width=80, height=65) if os.path.exists(ntpc_logo) else ""
-    right_logo = Image(nml_logo, width=80, height=65) if os.path.exists(nml_logo) else ""
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
 
-    header = Table([[left_logo, Paragraph(header_text, styles["BodyText"]), right_logo]], colWidths=[90, 360, 90])
-    header.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                                ("BOTTOMPADDING", (0, 0), (-1, -1), 10)]))
-    body.append(header)
-    body.append(Spacer(1, 0.2 * inch))
+    # --------------------------------------------------------
+    # META INFORMATION
+    # --------------------------------------------------------
 
     meta_data = [
-        ["Report Type:", "Shift-wise Inspection Report", "Date:", date_str],
-        ["Project:", "Talaipalli", "Shift:", f"{shift_str} Shift"],
+        [
+            "Report Type",
+            "Shift-wise Inspection Report",
+            "Date",
+            str(date_str),
+            "Shift",
+            f"{shift_str} Shift",
+        ],
+        [
+            "Project",
+            "Talaipalli",
+            "",
+            "",
+            "",
+            "",
+        ],
     ]
 
-    meta_table = Table(meta_data, colWidths=[80, 190, 80, 190])
-    meta_table.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
-        ("FONTNAME", (2, 0), (2, -1), "Helvetica-Bold"),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F9FAFB")),
-        ("PADDING", (0, 0), (-1, -1), 6),
-    ]))
+    meta_table = Table(
+        meta_data,
+        colWidths=[
+            25 * mm,
+            50 * mm,
+            20 * mm,
+            45 * mm,
+            20 * mm,
+            45 * mm,
+        ],
+    )
+
+    meta_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "GRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    BORDER,
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (0, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "BACKGROUND",
+                    (2, 0),
+                    (2, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "BACKGROUND",
+                    (4, 0),
+                    (4, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "FONTNAME",
+                    (0, 0),
+                    (0, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTNAME",
+                    (2, 0),
+                    (2, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTNAME",
+                    (4, 0),
+                    (4, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "MIDDLE",
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+            ]
+        )
+    )
+
     body.append(meta_table)
-    body.append(Spacer(1, 0.2 * inch))
+
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # UNIQUE INSPECTIONS
+    # --------------------------------------------------------
 
     unique_inspections = {}
+
     for item in queryset:
-        vehicle_no = item.vehicle.machine_number if item.vehicle else "Unknown"
-        if vehicle_no not in unique_inspections or item.id > unique_inspections[vehicle_no].id:
-            unique_inspections[vehicle_no] = item
 
-    final_queryset = sorted(unique_inspections.values(), key=lambda x: x.id)
+        vehicle_no = (
+            item.vehicle.machine_number
+            if item.vehicle
+            else "Unknown"
+        )
 
-    # Added \n to force stacking and prevent overlapping text
+        if (
+            vehicle_no not in unique_inspections
+            or item.id
+            > unique_inspections[vehicle_no].id
+        ):
+
+            unique_inspections[
+                vehicle_no
+            ] = item
+
+    final_queryset = sorted(
+        unique_inspections.values(),
+        key=lambda x: x.id,
+    )
+
+    # --------------------------------------------------------
+    # TABLE
+    # --------------------------------------------------------
+
     table_data = [
-        ["Sl.\nNo.", "Engineer", "Vehicle\nNo.", "Machinery\nType", "Status", "Flagged\nDefects", "Remarks"]
+        [
+            "Sl. No.",
+            "Engineer",
+            "Vehicle No.",
+            "Machinery Type",
+            "Status",
+            "Flagged Defects",
+            "Remarks",
+        ]
     ]
 
     table_styles = [
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 9),  # Slightly smaller header font
-        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            BORDER,
+        ),
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            NAVY,
+        ),
+        (
+            "TEXTCOLOR",
+            (0, 0),
+            (-1, 0),
+            WHITE,
+        ),
+        (
+            "FONTNAME",
+            (0, 0),
+            (-1, 0),
+            "Helvetica-Bold",
+        ),
+        (
+            "FONTSIZE",
+            (0, 0),
+            (-1, 0),
+            7.5,
+        ),
+        (
+            "ALIGN",
+            (0, 0),
+            (-1, -1),
+            "CENTER",
+        ),
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE",
+        ),
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
     ]
 
-    for index, item in enumerate(final_queryset, start=1):
-        op_status = str(item.operational_status or "").title()
-        is_fit = op_status.lower() in ["pass", "fit"]
+    for index, item in enumerate(
+        final_queryset,
+        start=1,
+    ):
 
-        status_text = "Fit" if is_fit else "Unfit"
-        table_styles.append(("TEXTCOLOR", (4, index), (4, index), colors.green if is_fit else colors.red))
-        table_styles.append(("FONTNAME", (4, index), (4, index), "Helvetica-Bold"))
+        op_status = str(
+            item.operational_status or ""
+        )
 
-        failed_items_list = [res.inspection_field.field_name for res in item.results.all() if
-                             str(res.result).lower() == "fail"]
-        failed_text = ", ".join(failed_items_list) if failed_items_list else "-"
-        remarks_text = item.remarks if item.remarks else (
-            "Fit for operations" if is_fit else "Unfit for operations pls repair it")
+        is_fit = is_fit_status(
+            op_status
+        )
 
-        table_data.append([
-            str(index),
-            Paragraph(item.engineer.full_name if item.engineer else "", cell_style),
-            Paragraph(item.vehicle.machine_number if item.vehicle else "", cell_style_center),
-            Paragraph(item.vehicle.machinery_type.name if item.vehicle and item.vehicle.machinery_type else "",
-                      cell_style_center),
-            status_text,
-            Paragraph(failed_text, cell_style),
-            Paragraph(remarks_text, cell_style),
-        ])
+        status = status_text(
+            op_status
+        )
 
-    # Rebalanced column widths
-    report_table = Table(table_data, colWidths=[35, 90, 65, 80, 50, 115, 120])
-    report_table.setStyle(TableStyle(table_styles))
+        status_color, status_bg = status_style(
+            op_status
+        )
+
+        failed_items = [
+            res.inspection_field.field_name
+            for res in item.results.all()
+            if str(res.result or "").lower()
+            == "fail"
+        ]
+
+        failed_text = (
+            ", ".join(failed_items)
+            if failed_items
+            else "-"
+        )
+
+        remarks_text = (
+            item.remarks
+            if item.remarks
+            else (
+                "Fit for operations"
+                if is_fit
+                else "Requires maintenance"
+            )
+        )
+
+        table_data.append(
+            [
+                str(index),
+                Paragraph(
+                    item.engineer.full_name
+                    if item.engineer
+                    else "",
+                    cell_style,
+                ),
+                Paragraph(
+                    item.vehicle.machine_number
+                    if item.vehicle
+                    else "",
+                    cell_style_center,
+                ),
+                Paragraph(
+                    item.vehicle.machinery_type.name
+                    if item.vehicle
+                    and item.vehicle.machinery_type
+                    else "",
+                    cell_style_center,
+                ),
+                status,
+                Paragraph(
+                    failed_text,
+                    cell_style,
+                ),
+                Paragraph(
+                    remarks_text,
+                    cell_style,
+                ),
+            ]
+        )
+
+        table_styles.extend(
+            [
+                (
+                    "TEXTCOLOR",
+                    (4, index),
+                    (4, index),
+                    status_color,
+                ),
+                (
+                    "BACKGROUND",
+                    (4, index),
+                    (4, index),
+                    status_bg,
+                ),
+                (
+                    "FONTNAME",
+                    (4, index),
+                    (4, index),
+                    "Helvetica-Bold",
+                ),
+            ]
+        )
+
+        if index % 2 == 0:
+
+            table_styles.append(
+                (
+                    "BACKGROUND",
+                    (0, index),
+                    (3, index),
+                    LIGHT_GRAY,
+                )
+            )
+
+    report_table = Table(
+        table_data,
+        colWidths=[
+            15 * mm,
+            38 * mm,
+            30 * mm,
+            42 * mm,
+            25 * mm,
+            65 * mm,
+            65 * mm,
+        ],
+        repeatRows=1,
+    )
+
+    report_table.setStyle(
+        TableStyle(table_styles)
+    )
+
     body.append(report_table)
-    body.append(Spacer(1, 0.4 * inch))
 
-    summary_data = [["______________________________"], ["Shift In-charge / Engineer"]]
-    summary_table = Table(summary_data, colWidths=[200])
-    summary_table.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "RIGHT"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                                       ("TOPPADDING", (0, 1), (-1, 1), 5)]))
+    body.append(
+        Spacer(
+            1,
+            12 * mm,
+        )
+    )
 
-    layout_table = Table([["", summary_table]], colWidths=[350, 200])
-    body.append(layout_table)
+    signature = Table(
+        [
+            [
+                "____________________________",
+            ],
+            [
+                "Shift In-charge / Engineer",
+            ],
+        ],
+        colWidths=[60 * mm],
+    )
 
-    doc.build(body)
+    signature.setStyle(
+        TableStyle(
+            [
+                (
+                    "ALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "CENTER",
+                ),
+                (
+                    "FONTNAME",
+                    (0, 1),
+                    (-1, 1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 1),
+                    (-1, 1),
+                    8,
+                ),
+            ]
+        )
+    )
+
+    body.append(
+        Table(
+            [["", signature]],
+            colWidths=[
+                180 * mm,
+                70 * mm,
+            ],
+            style=[
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "BOTTOM",
+                )
+            ],
+        )
+    )
+
+    doc.build(
+        body,
+        onFirstPage=add_page_number,
+        onLaterPages=add_page_number,
+    )
+
     pdf = buffer.getvalue()
+
     buffer.close()
 
     return pdf
 
 
-# -------------------------------------------------
+# ============================================================
 # GENERATE DAILY PDF
-# -------------------------------------------------
+# ============================================================
 
-def generate_daily_pdf(queryset, date_str):
+def generate_daily_pdf(
+    queryset,
+    date_str,
+):
+
     buffer = BytesIO()
 
     doc = SimpleDocTemplate(
         buffer,
-        rightMargin=20,
-        leftMargin=20,
-        topMargin=30,
-        bottomMargin=30,
+        pagesize=landscape(A4),
+        rightMargin=12 * mm,
+        leftMargin=12 * mm,
+        topMargin=12 * mm,
+        bottomMargin=18 * mm,
+        title="Daily Machinery Inspection Report",
+        author="NIRIKSHAN",
     )
 
-    styles = getSampleStyleSheet()
+    styles = get_pdf_styles()
 
-    # Left-aligned style for text blobs
-    cell_style = styles["BodyText"]
-    cell_style.fontSize = 9
-    cell_style.leading = 11
+    cell_style = styles["PDFSmall"]
 
-    # Centered style for IDs/Names
-    cell_style_center = styles["Normal"]
-    cell_style_center.fontSize = 9
-    cell_style_center.leading = 11
-    cell_style_center.alignment = TA_CENTER
-
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    FRONTEND_ASSETS_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "frontend", "src", "assets"))
-    ntpc_logo = os.path.join(FRONTEND_ASSETS_DIR, "Ntpc_logo.png")
-    nml_logo = os.path.join(FRONTEND_ASSETS_DIR, "nml_logo.png")
+    cell_style_center = styles["PDFSmallCenter"]
 
     body = []
 
-    header_text = """
-    <para align="center">
-    <font size="20" color="#163A8A"><b>NTPC MINING LIMITED</b></font><br/>
-    <font size="11">(A Subsidiary of NTPC Limited)</font><br/><br/>
-    <font size="14"><b>Talaipalli Coal Mining Project</b></font><br/><br/>
-    <font size="14">Daily Random Inspection Report</font>
-    </para>
-    """
+    body.append(
+        create_report_header(
+            "Daily Machinery Inspection Report",
+            styles,
+        )
+    )
 
-    left_logo = Image(ntpc_logo, width=80, height=65) if os.path.exists(ntpc_logo) else ""
-    right_logo = Image(nml_logo, width=80, height=65) if os.path.exists(nml_logo) else ""
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
 
-    header = Table([[left_logo, Paragraph(header_text, styles["BodyText"]), right_logo]], colWidths=[90, 360, 90])
-    header.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                                ("BOTTOMPADDING", (0, 0), (-1, -1), 10)]))
-    body.append(header)
-    body.append(Spacer(1, 0.2 * inch))
+    # --------------------------------------------------------
+    # UNIQUE VEHICLES
+    # --------------------------------------------------------
 
     unique_inspections = {}
-    for item in queryset:
-        vehicle_no = item.vehicle.machine_number if item.vehicle else "Unknown"
-        if vehicle_no not in unique_inspections or item.id > unique_inspections[vehicle_no].id:
-            unique_inspections[vehicle_no] = item
 
-    final_queryset = sorted(unique_inspections.values(), key=lambda x: x.id)
+    for item in queryset:
+
+        vehicle_no = (
+            item.vehicle.machine_number
+            if item.vehicle
+            else "Unknown"
+        )
+
+        if (
+            vehicle_no not in unique_inspections
+            or item.id
+            > unique_inspections[vehicle_no].id
+        ):
+
+            unique_inspections[
+                vehicle_no
+            ] = item
+
+    final_queryset = sorted(
+        unique_inspections.values(),
+        key=lambda x: x.id,
+    )
+
+    # --------------------------------------------------------
+    # META
+    # --------------------------------------------------------
 
     meta_data = [
-        ["Report Type:", "Daily Inspection Report", "Date:", date_str],
-        ["Project:", "Talaipalli", "Total Vehicles:", f"{len(final_queryset)}"],
+        [
+            "Report Type",
+            "Daily Inspection Report",
+            "Date",
+            str(date_str),
+        ],
+        [
+            "Project",
+            "Talaipalli",
+            "Total Vehicles",
+            str(len(final_queryset)),
+        ],
     ]
 
-    meta_table = Table(meta_data, colWidths=[90, 180, 90, 180])
-    meta_table.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
-        ("FONTNAME", (2, 0), (2, -1), "Helvetica-Bold"),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F9FAFB")),
-        ("PADDING", (0, 0), (-1, -1), 6),
-    ]))
-    body.append(meta_table)
-    body.append(Spacer(1, 0.2 * inch))
+    meta_table = Table(
+        meta_data,
+        colWidths=[
+            30 * mm,
+            60 * mm,
+            30 * mm,
+            90 * mm,
+        ],
+    )
 
-    # Added \n to force stacking and prevent overlapping text
+    meta_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "GRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    BORDER,
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (0, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "BACKGROUND",
+                    (2, 0),
+                    (2, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "FONTNAME",
+                    (0, 0),
+                    (0, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTNAME",
+                    (2, 0),
+                    (2, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+            ]
+        )
+    )
+
+    body.append(meta_table)
+
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # TABLE
+    # --------------------------------------------------------
+
     table_data = [
-        ["Sl.\nNo.", "Engineer", "Vehicle\nNo.", "Machinery\nType", "Last\nShift", "EOD\nStatus", "Flagged\nDefects",
-         "Remarks"]
+        [
+            "Sl. No.",
+            "Engineer",
+            "Vehicle No.",
+            "Machinery Type",
+            "Last Shift",
+            "EOD Status",
+            "Flagged Defects",
+            "Remarks",
+        ]
     ]
 
     table_styles = [
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 9),  # Slightly smaller header font
-        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            BORDER,
+        ),
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            NAVY,
+        ),
+        (
+            "TEXTCOLOR",
+            (0, 0),
+            (-1, 0),
+            WHITE,
+        ),
+        (
+            "FONTNAME",
+            (0, 0),
+            (-1, 0),
+            "Helvetica-Bold",
+        ),
+        (
+            "FONTSIZE",
+            (0, 0),
+            (-1, 0),
+            7,
+        ),
+        (
+            "ALIGN",
+            (0, 0),
+            (-1, -1),
+            "CENTER",
+        ),
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE",
+        ),
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
     ]
 
-    for index, item in enumerate(final_queryset, start=1):
-        op_status = str(item.operational_status or "").title()
-        is_fit = op_status.lower() in ["pass", "fit"]
+    for index, item in enumerate(
+        final_queryset,
+        start=1,
+    ):
 
-        status_text = "Fit" if is_fit else "Unfit"
-        table_styles.append(("TEXTCOLOR", (5, index), (5, index), colors.green if is_fit else colors.red))
-        table_styles.append(("FONTNAME", (5, index), (5, index), "Helvetica-Bold"))
+        op_status = str(
+            item.operational_status or ""
+        )
 
-        failed_items_list = [res.inspection_field.field_name for res in item.results.all() if
-                             str(res.result).lower() == "fail"]
-        failed_text = ", ".join(failed_items_list) if failed_items_list else "-"
+        is_fit = is_fit_status(
+            op_status
+        )
 
-        remarks_text = item.remarks if item.remarks else (
-            "Fit for operations" if is_fit else "Unfit for operations pls repair it")
+        status = status_text(
+            op_status
+        )
 
-        # Paragraph wrappers force long words/names to wrap downwards instead of bleeding
-        table_data.append([
-            str(index),
-            Paragraph(item.engineer.full_name if item.engineer else "", cell_style),
-            Paragraph(item.vehicle.machine_number if item.vehicle else "", cell_style_center),
-            Paragraph(item.vehicle.machinery_type.name if item.vehicle and item.vehicle.machinery_type else "",
-                      cell_style_center),
-            Paragraph(item.shift, cell_style_center),
-            status_text,
-            Paragraph(failed_text, cell_style),
-            Paragraph(remarks_text, cell_style),
-        ])
+        status_color, status_bg = status_style(
+            op_status
+        )
 
-    # Rebalanced column widths to total 555 max available width
-    report_table = Table(table_data, colWidths=[30, 75, 60, 75, 55, 55, 105, 100])
-    report_table.setStyle(TableStyle(table_styles))
+        failed_items = [
+            res.inspection_field.field_name
+            for res in item.results.all()
+            if str(res.result or "").lower()
+            == "fail"
+        ]
+
+        failed_text = (
+            ", ".join(failed_items)
+            if failed_items
+            else "-"
+        )
+
+        remarks_text = (
+            item.remarks
+            if item.remarks
+            else (
+                "Operational"
+                if is_fit
+                else "Requires maintenance"
+            )
+        )
+
+        table_data.append(
+            [
+                str(index),
+                Paragraph(
+                    item.engineer.full_name
+                    if item.engineer
+                    else "",
+                    cell_style,
+                ),
+                Paragraph(
+                    item.vehicle.machine_number
+                    if item.vehicle
+                    else "",
+                    cell_style_center,
+                ),
+                Paragraph(
+                    item.vehicle.machinery_type.name
+                    if item.vehicle
+                    and item.vehicle.machinery_type
+                    else "",
+                    cell_style_center,
+                ),
+                Paragraph(
+                    str(item.shift or ""),
+                    cell_style_center,
+                ),
+                status,
+                Paragraph(
+                    failed_text,
+                    cell_style,
+                ),
+                Paragraph(
+                    remarks_text,
+                    cell_style,
+                ),
+            ]
+        )
+
+        table_styles.extend(
+            [
+                (
+                    "TEXTCOLOR",
+                    (5, index),
+                    (5, index),
+                    status_color,
+                ),
+                (
+                    "BACKGROUND",
+                    (5, index),
+                    (5, index),
+                    status_bg,
+                ),
+                (
+                    "FONTNAME",
+                    (5, index),
+                    (5, index),
+                    "Helvetica-Bold",
+                ),
+            ]
+        )
+
+        if index % 2 == 0:
+
+            table_styles.append(
+                (
+                    "BACKGROUND",
+                    (0, index),
+                    (4, index),
+                    LIGHT_GRAY,
+                )
+            )
+
+    report_table = Table(
+        table_data,
+        colWidths=[
+            13 * mm,
+            35 * mm,
+            27 * mm,
+            38 * mm,
+            25 * mm,
+            25 * mm,
+            60 * mm,
+            57 * mm,
+        ],
+        repeatRows=1,
+    )
+
+    report_table.setStyle(
+        TableStyle(table_styles)
+    )
+
     body.append(report_table)
-    body.append(Spacer(1, 0.4 * inch))
 
-    summary_data = [["______________________________"], ["Colliery Engineer / Mine Manager"]]
-    summary_table = Table(summary_data, colWidths=[200])
-    summary_table.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "RIGHT"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                                       ("TOPPADDING", (0, 1), (-1, 1), 5)]))
+    body.append(
+        Spacer(
+            1,
+            12 * mm,
+        )
+    )
 
-    layout_table = Table([["", summary_table]], colWidths=[350, 200])
-    body.append(layout_table)
+    signature = Table(
+        [
+            [
+                "____________________________",
+            ],
+            [
+                "Colliery Engineer / Mine Manager",
+            ],
+        ],
+        colWidths=[70 * mm],
+    )
 
-    doc.build(body)
+    signature.setStyle(
+        TableStyle(
+            [
+                (
+                    "ALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "CENTER",
+                ),
+                (
+                    "FONTNAME",
+                    (0, 1),
+                    (-1, 1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 1),
+                    (-1, 1),
+                    8,
+                ),
+            ]
+        )
+    )
+
+    body.append(
+        Table(
+            [["", signature]],
+            colWidths=[
+                170 * mm,
+                80 * mm,
+            ],
+        )
+    )
+
+    doc.build(
+        body,
+        onFirstPage=add_page_number,
+        onLaterPages=add_page_number,
+    )
+
     pdf = buffer.getvalue()
+
     buffer.close()
 
     return pdf
 
 
-# -------------------------------------------------
+# ============================================================
 # GENERATE MONTHLY PDF
-# -------------------------------------------------
+# ============================================================
 
-def generate_monthly_pdf(queryset, month_str):
-    from io import BytesIO
-    from reportlab.lib import colors
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-    from reportlab.lib.styles import getSampleStyleSheet
-    import os
-    from datetime import datetime
+def generate_monthly_pdf(
+    queryset,
+    month_str,
+):
 
     buffer = BytesIO()
+
     doc = SimpleDocTemplate(
-        buffer, rightMargin=20, leftMargin=20, topMargin=30, bottomMargin=30
+        buffer,
+        pagesize=landscape(A4),
+        rightMargin=12 * mm,
+        leftMargin=12 * mm,
+        topMargin=12 * mm,
+        bottomMargin=18 * mm,
+        title="Monthly Machinery Inspection Summary",
+        author="NIRIKSHAN",
     )
 
-    styles = getSampleStyleSheet()
-    cell_style = styles["BodyText"]
-    cell_style.fontSize = 9
-    cell_style.leading = 11
+    styles = get_pdf_styles()
 
-    cell_style_center = styles["Normal"]
-    cell_style_center.fontSize = 9
-    cell_style_center.leading = 11
-    cell_style_center.alignment = TA_CENTER
+    cell_style = styles["PDFSmall"]
 
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    FRONTEND_ASSETS_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "frontend", "src", "assets"))
-    ntpc_logo = os.path.join(FRONTEND_ASSETS_DIR, "Ntpc_logo.png")
-    nml_logo = os.path.join(FRONTEND_ASSETS_DIR, "nml_logo.png")
+    cell_style_center = styles["PDFSmallCenter"]
 
     body = []
 
-    header_text = """
-    <para align="center">
-    <font size="20" color="#163A8A"><b>NTPC MINING LIMITED</b></font><br/>
-    <font size="11">(A Subsidiary of NTPC Limited)</font><br/><br/>
-    <font size="14"><b>Talaipalli Coal Mining Project</b></font><br/><br/>
-    <font size="14">Monthly Inspection Summary</font>
-    </para>
-    """
+    body.append(
+        create_report_header(
+            "Monthly Machinery Inspection Summary",
+            styles,
+        )
+    )
 
-    left_logo = Image(ntpc_logo, width=80, height=65) if os.path.exists(ntpc_logo) else ""
-    right_logo = Image(nml_logo, width=80, height=65) if os.path.exists(nml_logo) else ""
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
 
-    header = Table([[left_logo, Paragraph(header_text, styles["BodyText"]), right_logo]], colWidths=[90, 360, 90])
-    header.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                                ("BOTTOMPADDING", (0, 0), (-1, -1), 10)]))
-    body.append(header)
-    body.append(Spacer(1, 0.2 * inch))
+    # --------------------------------------------------------
+    # MONTH FORMAT
+    # --------------------------------------------------------
 
-    # Format Date (e.g., "2026-07" to "July 2026")
     try:
-        dt = datetime.strptime(month_str, "%Y-%m")
-        formatted_month = dt.strftime("%B %Y")
-    except ValueError:
-        formatted_month = month_str
 
-    # DEDUPLICATE VEHICLES & COUNT UNFIT INSTANCES
+        dt = datetime.strptime(
+            month_str,
+            "%Y-%m",
+        )
+
+        formatted_month = dt.strftime(
+            "%B %Y"
+        )
+
+    except (ValueError, TypeError):
+
+        formatted_month = str(
+            month_str
+        )
+
+    # --------------------------------------------------------
+    # DEDUPLICATE + UNFIT COUNT
+    # --------------------------------------------------------
+
     unique_inspections = {}
+
     unfit_counts = {}
 
     for item in queryset:
-        vehicle_no = item.vehicle.machine_number if item.vehicle else "Unknown"
 
-        # Increment unfit count if the machine failed
-        is_unfit = str(item.operational_status or "").lower() in ["fail", "unfit"]
+        vehicle_no = (
+            item.vehicle.machine_number
+            if item.vehicle
+            else "Unknown"
+        )
+
+        is_unfit = (
+            str(
+                item.operational_status
+                or ""
+            ).lower()
+            in [
+                "fail",
+                "unfit",
+            ]
+        )
+
         if is_unfit:
-            unfit_counts[vehicle_no] = unfit_counts.get(vehicle_no, 0) + 1
 
-        if vehicle_no not in unique_inspections or item.id > unique_inspections[vehicle_no].id:
-            unique_inspections[vehicle_no] = item
+            unfit_counts[
+                vehicle_no
+            ] = (
+                unfit_counts.get(
+                    vehicle_no,
+                    0,
+                )
+                + 1
+            )
 
-    final_queryset = sorted(unique_inspections.values(), key=lambda x: x.id)
+        if (
+            vehicle_no not in unique_inspections
+            or item.id
+            > unique_inspections[vehicle_no].id
+        ):
+
+            unique_inspections[
+                vehicle_no
+            ] = item
+
+    final_queryset = sorted(
+        unique_inspections.values(),
+        key=lambda x: x.id,
+    )
+
+    # --------------------------------------------------------
+    # META
+    # --------------------------------------------------------
 
     meta_data = [
-        ["Report Type:", "Monthly Summary", "Month:", formatted_month],
-        ["Project:", "Talaipalli", "Active Vehicles:", f"{len(final_queryset)}"],
+        [
+            "Report Type",
+            "Monthly Summary",
+            "Month",
+            formatted_month,
+        ],
+        [
+            "Project",
+            "Talaipalli",
+            "Active Vehicles",
+            str(len(final_queryset)),
+        ],
     ]
 
-    meta_table = Table(meta_data, colWidths=[90, 180, 90, 180])
-    meta_table.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
-        ("FONTNAME", (2, 0), (2, -1), "Helvetica-Bold"),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F9FAFB")),
-        ("PADDING", (0, 0), (-1, -1), 6),
-    ]))
+    meta_table = Table(
+        meta_data,
+        colWidths=[
+            30 * mm,
+            60 * mm,
+            30 * mm,
+            90 * mm,
+        ],
+    )
+
+    meta_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "GRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    BORDER,
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (0, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "BACKGROUND",
+                    (2, 0),
+                    (2, -1),
+                    LIGHT_BLUE,
+                ),
+                (
+                    "FONTNAME",
+                    (0, 0),
+                    (0, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTNAME",
+                    (2, 0),
+                    (2, -1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 0),
+                    (-1, -1),
+                    8,
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    5,
+                ),
+            ]
+        )
+    )
+
     body.append(meta_table)
-    body.append(Spacer(1, 0.2 * inch))
+
+    body.append(
+        Spacer(
+            1,
+            4 * mm,
+        )
+    )
+
+    # --------------------------------------------------------
+    # TABLE
+    # --------------------------------------------------------
 
     table_data = [
-        ["Sl.\nNo.", "Vehicle\nNo.", "Machinery\nType", "Unfit\nInstances", "EOM\nStatus", "Latest Flagged\nDefects",
-         "Remarks"]
+        [
+            "Sl. No.",
+            "Vehicle No.",
+            "Machinery Type",
+            "Unfit Instances",
+            "EOM Status",
+            "Latest Flagged Defects",
+            "Remarks",
+        ]
     ]
 
     table_styles = [
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#163A8A")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 9),
-        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+        (
+            "GRID",
+            (0, 0),
+            (-1, -1),
+            0.5,
+            BORDER,
+        ),
+        (
+            "BACKGROUND",
+            (0, 0),
+            (-1, 0),
+            NAVY,
+        ),
+        (
+            "TEXTCOLOR",
+            (0, 0),
+            (-1, 0),
+            WHITE,
+        ),
+        (
+            "FONTNAME",
+            (0, 0),
+            (-1, 0),
+            "Helvetica-Bold",
+        ),
+        (
+            "FONTSIZE",
+            (0, 0),
+            (-1, 0),
+            7.5,
+        ),
+        (
+            "ALIGN",
+            (0, 0),
+            (-1, -1),
+            "CENTER",
+        ),
+        (
+            "VALIGN",
+            (0, 0),
+            (-1, -1),
+            "MIDDLE",
+        ),
+        (
+            "TOPPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
+        (
+            "BOTTOMPADDING",
+            (0, 0),
+            (-1, -1),
+            5,
+        ),
     ]
 
-    for index, item in enumerate(final_queryset, start=1):
-        op_status = str(item.operational_status or "").title()
-        is_fit = op_status.lower() in ["pass", "fit"]
-        vehicle_no = item.vehicle.machine_number if item.vehicle else "Unknown"
+    for index, item in enumerate(
+        final_queryset,
+        start=1,
+    ):
 
-        status_text = "Fit" if is_fit else "Unfit"
-        table_styles.append(("TEXTCOLOR", (4, index), (4, index), colors.green if is_fit else colors.red))
-        table_styles.append(("FONTNAME", (4, index), (4, index), "Helvetica-Bold"))
+        op_status = str(
+            item.operational_status or ""
+        )
 
-        # Add red background logic for Unfit Instances
-        unfit_count = unfit_counts.get(vehicle_no, 0)
-        if unfit_count > 0:
-            table_styles.append(("BACKGROUND", (3, index), (3, index), colors.HexColor("#FEF2F2")))  # Red-50
-            table_styles.append(("TEXTCOLOR", (3, index), (3, index), colors.HexColor("#DC2626")))  # Red-600
-        else:
-            table_styles.append(("TEXTCOLOR", (3, index), (3, index), colors.HexColor("#374151")))  # Gray-700
+        is_fit = is_fit_status(
+            op_status
+        )
 
-        table_styles.append(("FONTNAME", (3, index), (3, index), "Helvetica-Bold"))
+        status = status_text(
+            op_status
+        )
 
-        failed_items_list = [res.inspection_field.field_name for res in item.results.all() if
-                             str(res.result).lower() == "fail"]
-        failed_text = ", ".join(failed_items_list) if failed_items_list else "-"
+        status_color, status_bg = status_style(
+            op_status
+        )
 
-        remarks_text = item.remarks if item.remarks else ("Operational" if is_fit else "Requires maintenance")
+        vehicle_no = (
+            item.vehicle.machine_number
+            if item.vehicle
+            else "Unknown"
+        )
 
-        table_data.append([
-            str(index),
-            Paragraph(vehicle_no, cell_style_center),
-            Paragraph(item.vehicle.machinery_type.name if item.vehicle and item.vehicle.machinery_type else "",
-                      cell_style_center),
-            str(unfit_count),
-            status_text,
-            Paragraph(failed_text, cell_style),
-            Paragraph(remarks_text, cell_style),
-        ])
+        unfit_count = (
+            unfit_counts.get(
+                vehicle_no,
+                0,
+            )
+        )
 
-    # Rebalanced column widths
-    report_table = Table(table_data, colWidths=[30, 75, 80, 65, 55, 140, 110])
-    report_table.setStyle(TableStyle(table_styles))
+        failed_items = [
+            res.inspection_field.field_name
+            for res in item.results.all()
+            if str(res.result or "").lower()
+            == "fail"
+        ]
+
+        failed_text = (
+            ", ".join(failed_items)
+            if failed_items
+            else "-"
+        )
+
+        remarks_text = (
+            item.remarks
+            if item.remarks
+            else (
+                "Operational"
+                if is_fit
+                else "Requires maintenance"
+            )
+        )
+
+        table_data.append(
+            [
+                str(index),
+                Paragraph(
+                    vehicle_no,
+                    cell_style_center,
+                ),
+                Paragraph(
+                    item.vehicle.machinery_type.name
+                    if item.vehicle
+                    and item.vehicle.machinery_type
+                    else "",
+                    cell_style_center,
+                ),
+                str(unfit_count),
+                status,
+                Paragraph(
+                    failed_text,
+                    cell_style,
+                ),
+                Paragraph(
+                    remarks_text,
+                    cell_style,
+                ),
+            ]
+        )
+
+        table_styles.extend(
+            [
+                (
+                    "TEXTCOLOR",
+                    (3, index),
+                    (3, index),
+                    RED
+                    if unfit_count > 0
+                    else GRAY,
+                ),
+                (
+                    "BACKGROUND",
+                    (3, index),
+                    (3, index),
+                    LIGHT_RED
+                    if unfit_count > 0
+                    else LIGHT_GRAY,
+                ),
+                (
+                    "FONTNAME",
+                    (3, index),
+                    (3, index),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "TEXTCOLOR",
+                    (4, index),
+                    (4, index),
+                    status_color,
+                ),
+                (
+                    "BACKGROUND",
+                    (4, index),
+                    (4, index),
+                    status_bg,
+                ),
+                (
+                    "FONTNAME",
+                    (4, index),
+                    (4, index),
+                    "Helvetica-Bold",
+                ),
+            ]
+        )
+
+        if index % 2 == 0:
+
+            table_styles.append(
+                (
+                    "BACKGROUND",
+                    (0, index),
+                    (2, index),
+                    LIGHT_GRAY,
+                )
+            )
+
+    report_table = Table(
+        table_data,
+        colWidths=[
+            13 * mm,
+            35 * mm,
+            42 * mm,
+            30 * mm,
+            28 * mm,
+            68 * mm,
+            64 * mm,
+        ],
+        repeatRows=1,
+    )
+
+    report_table.setStyle(
+        TableStyle(table_styles)
+    )
+
     body.append(report_table)
-    body.append(Spacer(1, 0.4 * inch))
 
-    summary_data = [["______________________________"], ["Colliery Engineer / Mine Manager"]]
-    summary_table = Table(summary_data, colWidths=[200])
-    summary_table.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "RIGHT"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                                       ("TOPPADDING", (0, 1), (-1, 1), 5)]))
+    body.append(
+        Spacer(
+            1,
+            12 * mm,
+        )
+    )
 
-    layout_table = Table([["", summary_table]], colWidths=[350, 200])
-    body.append(layout_table)
+    signature = Table(
+        [
+            [
+                "____________________________",
+            ],
+            [
+                "Colliery Engineer / Mine Manager",
+            ],
+        ],
+        colWidths=[70 * mm],
+    )
 
-    doc.build(body)
+    signature.setStyle(
+        TableStyle(
+            [
+                (
+                    "ALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "CENTER",
+                ),
+                (
+                    "FONTNAME",
+                    (0, 1),
+                    (-1, 1),
+                    "Helvetica-Bold",
+                ),
+                (
+                    "FONTSIZE",
+                    (0, 1),
+                    (-1, 1),
+                    8,
+                ),
+            ]
+        )
+    )
+
+    body.append(
+        Table(
+            [["", signature]],
+            colWidths=[
+                170 * mm,
+                80 * mm,
+            ],
+        )
+    )
+
+    doc.build(
+        body,
+        onFirstPage=add_page_number,
+        onLaterPages=add_page_number,
+    )
+
     pdf = buffer.getvalue()
+
     buffer.close()
 
     return pdf
