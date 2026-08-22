@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="page changes">
+    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="report changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/reporting/pdf_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/reporting/pdf_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,14 +70,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1784009060622</updated>
-    </task>
-    <task id="LOCAL-00004" summary="27/07/26">
-      <option name="closed" value="true" />
-      <created>1785151103743</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1785151103743</updated>
     </task>
     <task id="LOCAL-00005" summary="27/07/26">
       <option name="closed" value="true" />
@@ -463,7 +455,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787420217675</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="report changes">
+      <option name="closed" value="true" />
+      <created>1787421714161</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1787421714161</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -477,6 +477,7 @@
     <MESSAGE value="inspection changes" />
     <MESSAGE value="dashboard page changes" />
     <MESSAGE value="page changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="page changes" />
+    <MESSAGE value="report changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="report changes" />
   </component>
 </project>

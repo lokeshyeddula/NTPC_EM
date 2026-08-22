@@ -1,226 +1,766 @@
 import {
     ClipboardCheck,
-    Clock3,
+    AlertTriangle,
     FileBarChart,
-    ShieldCheck,
     ArrowRight,
     Activity,
-    CalendarDays,
-    AlertTriangle,
+    ShieldCheck,
+    Clock3,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
-
 export default function Dashboard() {
-
-    const navigate = useNavigate();
     const { user } = useAuth();
 
+    const name = user?.full_name || "User";
 
     return (
-        <div className="space-y-5 sm:space-y-6">
+        <div className="w-full min-w-0 overflow-x-hidden space-y-6">
 
-            {/* =====================================================
-                WELCOME
-            ====================================================== */}
+            {/* =========================================================
+                WELCOME HEADER
+            ========================================================= */}
 
-            <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#07102f] via-[#10296b] to-[#2147c7] px-5 py-7 text-white shadow-sm sm:px-7 sm:py-9">
+            <section className="w-full rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white shadow-md overflow-hidden">
+                <div className="px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
 
-                <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl" />
+                    <div className="flex items-center gap-2 mb-3">
+                        <ShieldCheck
+                            size={18}
+                            className="text-blue-300 shrink-0"
+                        />
 
-                <div className="relative">
+                        <span className="text-xs sm:text-sm font-bold tracking-[0.18em] text-blue-200">
+                            NIRIKSHAN
+                        </span>
+                    </div>
 
-                    <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                        Welcome {user?.full_name || "Engineer"}
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight">
+                        Welcome {name}
                     </h1>
 
                 </div>
-
             </section>
 
 
-            {/* =====================================================
+            {/* =========================================================
                 QUICK ACTIONS
-            ====================================================== */}
+            ========================================================= */}
 
-            <section>
+            <section className="w-full">
 
-                <div className="mb-3">
-
-                    <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                <div className="mb-4">
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                         Quick Actions
                     </h2>
 
-                    <p className="text-xs text-slate-500 sm:text-sm">
+                    <p className="text-sm sm:text-base text-slate-500 mt-1">
                         Start your next task
                     </p>
-
                 </div>
 
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                    {/* New Inspection */}
+                    {/* NEW INSPECTION */}
 
-                    <QuickAction
-                        icon={<ClipboardCheck size={21} />}
-                        title="New Inspection"
-                        description="Start a machinery safety inspection."
-                        onClick={() => navigate("/inspection")}
-                        primary
-                    />
+                    <button
+                        type="button"
+                        onClick={() => {
+                            window.location.href = "/inspection";
+                        }}
+                        className="
+                            group
+                            w-full
+                            min-w-0
+                            bg-blue-600
+                            hover:bg-blue-700
+                            text-white
+                            rounded-2xl
+                            p-5
+                            sm:p-6
+                            shadow-sm
+                            transition-all
+                            duration-200
+                            text-left
+                        "
+                    >
+                        <div className="flex items-center gap-4">
+
+                            <div className="
+                                w-12
+                                h-12
+                                sm:w-14
+                                sm:h-14
+                                rounded-xl
+                                bg-white/15
+                                flex
+                                items-center
+                                justify-center
+                                shrink-0
+                            ">
+                                <ClipboardCheck
+                                    size={25}
+                                    strokeWidth={2}
+                                />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+
+                                <div className="flex items-center justify-between gap-3">
+
+                                    <h3 className="font-bold text-lg sm:text-xl">
+                                        New Inspection
+                                    </h3>
+
+                                    <ArrowRight
+                                        size={24}
+                                        className="
+                                            shrink-0
+                                            transition-transform
+                                            group-hover:translate-x-1
+                                        "
+                                    />
+
+                                </div>
+
+                                <p className="text-sm sm:text-base text-blue-100 mt-1">
+                                    Start a machinery safety inspection.
+                                </p>
+
+                            </div>
+
+                        </div>
+                    </button>
 
 
-                    {/* Re-Inspection */}
+                    {/* RE-INSPECTION */}
 
-                    <QuickAction
-                        icon={<AlertTriangle size={21} />}
-                        title="Re-Inspection"
-                        description="Review vehicles requiring re-inspection."
-                        onClick={() => navigate("/Re-Inspection")}
-                    />
+                    <button
+                        type="button"
+                        onClick={() => {
+                            window.location.href = "/re-inspection";
+                        }}
+                        className="
+                            group
+                            w-full
+                            min-w-0
+                            bg-white
+                            hover:bg-slate-50
+                            text-slate-900
+                            rounded-2xl
+                            p-5
+                            sm:p-6
+                            border
+                            border-slate-200
+                            shadow-sm
+                            transition-all
+                            duration-200
+                            text-left
+                        "
+                    >
+                        <div className="flex items-center gap-4">
+
+                            <div className="
+                                w-12
+                                h-12
+                                sm:w-14
+                                sm:h-14
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                                shrink-0
+                            ">
+                                <AlertTriangle
+                                    size={25}
+                                    strokeWidth={2}
+                                />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+
+                                <div className="flex items-center justify-between gap-3">
+
+                                    <h3 className="font-bold text-lg sm:text-xl">
+                                        Re-Inspection
+                                    </h3>
+
+                                    <ArrowRight
+                                        size={24}
+                                        className="
+                                            shrink-0
+                                            text-slate-400
+                                            transition-transform
+                                            group-hover:translate-x-1
+                                        "
+                                    />
+
+                                </div>
+
+                                <p className="text-sm sm:text-base text-slate-500 mt-1">
+                                    Review vehicles requiring re-inspection.
+                                </p>
+
+                            </div>
+
+                        </div>
+                    </button>
 
 
-                    {/* Reports */}
+                    {/* REPORTS */}
 
-                    <QuickAction
-                        icon={<FileBarChart size={21} />}
-                        title="Reports"
-                        description="Search and view completed inspections."
-                        onClick={() => navigate("/reports")}
-                    />
+                    <button
+                        type="button"
+                        onClick={() => {
+                            window.location.href = "/reports";
+                        }}
+                        className="
+                            group
+                            w-full
+                            min-w-0
+                            bg-white
+                            hover:bg-slate-50
+                            text-slate-900
+                            rounded-2xl
+                            p-5
+                            sm:p-6
+                            border
+                            border-slate-200
+                            shadow-sm
+                            transition-all
+                            duration-200
+                            text-left
+                        "
+                    >
+                        <div className="flex items-center gap-4">
+
+                            <div className="
+                                w-12
+                                h-12
+                                sm:w-14
+                                sm:h-14
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                                shrink-0
+                            ">
+                                <FileBarChart
+                                    size={25}
+                                    strokeWidth={2}
+                                />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+
+                                <div className="flex items-center justify-between gap-3">
+
+                                    <h3 className="font-bold text-lg sm:text-xl">
+                                        Reports
+                                    </h3>
+
+                                    <ArrowRight
+                                        size={24}
+                                        className="
+                                            shrink-0
+                                            text-slate-400
+                                            transition-transform
+                                            group-hover:translate-x-1
+                                        "
+                                    />
+
+                                </div>
+
+                                <p className="text-sm sm:text-base text-slate-500 mt-1">
+                                    Search and view completed inspections.
+                                </p>
+
+                            </div>
+
+                        </div>
+                    </button>
 
                 </div>
 
             </section>
 
 
-            {/* =====================================================
+            {/* =========================================================
                 INSPECTION OVERVIEW
-            ====================================================== */}
+            ========================================================= */}
 
-            <section>
+            <section className="w-full">
 
-                <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-start justify-between mb-4">
 
                     <div>
-
-                        <h2 className="text-base font-bold text-slate-900 sm:text-lg">
+                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                             Inspection Overview
                         </h2>
 
-                        <p className="text-xs text-slate-500 sm:text-sm">
+                        <p className="text-sm sm:text-base text-slate-500 mt-1">
                             Operational metrics will appear here
+                        </p>
+                    </div>
+
+                    <Activity
+                        size={25}
+                        className="text-blue-600 hidden sm:block shrink-0"
+                    />
+
+                </div>
+
+
+                {/* IMPORTANT:
+                    1 column mobile
+                    2 columns tablet
+                    4 columns desktop
+                */}
+
+                <div className="
+                    grid
+                    grid-cols-1
+                    sm:grid-cols-2
+                    xl:grid-cols-4
+                    gap-4
+                ">
+
+
+                    {/* TOTAL INSPECTIONS */}
+
+                    <div className="
+                        w-full
+                        min-w-0
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        shadow-sm
+                        p-5
+                        sm:p-6
+                    ">
+
+                        <div className="flex items-center justify-between">
+
+                            <div className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <ClipboardCheck
+                                    size={23}
+                                />
+                            </div>
+
+                            <span className="
+                                text-[10px]
+                                sm:text-xs
+                                font-bold
+                                uppercase
+                                tracking-wide
+                                text-slate-400
+                            ">
+                                Coming Soon
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-sm font-semibold text-slate-500">
+                            Total Inspections
+                        </p>
+
+                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                            —
                         </p>
 
                     </div>
 
 
-                    <Activity
-                        size={19}
-                        className="text-blue-600"
-                    />
-
-                </div>
-
-
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-
-                    {/* Total Inspections */}
-
-                    <MetricCard
-                        icon={<ClipboardCheck size={19} />}
-                        label="Total Inspections"
-                    />
-
-
                     {/* FIT */}
 
-                    <MetricCard
-                        icon={<ShieldCheck size={19} />}
-                        label="FIT"
-                        positive
-                    />
+                    <div className="
+                        w-full
+                        min-w-0
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        shadow-sm
+                        p-5
+                        sm:p-6
+                    ">
+
+                        <div className="flex items-center justify-between">
+
+                            <div className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-green-50
+                                text-green-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <ShieldCheck
+                                    size={23}
+                                />
+                            </div>
+
+                            <span className="
+                                text-[10px]
+                                sm:text-xs
+                                font-bold
+                                uppercase
+                                tracking-wide
+                                text-slate-400
+                            ">
+                                Coming Soon
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-sm font-semibold text-slate-500">
+                            FIT
+                        </p>
+
+                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                            —
+                        </p>
+
+                    </div>
 
 
                     {/* UNFIT */}
 
-                    <MetricCard
-                        icon={<AlertTriangle size={19} />}
-                        label="UNFIT"
-                        warning
-                    />
+                    <div className="
+                        w-full
+                        min-w-0
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        shadow-sm
+                        p-5
+                        sm:p-6
+                    ">
+
+                        <div className="flex items-center justify-between">
+
+                            <div className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-red-50
+                                text-red-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <AlertTriangle
+                                    size={23}
+                                />
+                            </div>
+
+                            <span className="
+                                text-[10px]
+                                sm:text-xs
+                                font-bold
+                                uppercase
+                                tracking-wide
+                                text-slate-400
+                            ">
+                                Coming Soon
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-sm font-semibold text-slate-500">
+                            UNFIT
+                        </p>
+
+                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                            —
+                        </p>
+
+                    </div>
 
 
-                    {/* Pending */}
+                    {/* PENDING */}
 
-                    <MetricCard
-                        icon={<Clock3 size={19} />}
-                        label="Pending"
-                    />
+                    <div className="
+                        w-full
+                        min-w-0
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        shadow-sm
+                        p-5
+                        sm:p-6
+                    ">
+
+                        <div className="flex items-center justify-between">
+
+                            <div className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <Clock3
+                                    size={23}
+                                />
+                            </div>
+
+                            <span className="
+                                text-[10px]
+                                sm:text-xs
+                                font-bold
+                                uppercase
+                                tracking-wide
+                                text-slate-400
+                            ">
+                                Coming Soon
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-sm font-semibold text-slate-500">
+                            Pending
+                        </p>
+
+                        <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                            —
+                        </p>
+
+                    </div>
 
                 </div>
 
             </section>
 
 
-            {/* =====================================================
-                TODAY'S ACTIVITY
-            ====================================================== */}
+            {/* =========================================================
+                BOTTOM INFORMATION
+            ========================================================= */}
 
-            <section>
+            <section className="
+                grid
+                grid-cols-1
+                lg:grid-cols-2
+                gap-4
+                pb-6
+            ">
 
-                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                {/* TODAY'S ACTIVITY */}
 
-                    {/* Card Header */}
+                <div className="
+                    w-full
+                    min-w-0
+                    bg-white
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    shadow-sm
+                    overflow-hidden
+                ">
 
-                    <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+                    <div className="
+                        px-5
+                        sm:px-6
+                        py-5
+                        border-b
+                        border-slate-100
+                    ">
 
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                        <div className="flex items-center gap-3">
 
-                            <CalendarDays size={18} />
+                            <div className="
+                                w-10
+                                h-10
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <Activity
+                                    size={21}
+                                />
+                            </div>
 
-                        </div>
+                            <div>
 
+                                <h3 className="font-bold text-slate-900">
+                                    Today's Activity
+                                </h3>
 
-                        <div>
+                                <p className="text-sm text-slate-500">
+                                    Inspection activity summary
+                                </p>
 
-                            <h3 className="text-sm font-bold text-slate-900">
-                                Today's Activity
-                            </h3>
-
-                            <p className="text-xs text-slate-500">
-                                Inspection activity summary
-                            </p>
+                            </div>
 
                         </div>
 
                     </div>
 
 
-                    {/* Empty State */}
+                    <div className="p-5 sm:p-6">
 
-                    <div className="px-5 py-6">
-
-                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
+                        <div className="
+                            rounded-xl
+                            border
+                            border-dashed
+                            border-slate-200
+                            bg-slate-50
+                            p-8
+                            text-center
+                        ">
 
                             <Activity
-                                size={26}
-                                className="mx-auto text-slate-300"
+                                size={27}
+                                className="
+                                    mx-auto
+                                    mb-3
+                                    text-slate-300
+                                "
                             />
 
-
-                            <p className="mt-3 text-sm font-semibold text-slate-600">
+                            <p className="
+                                font-semibold
+                                text-slate-600
+                            ">
                                 Activity metrics coming soon
                             </p>
 
-
-                            <p className="mx-auto mt-1 max-w-md text-xs text-slate-400">
-                                Today's inspection statistics will appear here
-                                once dashboard metrics are connected.
+                            <p className="
+                                text-sm
+                                text-slate-400
+                                mt-1
+                            ">
+                                Today's inspection statistics will appear here.
                             </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* MOBILE FRIENDLY EMPTY SPACE / FUTURE PANEL */}
+
+                <div className="
+                    w-full
+                    min-w-0
+                    bg-white
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    shadow-sm
+                    overflow-hidden
+                ">
+
+                    <div className="
+                        px-5
+                        sm:px-6
+                        py-5
+                        border-b
+                        border-slate-100
+                    ">
+
+                        <div className="flex items-center gap-3">
+
+                            <div className="
+                                w-10
+                                h-10
+                                rounded-xl
+                                bg-green-50
+                                text-green-600
+                                flex
+                                items-center
+                                justify-center
+                            ">
+                                <ShieldCheck
+                                    size={21}
+                                />
+                            </div>
+
+                            <div>
+
+                                <h3 className="font-bold text-slate-900">
+                                    Inspection System
+                                </h3>
+
+                                <p className="text-sm text-slate-500">
+                                    NIRIKSHAN operational overview
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="p-5 sm:p-6">
+
+                        <div className="
+                            rounded-xl
+                            border
+                            border-slate-200
+                            bg-slate-50
+                            p-5
+                        ">
+
+                            <div className="flex items-center gap-3">
+
+                                <div className="
+                                    w-3
+                                    h-3
+                                    rounded-full
+                                    bg-green-500
+                                    shrink-0
+                                />
+
+                                <div>
+
+                                    <p className="
+                                        font-bold
+                                        text-slate-800
+                                    ">
+                                        System Ready
+                                    </p>
+
+                                    <p className="
+                                        text-sm
+                                        text-slate-500
+                                        mt-1
+                                    ">
+                                        Inspection system is ready for use.
+                                    </p>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
@@ -231,214 +771,5 @@ export default function Dashboard() {
             </section>
 
         </div>
-    );
-}
-
-
-/* ================================================================
-   QUICK ACTION COMPONENT
-================================================================ */
-
-interface QuickActionProps {
-
-    icon: React.ReactNode;
-
-    title: string;
-
-    description: string;
-
-    onClick: () => void;
-
-    primary?: boolean;
-
-}
-
-
-function QuickAction({
-    icon,
-    title,
-    description,
-    onClick,
-    primary = false,
-}: QuickActionProps) {
-
-    return (
-
-        <button
-            type="button"
-            onClick={onClick}
-            className={`
-                group
-                flex
-                items-center
-                gap-4
-                rounded-2xl
-                border
-                p-4
-                text-left
-                shadow-sm
-                transition-all
-                duration-200
-
-                ${
-                    primary
-                        ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md"
-                        : "border-slate-200 bg-white text-slate-900 hover:border-blue-200 hover:bg-blue-50/40 hover:shadow-md"
-                }
-            `}
-        >
-
-            {/* Icon */}
-
-            <div
-                className={`
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-
-                    ${
-                        primary
-                            ? "bg-white/15 text-white"
-                            : "bg-blue-50 text-blue-600"
-                    }
-                `}
-            >
-                {icon}
-            </div>
-
-
-            {/* Content */}
-
-            <div className="min-w-0 flex-1">
-
-                <h3 className="text-sm font-bold">
-                    {title}
-                </h3>
-
-
-                <p
-                    className={`
-                        mt-1
-                        text-xs
-                        leading-5
-
-                        ${
-                            primary
-                                ? "text-blue-100"
-                                : "text-slate-500"
-                        }
-                    `}
-                >
-                    {description}
-                </p>
-
-            </div>
-
-
-            {/* Arrow */}
-
-            <ArrowRight
-                size={17}
-                className={`
-                    shrink-0
-                    transition-transform
-                    group-hover:translate-x-1
-
-                    ${
-                        primary
-                            ? "text-blue-200"
-                            : "text-slate-400"
-                    }
-                `}
-            />
-
-        </button>
-
-    );
-}
-
-
-/* ================================================================
-   METRIC CARD COMPONENT
-================================================================ */
-
-interface MetricCardProps {
-
-    icon: React.ReactNode;
-
-    label: string;
-
-    positive?: boolean;
-
-    warning?: boolean;
-
-}
-
-
-function MetricCard({
-    icon,
-    label,
-    positive = false,
-    warning = false,
-}: MetricCardProps) {
-
-    return (
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-
-            {/* Top */}
-
-            <div className="flex items-start justify-between gap-2">
-
-                <div
-                    className={`
-                        flex
-                        h-9
-                        w-9
-                        items-center
-                        justify-center
-                        rounded-lg
-
-                        ${
-                            positive
-                                ? "bg-green-50 text-green-600"
-                                : warning
-                                    ? "bg-red-50 text-red-600"
-                                    : "bg-blue-50 text-blue-600"
-                        }
-                    `}
-                >
-                    {icon}
-                </div>
-
-
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                    Coming soon
-                </span>
-
-            </div>
-
-
-            {/* Value */}
-
-            <div className="mt-4">
-
-                <p className="text-xs font-semibold text-slate-500">
-                    {label}
-                </p>
-
-
-                <p className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">
-                    —
-                </p>
-
-            </div>
-
-        </div>
-
     );
 }
