@@ -18,13 +18,6 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    const initials =
-        user?.full_name
-            ?.split(" ")
-            .map((name) => name[0])
-            .join("")
-            .toUpperCase() || "U";
-
 
     return (
         <div className="space-y-5 sm:space-y-6">
@@ -33,62 +26,15 @@ export default function Dashboard() {
                 WELCOME
             ====================================================== */}
 
-            <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#07102f] via-[#10296b] to-[#2147c7] px-5 py-6 text-white shadow-sm sm:px-7 sm:py-7">
+            <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#07102f] via-[#10296b] to-[#2147c7] px-5 py-7 text-white shadow-sm sm:px-7 sm:py-9">
 
                 <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl" />
 
-                <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="relative">
 
-                    <div>
-
-                        <div className="mb-2 flex items-center gap-2">
-
-                            <ShieldCheck
-                                size={18}
-                                className="text-blue-300"
-                            />
-
-                            <span className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">
-                                NIRIKSHAN
-                            </span>
-
-                        </div>
-
-
-                        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                            Good to see you, {user?.full_name || "Engineer"}
-                        </h1>
-
-
-                        <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100 sm:text-base">
-                            Machinery safety inspection management at your fingertips.
-                        </p>
-
-                    </div>
-
-
-                    {/* USER */}
-
-                    <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
-
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white ring-4 ring-white/10">
-                            {initials}
-                        </div>
-
-
-                        <div>
-
-                            <p className="text-sm font-bold text-white">
-                                {user?.full_name || "User"}
-                            </p>
-
-                            <p className="text-xs text-blue-200">
-                                {user?.designation || "Engineer"}
-                            </p>
-
-                        </div>
-
-                    </div>
+                    <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+                        Welcome {user?.full_name || "Engineer"}
+                    </h1>
 
                 </div>
 
@@ -116,6 +62,8 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 
+                    {/* New Inspection */}
+
                     <QuickAction
                         icon={<ClipboardCheck size={21} />}
                         title="New Inspection"
@@ -125,6 +73,8 @@ export default function Dashboard() {
                     />
 
 
+                    {/* Re-Inspection */}
+
                     <QuickAction
                         icon={<AlertTriangle size={21} />}
                         title="Re-Inspection"
@@ -132,6 +82,8 @@ export default function Dashboard() {
                         onClick={() => navigate("/Re-Inspection")}
                     />
 
+
+                    {/* Reports */}
 
                     <QuickAction
                         icon={<FileBarChart size={21} />}
@@ -176,10 +128,15 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
 
+                    {/* Total Inspections */}
+
                     <MetricCard
                         icon={<ClipboardCheck size={19} />}
                         label="Total Inspections"
                     />
+
+
+                    {/* FIT */}
 
                     <MetricCard
                         icon={<ShieldCheck size={19} />}
@@ -187,11 +144,17 @@ export default function Dashboard() {
                         positive
                     />
 
+
+                    {/* UNFIT */}
+
                     <MetricCard
                         icon={<AlertTriangle size={19} />}
                         label="UNFIT"
                         warning
                     />
+
+
+                    {/* Pending */}
 
                     <MetricCard
                         icon={<Clock3 size={19} />}
@@ -204,14 +167,14 @@ export default function Dashboard() {
 
 
             {/* =====================================================
-                ACTIVITY + SYSTEM STATUS
+                TODAY'S ACTIVITY
             ====================================================== */}
 
-            <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-                {/* TODAY */}
+            <section>
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+                    {/* Card Header */}
 
                     <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
 
@@ -237,84 +200,27 @@ export default function Dashboard() {
                     </div>
 
 
+                    {/* Empty State */}
+
                     <div className="px-5 py-6">
 
-                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center">
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
 
                             <Activity
-                                size={24}
+                                size={26}
                                 className="mx-auto text-slate-300"
                             />
 
-                            <p className="mt-2 text-sm font-semibold text-slate-600">
+
+                            <p className="mt-3 text-sm font-semibold text-slate-600">
                                 Activity metrics coming soon
                             </p>
 
-                            <p className="mt-1 text-xs text-slate-400">
-                                Today's inspection statistics will appear here.
+
+                            <p className="mx-auto mt-1 max-w-md text-xs text-slate-400">
+                                Today's inspection statistics will appear here
+                                once dashboard metrics are connected.
                             </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* SYSTEM STATUS */}
-
-                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-                    <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
-
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-green-600">
-
-                            <ShieldCheck size={18} />
-
-                        </div>
-
-
-                        <div>
-
-                            <h3 className="text-sm font-bold text-slate-900">
-                                System Status
-                            </h3>
-
-                            <p className="text-xs text-slate-500">
-                                NIRIKSHAN application status
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div className="p-5">
-
-                        <div className="flex items-center justify-between rounded-xl border border-green-100 bg-green-50 px-4 py-4">
-
-                            <div className="flex items-center gap-3">
-
-                                <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-
-                                <div>
-
-                                    <p className="text-sm font-bold text-green-800">
-                                        System Operational
-                                    </p>
-
-                                    <p className="mt-0.5 text-xs text-green-700">
-                                        NIRIKSHAN is ready for use.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <span className="rounded-full bg-green-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                                Online
-                            </span>
 
                         </div>
 
@@ -330,7 +236,7 @@ export default function Dashboard() {
 
 
 /* ================================================================
-   QUICK ACTION
+   QUICK ACTION COMPONENT
 ================================================================ */
 
 interface QuickActionProps {
@@ -376,11 +282,13 @@ function QuickAction({
 
                 ${
                     primary
-                        ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
-                        : "border-slate-200 bg-white text-slate-900 hover:border-blue-200 hover:bg-blue-50/40"
+                        ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md"
+                        : "border-slate-200 bg-white text-slate-900 hover:border-blue-200 hover:bg-blue-50/40 hover:shadow-md"
                 }
             `}
         >
+
+            {/* Icon */}
 
             <div
                 className={`
@@ -403,11 +311,14 @@ function QuickAction({
             </div>
 
 
+            {/* Content */}
+
             <div className="min-w-0 flex-1">
 
                 <h3 className="text-sm font-bold">
                     {title}
                 </h3>
+
 
                 <p
                     className={`
@@ -427,6 +338,8 @@ function QuickAction({
 
             </div>
 
+
+            {/* Arrow */}
 
             <ArrowRight
                 size={17}
@@ -450,7 +363,7 @@ function QuickAction({
 
 
 /* ================================================================
-   METRIC CARD
+   METRIC CARD COMPONENT
 ================================================================ */
 
 interface MetricCardProps {
@@ -477,7 +390,9 @@ function MetricCard({
 
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
 
-            <div className="flex items-start justify-between">
+            {/* Top */}
+
+            <div className="flex items-start justify-between gap-2">
 
                 <div
                     className={`
@@ -508,11 +423,14 @@ function MetricCard({
             </div>
 
 
+            {/* Value */}
+
             <div className="mt-4">
 
                 <p className="text-xs font-semibold text-slate-500">
                     {label}
                 </p>
+
 
                 <p className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">
                     —
