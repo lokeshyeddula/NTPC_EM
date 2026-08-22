@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="ReportPanel changes" />
+    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="inspection changes">
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Dashboard/Dashboard.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -420,7 +422,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787418970673</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="inspection changes">
+      <option name="closed" value="true" />
+      <created>1787419054854</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1787419054854</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -431,6 +441,7 @@
     <MESSAGE value="Layout changes" />
     <MESSAGE value="IndividualReportPanel.tsx changes" />
     <MESSAGE value="ReportPanel changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="ReportPanel changes" />
+    <MESSAGE value="inspection changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="inspection changes" />
   </component>
 </project>
