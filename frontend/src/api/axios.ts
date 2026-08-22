@@ -1,86 +1,240 @@
-import axios from "axios";
+import axios, {
+    type AxiosError,
+    type InternalAxiosRequestConfig,
+} from "axios";
+
+
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL;
+
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+
+    baseURL: API_BASE_URL,
+
     headers: {
         "Content-Type": "application/json",
     },
+
 });
 
-// Request Interceptor
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("access");
 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+// ============================================================
+// REQUEST INTERCEPTOR
+// ============================================================
+
+api.interceptors.request.use(
+
+    (config: InternalAxiosRequestConfig) => {
+
+        const access =
+            localStorage.getItem("access");
+
+
+        if (access) {
+
+            config.headers.Authorization =
+                `Bearer ${access}`;
+
         }
 
+
         return config;
+
     },
-    (error) => Promise.reject(error)
+
+    (error) => {
+
+        return Promise.reject(error);
+
+    }
+
 );
 
-// Response Interceptor
+
+// ============================================================
+// RESPONSE INTERCEPTOR
+// ============================================================
+
 api.interceptors.response.use(
-    (response) => response,
 
-    async (error) => {
+    (response) => {
 
-        const originalRequest = error.config;
+        return response;
+
+    },
+
+
+    async (error: AxiosError) => {
+
+        const originalRequest =
+            error.config as
+            (InternalAxiosRequestConfig & {
+                _retry?: boolean;
+            }) | undefined;
+
+
+        // ----------------------------------------------------
+        // No request information
+        // ----------------------------------------------------
+
+        if (!originalRequest) {
+
+            return Promise.reject(error);
+
+        }
+
+
+        // ----------------------------------------------------
+        // Only handle 401
+        // ----------------------------------------------------
 
         if (
-            error.response?.status === 401 &&
-            !originalRequest._retry
+            error.response?.status !== 401 ||
+            originalRequest._retry
         ) {
 
-            originalRequest._retry = true;
+            return Promise.reject(error);
 
-            const refresh = localStorage.getItem("refresh");
+        }
 
-            if (!refresh) {
 
-                localStorage.clear();
+        // ----------------------------------------------------
+        // Never refresh the refresh-token request itself
+        // ----------------------------------------------------
 
-                window.location.href = "/login";
+        if (
+            originalRequest.url?.includes(
+                "/auth/token/refresh/"
+            )
+        ) {
 
-                return Promise.reject(error);
-            }
+            return Promise.reject(error);
 
-            try {
+        }
 
-                const response = await axios.post(
 
-                    `${import.meta.env.VITE_API_BASE_URL}/auth/token/refresh/`,
+        originalRequest._retry = true;
+
+
+        const refresh =
+            localStorage.getItem("refresh");
+
+
+        // ----------------------------------------------------
+        // No refresh token
+        // ----------------------------------------------------
+
+        if (!refresh) {
+
+            localStorage.removeItem("access");
+
+            localStorage.removeItem("refresh");
+
+            window.location.href = "/login";
+
+            return Promise.reject(error);
+
+        }
+
+
+        try {
+
+            // ------------------------------------------------
+            // Use plain axios here.
+            //
+            // DO NOT use `api.post()` because that would
+            // trigger this interceptor again.
+            // ------------------------------------------------
+
+            const refreshResponse =
+                await axios.post(
+
+                    `${API_BASE_URL}/auth/token/refresh/`,
 
                     {
                         refresh,
+                    },
+
+                    {
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
                     }
 
                 );
 
-                const access = response.data.access;
 
-                localStorage.setItem(
-                    "access",
-                    access
+            const newAccess =
+                refreshResponse.data.access;
+
+
+            if (!newAccess) {
+
+                throw new Error(
+                    "No access token returned."
                 );
 
-                originalRequest.headers.Authorization =
-                    `Bearer ${access}`;
-
-                return api(originalRequest);
-
-            } catch {
-
-                localStorage.clear();
-
-                window.location.href = "/login";
             }
+
+
+            // ------------------------------------------------
+            // Save new access token
+            // ------------------------------------------------
+
+            localStorage.setItem(
+                "access",
+                newAccess
+            );
+
+
+            // ------------------------------------------------
+            // Update original request
+            // ------------------------------------------------
+
+            originalRequest.headers.Authorization =
+                `Bearer ${newAccess}`;
+
+
+            // ------------------------------------------------
+            // Retry original request
+            // ------------------------------------------------
+
+            return api(originalRequest);
+
+
+        } catch (refreshError) {
+
+            console.error(
+                "Token refresh failed:",
+                refreshError
+            );
+
+
+            // ------------------------------------------------
+            // Refresh token is invalid/expired.
+            // NOW logout.
+            // ------------------------------------------------
+
+            localStorage.removeItem("access");
+
+            localStorage.removeItem("refresh");
+
+
+            window.location.href =
+                "/login";
+
+
+            return Promise.reject(
+                refreshError
+            );
+
         }
 
-        return Promise.reject(error);
     }
+
 );
+
 
 export default api;
