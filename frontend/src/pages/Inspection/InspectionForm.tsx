@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select, { type StylesConfig } from "react-select";
+
 import {
     ClipboardCheck,
     Truck,
@@ -514,7 +515,26 @@ export default function InspectionForm() {
                 "hidden",
 
             zIndex:
-                100,
+                9999,
+
+        }),
+
+
+        /*
+         * IMPORTANT:
+         * The dropdown is rendered into document.body.
+         * This prevents the Inspection Setup card's
+         * overflow-hidden from clipping the menu.
+         */
+
+        menuPortal: (
+            provided
+        ) => ({
+
+            ...provided,
+
+            zIndex:
+                9999,
 
         }),
 
@@ -762,10 +782,8 @@ export default function InspectionForm() {
                         gap-5
                         px-5
                         py-6
-
                         sm:grid-cols-2
                         sm:px-7
-
                         lg:grid-cols-3
                     "
                 >
@@ -800,6 +818,17 @@ export default function InspectionForm() {
                                 customSelectStyles
                             }
 
+                            /*
+                             * Render dropdown outside the card.
+                             * This prevents desktop clipping.
+                             */
+
+                            menuPortalTarget={
+                                document.body
+                            }
+
+                            menuPosition="fixed"
+
                             value={
                                 relayOptions.find(
                                     (item) =>
@@ -819,6 +848,7 @@ export default function InspectionForm() {
                                         : ""
                                 )
                             }
+
                         />
 
                     </SelectionField>
@@ -863,6 +893,16 @@ export default function InspectionForm() {
                                 customSelectStyles
                             }
 
+                            /*
+                             * Render outside card.
+                             */
+
+                            menuPortalTarget={
+                                document.body
+                            }
+
+                            menuPosition="fixed"
+
                             value={
                                 machineryOptions.find(
                                     (item) =>
@@ -874,6 +914,7 @@ export default function InspectionForm() {
                             onChange={
                                 handleMachineryChange
                             }
+
                         />
 
                     </SelectionField>
@@ -913,7 +954,7 @@ export default function InspectionForm() {
                                 !selectedMachinery
                                     ? "Select machinery first..."
                                     : isLoadingVehicles ||
-                                        isCheckingStatus
+                                      isCheckingStatus
                                         ? "Loading vehicles..."
                                         : "Search Door Number..."
                             }
@@ -933,6 +974,16 @@ export default function InspectionForm() {
                                 customSelectStyles
                             }
 
+                            /*
+                             * Render outside card.
+                             */
+
+                            menuPortalTarget={
+                                document.body
+                            }
+
+                            menuPosition="fixed"
+
                             value={
                                 vehicleOptions.find(
                                     (item) =>
@@ -944,6 +995,7 @@ export default function InspectionForm() {
                             onChange={
                                 handleVehicleChange
                             }
+
                         />
 
                     </SelectionField>
@@ -971,7 +1023,6 @@ export default function InspectionForm() {
                             flex
                             flex-col
                             gap-3
-
                             sm:flex-row
                             sm:items-center
                             sm:justify-between
@@ -1095,12 +1146,9 @@ export default function InspectionForm() {
                         className="
                             overflow-hidden
                             rounded-2xl
-
                             border
                             border-orange-200
-
                             bg-orange-50
-
                             shadow-sm
                         "
                     >
@@ -1111,7 +1159,6 @@ export default function InspectionForm() {
                                 border-orange-500
                                 px-5
                                 py-5
-
                                 sm:px-6
                             "
                         >
@@ -1132,9 +1179,7 @@ export default function InspectionForm() {
                                         shrink-0
                                         items-center
                                         justify-center
-
                                         rounded-xl
-
                                         bg-orange-100
                                         text-orange-600
                                     "
@@ -1306,13 +1351,9 @@ function SelectionField({
         <div
             className={`
                 min-w-0
-
                 rounded-xl
-
                 border
-
                 p-4
-
                 transition
 
                 ${
@@ -1354,7 +1395,6 @@ function SelectionField({
                             shrink-0
                             items-center
                             justify-center
-
                             rounded-lg
 
                             ${
@@ -1366,7 +1406,9 @@ function SelectionField({
                             }
                         `}
                     >
+
                         {icon}
+
                     </div>
 
 
@@ -1481,9 +1523,7 @@ function StepDot({
                 w-7
                 items-center
                 justify-center
-
                 rounded-full
-
                 text-[10px]
                 font-bold
 
