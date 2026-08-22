@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import {
+    ShieldCheck,
+    ClipboardCheck,
+    UserRound,
+    Building2,
+    Phone,
+    IdCard,
+    FileText,
+    CheckCircle2,
+    AlertTriangle,
+    Clock3,
+    RefreshCcw,
+} from "lucide-react";
+
 import inspectionService, {
     type PendingReinspection,
 } from "../../services/inspectionService";
@@ -33,84 +47,55 @@ export default function Checklist({
     const navigate = useNavigate();
 
 
-    // =====================================================
+    // =========================================================
     // STATE
-    // =====================================================
+    // =========================================================
 
-    const [
-        fields,
-        setFields,
-    ] = useState<ChecklistField[]>([]);
+    const [fields, setFields] =
+        useState<ChecklistField[]>([]);
 
+    const [loading, setLoading] =
+        useState(true);
 
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
-
-
-    const [
-        results,
-        setResults,
-    ] = useState<
-        Record<
-            number,
-            "Pass" | "Fail"
-        >
-    >({});
+    const [results, setResults] =
+        useState<
+            Record<
+                number,
+                "Pass" | "Fail"
+            >
+        >({});
 
 
-    const [
-        remarks,
-        setRemarks,
-    ] = useState("");
+    const [remarks, setRemarks] =
+        useState("");
 
 
-    const [
-        operatorName,
-        setOperatorName,
-    ] = useState("");
+    const [operatorName, setOperatorName] =
+        useState("");
+
+    const [operatorEmployeeId, setOperatorEmployeeId] =
+        useState("");
+
+    const [operatorAgency, setOperatorAgency] =
+        useState("");
+
+    const [operatorMobile, setOperatorMobile] =
+        useState("");
+
+    const [operatorChecklistFilled, setOperatorChecklistFilled] =
+        useState(true);
+
+    const [operatorRemarks, setOperatorRemarks] =
+        useState("");
 
 
-    const [
-        operatorEmployeeId,
-        setOperatorEmployeeId,
-    ] = useState("");
+    const [saving, setSaving] =
+        useState(false);
 
 
-    const [
-        operatorAgency,
-        setOperatorAgency,
-    ] = useState("");
-
-
-    const [
-        operatorMobile,
-        setOperatorMobile,
-    ] = useState("");
-
-
-    const [
-        operatorChecklistFilled,
-        setOperatorChecklistFilled,
-    ] = useState(true);
-
-
-    const [
-        operatorRemarks,
-        setOperatorRemarks,
-    ] = useState("");
-
-
-    const [
-        saving,
-        setSaving,
-    ] = useState(false);
-
-
-    // =====================================================
-    // DETERMINE REINSPECTION
-    // =====================================================
+    // =========================================================
+    // RE-INSPECTION
+    // =========================================================
 
     const isReinspection =
         pendingReinspection?.is_unfit === true;
@@ -123,9 +108,9 @@ export default function Checklist({
             : null;
 
 
-    // =====================================================
+    // =========================================================
     // CHECKLIST COUNTER
-    // =====================================================
+    // =========================================================
 
     const completedCount =
         Object.keys(results).length;
@@ -140,18 +125,24 @@ export default function Checklist({
         totalCount > 0;
 
 
-    // =====================================================
+    const completionPercentage =
+        totalCount > 0
+            ? Math.round(
+                (completedCount / totalCount) * 100
+            )
+            : 0;
+
+
+    // =========================================================
     // OPERATIONAL STATUS
-    // =====================================================
+    // =========================================================
 
     const operationalStatus:
         "Fit" |
         "Unfit" |
         "Pending" =
 
-        Object.values(results).includes(
-            "Fail"
-        )
+        Object.values(results).includes("Fail")
 
             ? "Unfit"
 
@@ -166,9 +157,9 @@ export default function Checklist({
         operationalStatus === "Unfit";
 
 
-    // =====================================================
+    // =========================================================
     // LOAD CHECKLIST
-    // =====================================================
+    // =========================================================
 
     useEffect(() => {
 
@@ -183,7 +174,7 @@ export default function Checklist({
 
 
             // -------------------------------------------------
-            // REINSPECTION
+            // RE-INSPECTION
             // -------------------------------------------------
 
             if (
@@ -204,7 +195,6 @@ export default function Checklist({
                     );
 
                     setLoading(false);
-
                 }
 
                 return;
@@ -252,6 +242,7 @@ export default function Checklist({
                 }
 
             }
+
         }
 
 
@@ -270,9 +261,9 @@ export default function Checklist({
     ]);
 
 
-    // =====================================================
+    // =========================================================
     // HANDLE RESULT
-    // =====================================================
+    // =========================================================
 
     function handleResult(
         fieldId: number,
@@ -282,18 +273,16 @@ export default function Checklist({
         setResults(
             (previous) => ({
                 ...previous,
-
                 [fieldId]: result,
-
             })
         );
 
     }
 
 
-    // =====================================================
+    // =========================================================
     // SUBMIT
-    // =====================================================
+    // =========================================================
 
     async function handleSubmit() {
 
@@ -390,7 +379,7 @@ export default function Checklist({
 
 
         // -------------------------------------------------
-        // REINSPECTION VALIDATION
+        // RE-INSPECTION VALIDATION
         // -------------------------------------------------
 
         if (
@@ -472,12 +461,7 @@ export default function Checklist({
 
             remarks,
 
-            results:
-                inspectionResults,
-
-            // -------------------------------------------------
-            // REINSPECTION INFORMATION
-            // -------------------------------------------------
+            results: inspectionResults,
 
             is_reinspection:
                 isReinspection,
@@ -528,25 +512,9 @@ export default function Checklist({
             /*
              * IMPORTANT:
              *
-             * Do NOT use:
+             * Keep React Router navigation here.
              *
-             * window.location.href
-             *
-             * because that performs a full browser navigation.
-             *
-             * Your App.tsx has:
-             *
-             * /Re-Inspection
-             *
-             * but does NOT have:
-             *
-             * /reinspection
-             *
-             * The old URL therefore went to the catch-all
-             * route and redirected to /login.
-             *
-             * React Router navigation keeps the current
-             * authentication state.
+             * Do NOT use window.location.href.
              */
 
             navigate(
@@ -566,7 +534,7 @@ export default function Checklist({
 
 
             // -------------------------------------------------
-            // SHOW BACKEND VALIDATION MESSAGE
+            // BACKEND VALIDATION MESSAGE
             // -------------------------------------------------
 
             const backendError =
@@ -583,6 +551,7 @@ export default function Checklist({
                         backendError.parent_inspection_id
                     );
 
+
                 } else if (
                     backendError.remarks
                 ) {
@@ -590,6 +559,7 @@ export default function Checklist({
                     alert(
                         backendError.remarks
                     );
+
 
                 } else if (
                     backendError.detail
@@ -599,6 +569,7 @@ export default function Checklist({
                         backendError.detail
                     );
 
+
                 } else if (
                     backendError.error
                 ) {
@@ -606,6 +577,7 @@ export default function Checklist({
                     alert(
                         backendError.error
                     );
+
 
                 } else {
 
@@ -632,21 +604,50 @@ export default function Checklist({
     }
 
 
-    // =====================================================
+    // =========================================================
     // LOADING
-    // =====================================================
+    // =========================================================
 
     if (loading) {
 
         return (
 
-            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                p-6
+                shadow-sm
+            ">
 
-                <p className="text-gray-600 font-medium">
+                <div className="
+                    flex
+                    items-center
+                    justify-center
+                    gap-3
+                    py-10
+                ">
 
-                    Loading checklist...
+                    <div className="
+                        h-8
+                        w-8
+                        animate-spin
+                        rounded-full
+                        border-4
+                        border-blue-600
+                        border-t-transparent
+                    " />
 
-                </p>
+                    <p className="
+                        text-sm
+                        font-medium
+                        text-slate-600
+                    ">
+                        Loading inspection checklist...
+                    </p>
+
+                </div>
 
             </div>
 
@@ -655,17 +656,54 @@ export default function Checklist({
     }
 
 
-    // =====================================================
+    // =========================================================
     // EMPTY CHECKLIST
-    // =====================================================
+    // =========================================================
 
     if (fields.length === 0) {
 
         return (
 
-            <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 sm:p-6">
+            <div className="
+                rounded-2xl
+                border
+                border-amber-200
+                bg-amber-50
+                p-6
+            ">
 
-                No checklist available.
+                <div className="
+                    flex
+                    items-start
+                    gap-3
+                ">
+
+                    <AlertTriangle
+                        className="text-amber-600 shrink-0"
+                        size={22}
+                    />
+
+                    <div>
+
+                        <h3 className="
+                            font-bold
+                            text-amber-900
+                        ">
+                            No Checklist Available
+                        </h3>
+
+                        <p className="
+                            mt-1
+                            text-sm
+                            text-amber-700
+                        ">
+                            No inspection checklist was found
+                            for the selected machinery.
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -674,376 +712,938 @@ export default function Checklist({
     }
 
 
-    // =====================================================
+    // =========================================================
     // UI
-    // =====================================================
+    // =========================================================
 
     return (
 
-        <div className="bg-white sm:rounded-lg sm:shadow px-4 py-2 sm:p-6">
+        <div className="
+            w-full
+            space-y-4
+            sm:space-y-6
+        ">
 
 
-            {/* =================================================
-                HEADER
-            ================================================= */}
+            {/* =====================================================
+                CHECKLIST HEADER
+            ====================================================== */}
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <section className="
+                overflow-hidden
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                shadow-sm
+            ">
 
-                <div>
+                {/* Header */}
 
-                    <h2 className="text-xl sm:text-2xl font-bold">
+                <div className="
+                    bg-gradient-to-r
+                    from-slate-950
+                    via-blue-950
+                    to-blue-800
+                    px-4
+                    py-5
+                    sm:px-6
+                    sm:py-6
+                ">
 
-                        {
-                            isReinspection
-                                ? "Targeted Re-inspection"
-                                : "Inspection Checklist"
-                        }
-
-                    </h2>
-
-
-                    <p className="text-sm text-gray-500 mt-1">
-
-                        {
-                            isReinspection
-
-                                ? "Verify the previously failed checkpoints."
-
-                                : "Select PASS or FAIL for every checkpoint."
-                        }
-
-                    </p>
-
-
-                    {
-                        isReinspection &&
-                        parentInspectionId &&
-
-                        <p className="text-xs text-orange-600 mt-2">
-
-                            Original Inspection ID:{" "}
-                            {parentInspectionId}
-
-                        </p>
-                    }
-
-                </div>
+                    <div className="
+                        flex
+                        flex-col
+                        gap-5
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                    ">
 
 
-                {/* STATUS */}
+                        {/* Title */}
 
-                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                        <div className="
+                            flex
+                            items-start
+                            gap-3
+                        ">
 
-                    <div
-                        className={`
-                            px-4 sm:px-5
-                            py-2
-                            rounded-lg
-                            text-white
-                            text-sm sm:text-base
-                            font-bold
-                            w-1/2
-                            sm:w-auto
-                            text-center
+                            <div className="
+                                flex
+                                h-11
+                                w-11
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-white/10
+                                ring-1
+                                ring-white/20
+                            ">
 
-                            ${
-                                operationalStatus === "Fit"
-                                    ? "bg-green-600"
-                                    : operationalStatus === "Unfit"
-                                        ? "bg-red-600"
-                                        : "bg-yellow-500"
-                            }
-                        `}
-                    >
+                                {isReinspection ? (
 
-                        {operationalStatus}
+                                    <RefreshCcw
+                                        size={23}
+                                        className="text-blue-200"
+                                    />
+
+                                ) : (
+
+                                    <ShieldCheck
+                                        size={23}
+                                        className="text-blue-200"
+                                    />
+
+                                )}
+
+                            </div>
+
+
+                            <div>
+
+                                <div className="
+                                    text-[11px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.18em]
+                                    text-blue-200
+                                ">
+                                    NIRIKSHAN
+                                </div>
+
+
+                                <h2 className="
+                                    mt-0.5
+                                    text-xl
+                                    font-bold
+                                    text-white
+                                    sm:text-2xl
+                                ">
+
+                                    {isReinspection
+                                        ? "Targeted Re-Inspection"
+                                        : "Inspection Checklist"
+                                    }
+
+                                </h2>
+
+
+                                <p className="
+                                    mt-1
+                                    text-xs
+                                    leading-5
+                                    text-blue-100/80
+                                    sm:text-sm
+                                ">
+
+                                    {isReinspection
+                                        ? "Verify the previously failed checkpoints."
+                                        : "Complete every safety checkpoint before submission."
+                                    }
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Status */}
+
+                        <div className="
+                            flex
+                            items-center
+                            gap-2
+                            sm:flex-col
+                            sm:items-end
+                        ">
+
+                            <div
+                                className={`
+                                    flex
+                                    items-center
+                                    gap-2
+                                    rounded-full
+                                    px-4
+                                    py-2
+                                    text-xs
+                                    font-bold
+                                    shadow-sm
+
+                                    ${
+                                        operationalStatus === "Fit"
+                                            ? "bg-green-500 text-white"
+                                            : operationalStatus === "Unfit"
+                                                ? "bg-red-500 text-white"
+                                                : "bg-amber-400 text-slate-950"
+                                    }
+                                `}
+                            >
+
+                                {operationalStatus === "Fit" && (
+                                    <CheckCircle2 size={16} />
+                                )}
+
+                                {operationalStatus === "Unfit" && (
+                                    <AlertTriangle size={16} />
+                                )}
+
+                                {operationalStatus === "Pending" && (
+                                    <Clock3 size={16} />
+                                )}
+
+                                {operationalStatus}
+
+                            </div>
+
+
+                            <div className="
+                                rounded-full
+                                bg-white/10
+                                px-4
+                                py-2
+                                text-xs
+                                font-semibold
+                                text-white
+                                ring-1
+                                ring-white/15
+                            ">
+
+                                {completedCount} / {totalCount}
+                                {" "}Completed
+
+                            </div>
+
+                        </div>
 
                     </div>
 
 
-                    <div
-                        className={`
-                            px-3 sm:px-4
-                            py-1.5
-                            rounded-full
-                            text-xs sm:text-sm
+                    {/* Reinspection information */}
+
+                    {isReinspection &&
+                        parentInspectionId && (
+
+                            <div className="
+                                mt-4
+                                flex
+                                items-center
+                                gap-2
+                                rounded-xl
+                                border
+                                border-orange-300/20
+                                bg-orange-400/10
+                                px-3
+                                py-2.5
+                                text-xs
+                                text-orange-100
+                            ">
+
+                                <RefreshCcw
+                                    size={15}
+                                    className="shrink-0"
+                                />
+
+                                <span>
+                                    Original Inspection ID:
+                                    {" "}
+                                    <strong>
+                                        {parentInspectionId}
+                                    </strong>
+                                </span>
+
+                            </div>
+
+                        )}
+
+                </div>
+
+
+                {/* Progress */}
+
+                <div className="
+                    border-t
+                    border-slate-100
+                    bg-white
+                    px-4
+                    py-4
+                    sm:px-6
+                ">
+
+                    <div className="
+                        mb-2
+                        flex
+                        items-center
+                        justify-between
+                    ">
+
+                        <div className="
+                            flex
+                            items-center
+                            gap-2
+                            text-xs
                             font-semibold
-                            text-white
-                            w-1/2
-                            sm:w-auto
-                            text-center
+                            text-slate-500
+                        ">
 
-                            ${
-                                allCompleted
-                                    ? "bg-green-600"
-                                    : "bg-orange-500"
-                            }
-                        `}
-                    >
-
-                        {completedCount} / {totalCount}
-
-                        {" "}Completed
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {/* =================================================
-                OPERATOR INFORMATION
-            ================================================= */}
-
-            {!isReinspection && (
-
-                <div className="mt-6 pt-6 border-t border-gray-200 sm:mt-8 sm:mb-8 sm:border sm:rounded-lg sm:p-6 sm:bg-gray-50">
-
-                    <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-5">
-
-                        Operator Information
-
-                    </h3>
-
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-
-
-                        {/* NAME */}
-
-                        <div>
-
-                            <label className="block mb-2 text-sm font-medium">
-
-                                Operator Name
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                className="w-full border rounded-lg p-3"
-
-                                value={
-                                    operatorName
-                                }
-
-                                onChange={(event) =>
-                                    setOperatorName(
-                                        event.target.value
-                                    )
-                                }
-
+                            <ClipboardCheck
+                                size={15}
+                                className="text-blue-600"
                             />
+
+                            Checklist Progress
 
                         </div>
 
 
-                        {/* EMPLOYEE ID */}
+                        <span className="
+                            text-xs
+                            font-bold
+                            text-slate-700
+                        ">
 
-                        <div>
+                            {completionPercentage}%
 
-                            <label className="block mb-2 text-sm font-medium">
-
-                                Employee ID
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                className="w-full border rounded-lg p-3"
-
-                                value={
-                                    operatorEmployeeId
-                                }
-
-                                onChange={(event) =>
-                                    setOperatorEmployeeId(
-                                        event.target.value
-                                    )
-                                }
-
-                            />
-
-                        </div>
-
-
-                        {/* AGENCY */}
-
-                        <div>
-
-                            <label className="block mb-2 text-sm font-medium">
-
-                                Agency Name
-
-                            </label>
-
-                            <input
-
-                                type="text"
-
-                                className="w-full border rounded-lg p-3"
-
-                                value={
-                                    operatorAgency
-                                }
-
-                                onChange={(event) =>
-                                    setOperatorAgency(
-                                        event.target.value
-                                    )
-                                }
-
-                            />
-
-                        </div>
-
-
-                        {/* MOBILE */}
-
-                        <div>
-
-                            <label className="block mb-2 text-sm font-medium">
-
-                                Mobile Number
-
-                            </label>
-
-                            <input
-
-                                type="tel"
-
-                                className="w-full border rounded-lg p-3"
-
-                                value={
-                                    operatorMobile
-                                }
-
-                                onChange={(event) =>
-                                    setOperatorMobile(
-                                        event.target.value
-                                    )
-                                }
-
-                            />
-
-                        </div>
+                        </span>
 
                     </div>
 
 
-                    {/* OPERATOR CHECKLIST */}
+                    <div className="
+                        h-2
+                        overflow-hidden
+                        rounded-full
+                        bg-slate-100
+                    ">
 
-                    <div className="mt-5">
+                        <div
+                            className={`
+                                h-full
+                                rounded-full
+                                transition-all
+                                duration-500
 
-                        <label className="block mb-3 text-sm font-medium">
-
-                            Operator Checklist Filled
-
-                        </label>
-
-
-                        <div className="flex gap-8">
-
-                            <label className="flex items-center gap-2">
-
-                                <input
-
-                                    type="radio"
-
-                                    checked={
-                                        operatorChecklistFilled
-                                    }
-
-                                    onChange={() =>
-                                        setOperatorChecklistFilled(
-                                            true
-                                        )
-                                    }
-
-                                />
-
-                                Yes
-
-                            </label>
-
-
-                            <label className="flex items-center gap-2">
-
-                                <input
-
-                                    type="radio"
-
-                                    checked={
-                                        !operatorChecklistFilled
-                                    }
-
-                                    onChange={() =>
-                                        setOperatorChecklistFilled(
-                                            false
-                                        )
-                                    }
-
-                                />
-
-                                No
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* OPERATOR REMARKS */}
-
-                    <div className="mt-5">
-
-                        <label className="block mb-2 text-sm font-medium">
-
-                            Operator Remarks
-
-                        </label>
-
-                        <textarea
-
-                            rows={3}
-
-                            className="w-full border rounded-lg p-3 resize-none"
-
-                            placeholder="Enter operator-related observations..."
-
-                            value={
-                                operatorRemarks
-                            }
-
-                            onChange={(event) =>
-                                setOperatorRemarks(
-                                    event.target.value
-                                )
-                            }
-
+                                ${
+                                    operationalStatus === "Unfit"
+                                        ? "bg-red-500"
+                                        : "bg-blue-600"
+                                }
+                            `}
+                            style={{
+                                width: `${completionPercentage}%`,
+                            }}
                         />
 
                     </div>
 
                 </div>
 
+            </section>
+
+
+            {/* =====================================================
+                OPERATOR INFORMATION
+            ====================================================== */}
+
+            {!isReinspection && (
+
+                <section className="
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    shadow-sm
+                ">
+
+                    {/* Section Header */}
+
+                    <div className="
+                        border-b
+                        border-slate-100
+                        px-4
+                        py-4
+                        sm:px-6
+                        sm:py-5
+                    ">
+
+                        <div className="
+                            flex
+                            items-center
+                            gap-3
+                        ">
+
+                            <div className="
+                                flex
+                                h-10
+                                w-10
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                            ">
+
+                                <UserRound
+                                    size={20}
+                                />
+
+                            </div>
+
+
+                            <div>
+
+                                <h3 className="
+                                    text-base
+                                    font-bold
+                                    text-slate-900
+                                    sm:text-lg
+                                ">
+                                    Operator Information
+                                </h3>
+
+                                <p className="
+                                    mt-0.5
+                                    text-xs
+                                    text-slate-500
+                                    sm:text-sm
+                                ">
+                                    Enter the operator details for this inspection.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Form */}
+
+                    <div className="
+                        space-y-5
+                        p-4
+                        sm:p-6
+                    ">
+
+
+                        {/* Name */}
+
+                        <div>
+
+                            <label className="
+                                mb-2
+                                flex
+                                items-center
+                                gap-2
+                                text-sm
+                                font-semibold
+                                text-slate-700
+                            ">
+
+                                <UserRound
+                                    size={15}
+                                    className="text-slate-400"
+                                />
+
+                                Operator Name
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                value={operatorName}
+                                onChange={(event) =>
+                                    setOperatorName(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="Enter operator name"
+                                className="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    border-slate-200
+                                    bg-slate-50
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-900
+                                    outline-none
+                                    transition
+
+                                    placeholder:text-slate-400
+
+                                    focus:border-blue-500
+                                    focus:bg-white
+                                    focus:ring-4
+                                    focus:ring-blue-500/10
+                                "
+                            />
+
+                        </div>
+
+
+                        {/* Employee ID + Agency */}
+
+                        <div className="
+                            grid
+                            grid-cols-1
+                            gap-5
+                            md:grid-cols-2
+                        ">
+
+
+                            {/* Employee ID */}
+
+                            <div>
+
+                                <label className="
+                                    mb-2
+                                    flex
+                                    items-center
+                                    gap-2
+                                    text-sm
+                                    font-semibold
+                                    text-slate-700
+                                ">
+
+                                    <IdCard
+                                        size={15}
+                                        className="text-slate-400"
+                                    />
+
+                                    Employee ID
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    value={operatorEmployeeId}
+                                    onChange={(event) =>
+                                        setOperatorEmployeeId(
+                                            event.target.value
+                                        )
+                                    }
+                                    placeholder="Enter employee ID"
+                                    className="
+                                        w-full
+                                        rounded-xl
+                                        border
+                                        border-slate-200
+                                        bg-slate-50
+                                        px-4
+                                        py-3
+                                        text-sm
+                                        text-slate-900
+                                        outline-none
+                                        transition
+
+                                        placeholder:text-slate-400
+
+                                        focus:border-blue-500
+                                        focus:bg-white
+                                        focus:ring-4
+                                        focus:ring-blue-500/10
+                                    "
+                                />
+
+                            </div>
+
+
+                            {/* Agency */}
+
+                            <div>
+
+                                <label className="
+                                    mb-2
+                                    flex
+                                    items-center
+                                    gap-2
+                                    text-sm
+                                    font-semibold
+                                    text-slate-700
+                                ">
+
+                                    <Building2
+                                        size={15}
+                                        className="text-slate-400"
+                                    />
+
+                                    Agency Name
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    value={operatorAgency}
+                                    onChange={(event) =>
+                                        setOperatorAgency(
+                                            event.target.value
+                                        )
+                                    }
+                                    placeholder="Enter agency name"
+                                    className="
+                                        w-full
+                                        rounded-xl
+                                        border
+                                        border-slate-200
+                                        bg-slate-50
+                                        px-4
+                                        py-3
+                                        text-sm
+                                        text-slate-900
+                                        outline-none
+                                        transition
+
+                                        placeholder:text-slate-400
+
+                                        focus:border-blue-500
+                                        focus:bg-white
+                                        focus:ring-4
+                                        focus:ring-blue-500/10
+                                    "
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Mobile */}
+
+                        <div>
+
+                            <label className="
+                                mb-2
+                                flex
+                                items-center
+                                gap-2
+                                text-sm
+                                font-semibold
+                                text-slate-700
+                            ">
+
+                                <Phone
+                                    size={15}
+                                    className="text-slate-400"
+                                />
+
+                                Mobile Number
+
+                            </label>
+
+
+                            <input
+                                type="tel"
+                                inputMode="numeric"
+                                value={operatorMobile}
+                                onChange={(event) =>
+                                    setOperatorMobile(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="Enter mobile number"
+                                className="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    border-slate-200
+                                    bg-slate-50
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-900
+                                    outline-none
+                                    transition
+
+                                    placeholder:text-slate-400
+
+                                    focus:border-blue-500
+                                    focus:bg-white
+                                    focus:ring-4
+                                    focus:ring-blue-500/10
+                                "
+                            />
+
+                        </div>
+
+
+                        {/* Operator Checklist */}
+
+                        <div className="
+                            rounded-xl
+                            border
+                            border-slate-200
+                            bg-slate-50
+                            p-4
+                        ">
+
+                            <div className="
+                                mb-3
+                                flex
+                                items-center
+                                gap-2
+                            ">
+
+                                <ClipboardCheck
+                                    size={17}
+                                    className="text-blue-600"
+                                />
+
+                                <span className="
+                                    text-sm
+                                    font-semibold
+                                    text-slate-800
+                                ">
+                                    Operator Checklist Filled
+                                </span>
+
+                            </div>
+
+
+                            <div className="
+                                grid
+                                grid-cols-2
+                                gap-3
+                            ">
+
+
+                                {/* YES */}
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setOperatorChecklistFilled(
+                                            true
+                                        )
+                                    }
+                                    className={`
+                                        flex
+                                        min-h-11
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        rounded-xl
+                                        border
+                                        text-sm
+                                        font-bold
+                                        transition
+
+                                        ${
+                                            operatorChecklistFilled
+                                                ? `
+                                                    border-green-500
+                                                    bg-green-50
+                                                    text-green-700
+                                                  `
+                                                : `
+                                                    border-slate-200
+                                                    bg-white
+                                                    text-slate-500
+                                                    hover:bg-slate-100
+                                                  `
+                                        }
+                                    `}
+                                >
+
+                                    <CheckCircle2
+                                        size={18}
+                                    />
+
+                                    Yes
+
+                                </button>
+
+
+                                {/* NO */}
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setOperatorChecklistFilled(
+                                            false
+                                        )
+                                    }
+                                    className={`
+                                        flex
+                                        min-h-11
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        rounded-xl
+                                        border
+                                        text-sm
+                                        font-bold
+                                        transition
+
+                                        ${
+                                            !operatorChecklistFilled
+                                                ? `
+                                                    border-red-400
+                                                    bg-red-50
+                                                    text-red-700
+                                                  `
+                                                : `
+                                                    border-slate-200
+                                                    bg-white
+                                                    text-slate-500
+                                                    hover:bg-slate-100
+                                                  `
+                                        }
+                                    `}
+                                >
+
+                                    <AlertTriangle
+                                        size={18}
+                                    />
+
+                                    No
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Operator Remarks */}
+
+                        <div>
+
+                            <label className="
+                                mb-2
+                                flex
+                                items-center
+                                gap-2
+                                text-sm
+                                font-semibold
+                                text-slate-700
+                            ">
+
+                                <FileText
+                                    size={15}
+                                    className="text-slate-400"
+                                />
+
+                                Operator Remarks
+
+                            </label>
+
+
+                            <textarea
+                                rows={3}
+                                value={operatorRemarks}
+                                onChange={(event) =>
+                                    setOperatorRemarks(
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="Enter operator-related observations..."
+                                className="
+                                    w-full
+                                    resize-none
+                                    rounded-xl
+                                    border
+                                    border-slate-200
+                                    bg-slate-50
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-900
+                                    outline-none
+                                    transition
+
+                                    placeholder:text-slate-400
+
+                                    focus:border-blue-500
+                                    focus:bg-white
+                                    focus:ring-4
+                                    focus:ring-blue-500/10
+                                "
+                            />
+
+                        </div>
+
+                    </div>
+
+                </section>
+
             )}
 
 
-            {/* =================================================
+            {/* =====================================================
                 CHECKLIST ITEMS
-            ================================================= */}
+            ====================================================== */}
 
-            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 mt-6">
+            <section>
 
-                {
-                    fields.map(
+                <div className="
+                    mb-3
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+                    px-1
+                ">
+
+                    <div>
+
+                        <h3 className="
+                            text-base
+                            font-bold
+                            text-slate-900
+                            sm:text-lg
+                        ">
+
+                            Safety Checkpoints
+
+                        </h3>
+
+                        <p className="
+                            mt-0.5
+                            text-xs
+                            text-slate-500
+                            sm:text-sm
+                        ">
+
+                            Select PASS or FAIL for every checkpoint.
+
+                        </p>
+
+                    </div>
+
+
+                    <div className="
+                        shrink-0
+                        rounded-lg
+                        bg-blue-50
+                        px-3
+                        py-1.5
+                        text-xs
+                        font-bold
+                        text-blue-700
+                    ">
+
+                        {completedCount}/{totalCount}
+
+                    </div>
+
+                </div>
+
+
+                <div className="
+                    space-y-3
+                    sm:space-y-4
+                ">
+
+                    {fields.map(
                         (field) => (
 
                             <ChecklistItem
@@ -1073,41 +1673,46 @@ export default function Checklist({
                             />
 
                         )
-                    )
-                }
+                    )}
 
-            </div>
+                </div>
+
+            </section>
 
 
-            {/* =================================================
+            {/* =====================================================
                 REMARKS
-            ================================================= */}
+            ====================================================== */}
 
-            <Remarks
+            <section>
 
-                remarks={
-                    remarks
-                }
+                <Remarks
+                    remarks={
+                        remarks
+                    }
 
-                setRemarks={
-                    setRemarks
-                }
+                    setRemarks={
+                        setRemarks
+                    }
 
-                required={
-                    remarksRequired
-                }
+                    required={
+                        remarksRequired
+                    }
+                />
 
-            />
+            </section>
 
 
-            {/* =================================================
+            {/* =====================================================
                 SUBMIT
-            ================================================= */}
+            ====================================================== */}
 
-            <div className="mt-6 sm:mt-8">
+            <section className="
+                pb-6
+                sm:pb-8
+            ">
 
                 <SubmitButton
-
                     onSubmit={
                         handleSubmit
                     }
@@ -1115,10 +1720,9 @@ export default function Checklist({
                     loading={
                         saving
                     }
-
                 />
 
-            </div>
+            </section>
 
         </div>
 
