@@ -17,7 +17,6 @@ import type {
 
 
 interface AuthContextType {
-
     user: User | null;
 
     loading: boolean;
@@ -57,6 +56,10 @@ export function AuthProvider({
         useState(true);
 
 
+    // ========================================================
+    // CHECK EXISTING LOGIN
+    // ========================================================
+
     useEffect(() => {
 
         const access =
@@ -66,7 +69,6 @@ export function AuthProvider({
             localStorage.getItem("refresh");
 
 
-        // No tokens = not logged in
         if (!access && !refresh) {
 
             setLoading(false);
@@ -80,6 +82,10 @@ export function AuthProvider({
     }, []);
 
 
+    // ========================================================
+    // LOAD PROFILE
+    // ========================================================
+
     async function loadProfile() {
 
         try {
@@ -92,20 +98,25 @@ export function AuthProvider({
         } catch (error) {
 
             console.error(
-                "Unable to load user profile:",
+                "Unable to load profile:",
                 error
             );
 
             /*
              * IMPORTANT:
              *
-             * Do NOT logout here.
+             * DO NOT CALL logout() HERE.
              *
-             * Axios interceptor already handles
-             * access-token refresh.
+             * Axios interceptor handles:
              *
-             * A temporary API/network error should
-             * never destroy the user's session.
+             * 401
+             *   ↓
+             * refresh token
+             *   ↓
+             * retry request
+             *
+             * A temporary API/network problem must
+             * not destroy the user's session.
              */
 
             const access =
@@ -116,11 +127,16 @@ export function AuthProvider({
 
 
             /*
-             * Only consider the user unauthenticated
-             * if BOTH tokens are missing.
+             * If tokens still exist, keep the session.
              */
 
-            if (!access && !refresh) {
+            if (access || refresh) {
+
+                console.log(
+                    "Authentication tokens still exist."
+                );
+
+            } else {
 
                 setUser(null);
 
@@ -131,8 +147,13 @@ export function AuthProvider({
             setLoading(false);
 
         }
+
     }
 
+
+    // ========================================================
+    // LOGIN
+    // ========================================================
 
     async function login(
         data: LoginRequest
@@ -141,6 +162,10 @@ export function AuthProvider({
         const response =
             await authService.login(data);
 
+
+        /*
+         * Save tokens BEFORE setting user.
+         */
 
         localStorage.setItem(
             "access",
@@ -154,10 +179,22 @@ export function AuthProvider({
         );
 
 
+        /*
+         * Login response already contains
+         * user information.
+         *
+         * Therefore no additional profile
+         * request is required here.
+         */
+
         setUser(response.user);
 
     }
 
+
+    // ========================================================
+    // REGISTER
+    // ========================================================
 
     async function register(
         data: RegisterRequest
@@ -184,27 +221,41 @@ export function AuthProvider({
     }
 
 
+    // ========================================================
+    // LOGOUT
+    // ========================================================
+
     function logout() {
 
         /*
-         * Explicit user logout only.
+         * Only remove authentication tokens.
+         *
+         * Do NOT use localStorage.clear().
          */
 
         localStorage.removeItem("access");
 
         localStorage.removeItem("refresh");
 
+
         setUser(null);
 
-        window.location.href = "/login";
+
+        window.location.href =
+            "/login";
 
     }
 
+
+    // ========================================================
+    // CONTEXT
+    // ========================================================
 
     return (
 
         <AuthContext.Provider
             value={{
+
                 user,
 
                 loading,
@@ -219,6 +270,7 @@ export function AuthProvider({
                 logout,
 
                 setUser,
+
             }}
         >
 
@@ -230,6 +282,10 @@ export function AuthProvider({
 
 }
 
+
+// ============================================================
+// USE AUTH
+// ============================================================
 
 export function useAuth() {
 

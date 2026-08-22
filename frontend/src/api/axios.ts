@@ -3,33 +3,26 @@ import axios, {
     type InternalAxiosRequestConfig,
 } from "axios";
 
-
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL;
 
-
 const api = axios.create({
-
     baseURL: API_BASE_URL,
-
     headers: {
         "Content-Type": "application/json",
     },
-
 });
 
 
 // ============================================================
-// REQUEST INTERCEPTOR
+// REQUEST
 // ============================================================
 
 api.interceptors.request.use(
-
     (config: InternalAxiosRequestConfig) => {
 
         const access =
             localStorage.getItem("access");
-
 
         if (access) {
 
@@ -38,32 +31,21 @@ api.interceptors.request.use(
 
         }
 
-
         return config;
-
     },
 
-    (error) => {
-
-        return Promise.reject(error);
-
-    }
-
+    (error) =>
+        Promise.reject(error)
 );
 
 
 // ============================================================
-// RESPONSE INTERCEPTOR
+// RESPONSE
 // ============================================================
 
 api.interceptors.response.use(
 
-    (response) => {
-
-        return response;
-
-    },
-
+    (response) => response,
 
     async (error: AxiosError) => {
 
@@ -74,14 +56,8 @@ api.interceptors.response.use(
             }) | undefined;
 
 
-        // ----------------------------------------------------
-        // No request information
-        // ----------------------------------------------------
-
         if (!originalRequest) {
-
             return Promise.reject(error);
-
         }
 
 
@@ -100,7 +76,7 @@ api.interceptors.response.use(
 
 
         // ----------------------------------------------------
-        // Never refresh the refresh-token request itself
+        // Never intercept refresh request
         // ----------------------------------------------------
 
         if (
@@ -121,17 +97,17 @@ api.interceptors.response.use(
             localStorage.getItem("refresh");
 
 
-        // ----------------------------------------------------
-        // No refresh token
-        // ----------------------------------------------------
-
         if (!refresh) {
 
-            localStorage.removeItem("access");
+            console.error(
+                "No refresh token available."
+            );
 
+            localStorage.removeItem("access");
             localStorage.removeItem("refresh");
 
-            window.location.href = "/login";
+            window.location.href =
+                "/login";
 
             return Promise.reject(error);
 
@@ -140,12 +116,10 @@ api.interceptors.response.use(
 
         try {
 
-            // ------------------------------------------------
-            // Use plain axios here.
-            //
-            // DO NOT use `api.post()` because that would
-            // trigger this interceptor again.
-            // ------------------------------------------------
+            console.log(
+                "Access token expired. Refreshing..."
+            );
+
 
             const refreshResponse =
                 await axios.post(
@@ -173,15 +147,11 @@ api.interceptors.response.use(
             if (!newAccess) {
 
                 throw new Error(
-                    "No access token returned."
+                    "Refresh response did not contain access token."
                 );
 
             }
 
-
-            // ------------------------------------------------
-            // Save new access token
-            // ------------------------------------------------
 
             localStorage.setItem(
                 "access",
@@ -189,17 +159,14 @@ api.interceptors.response.use(
             );
 
 
-            // ------------------------------------------------
-            // Update original request
-            // ------------------------------------------------
-
             originalRequest.headers.Authorization =
                 `Bearer ${newAccess}`;
 
 
-            // ------------------------------------------------
-            // Retry original request
-            // ------------------------------------------------
+            console.log(
+                "Token refreshed successfully."
+            );
+
 
             return api(originalRequest);
 
@@ -207,18 +174,12 @@ api.interceptors.response.use(
         } catch (refreshError) {
 
             console.error(
-                "Token refresh failed:",
+                "Refresh token failed:",
                 refreshError
             );
 
 
-            // ------------------------------------------------
-            // Refresh token is invalid/expired.
-            // NOW logout.
-            // ------------------------------------------------
-
             localStorage.removeItem("access");
-
             localStorage.removeItem("refresh");
 
 
