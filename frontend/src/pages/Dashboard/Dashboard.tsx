@@ -1,7 +1,7 @@
 import {
     ClipboardCheck,
     Clock3,
-    FileBarChart3,
+    FileBarChart,
     ShieldCheck,
     ArrowRight,
     Activity,
@@ -23,7 +23,6 @@ export default function Dashboard() {
             .map((name) => name[0])
             .join("")
             .toUpperCase() || "U";
-
 
     return (
         <div className="space-y-5 sm:space-y-6">
@@ -61,7 +60,7 @@ export default function Dashboard() {
                     rounded-full
                     bg-blue-400/10
                     blur-3xl
-                " />
+                />
 
                 <div className="
                     pointer-events-none
@@ -73,7 +72,7 @@ export default function Dashboard() {
                     rounded-full
                     bg-indigo-300/10
                     blur-3xl
-                " />
+                />
 
 
                 <div className="
@@ -288,7 +287,7 @@ export default function Dashboard() {
 
                     <QuickAction
                         icon={
-                            <FileBarChart3
+                            <FileBarChart
                                 size={21}
                             />
                         }
@@ -410,7 +409,7 @@ export default function Dashboard() {
 
 
             {/* =====================================================
-                SYSTEM STATUS / TODAY
+                TODAY'S ACTIVITY + SYSTEM STATUS
             ====================================================== */}
 
             <section className="
@@ -639,6 +638,7 @@ export default function Dashboard() {
 
                             </div>
 
+
                             <span className="
                                 rounded-full
                                 bg-green-100
@@ -667,7 +667,7 @@ export default function Dashboard() {
 
 
 /* ================================================================
-   QUICK ACTION
+   QUICK ACTION COMPONENT
 ================================================================ */
 
 interface QuickActionProps {
@@ -762,6 +762,7 @@ function QuickAction({
                     {title}
                 </h3>
 
+
                 <p
                     className={`
                         mt-1
@@ -803,7 +804,7 @@ function QuickAction({
 
 
 /* ================================================================
-   METRIC CARD
+   METRIC CARD COMPONENT
 ================================================================ */
 
 interface MetricCardProps {
@@ -896,6 +897,7 @@ function MetricCard({
                 ">
                     {label}
                 </p>
+
 
                 <p className="
                     mt-1
