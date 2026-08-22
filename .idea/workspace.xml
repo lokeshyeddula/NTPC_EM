@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="auth changes">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Sidebar.tsx" afterDir="false" />
+    <list default="true" id="7f63e514-7ec7-41c9-a006-f6deca4597a3" name="Changes" comment="Layout changes">
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Login/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Login/Login.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -297,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787409098501</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Layout changes">
+      <option name="closed" value="true" />
+      <created>1787410997253</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1787410997253</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -305,6 +310,7 @@
     <MESSAGE value="uuid creation for inspection number" />
     <MESSAGE value="change in views.py" />
     <MESSAGE value="auth changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="auth changes" />
+    <MESSAGE value="Layout changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Layout changes" />
   </component>
 </project>
