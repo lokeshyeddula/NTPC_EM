@@ -11,7 +11,7 @@ export default function Layout({ children }: Props) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen w-full max-w-full overflow-x-hidden bg-slate-100">
+        <div className="flex h-dvh w-full overflow-hidden bg-slate-100">
 
             {/* =====================================================
                 MOBILE OVERLAY
@@ -31,24 +31,25 @@ export default function Layout({ children }: Props) {
                 />
             )}
 
-
             {/* =====================================================
                 SIDEBAR
             ====================================================== */}
 
-            <div
+            <aside
                 className={`
                     fixed
                     inset-y-0
                     left-0
                     z-50
-                    w-auto
+                    h-dvh
                     transform
                     transition-transform
                     duration-300
                     ease-in-out
 
                     md:relative
+                    md:z-auto
+                    md:block
                     md:translate-x-0
 
                     ${
@@ -61,57 +62,59 @@ export default function Layout({ children }: Props) {
                 <Sidebar
                     onClose={() => setIsSidebarOpen(false)}
                 />
-            </div>
-
+            </aside>
 
             {/* =====================================================
-                MAIN APPLICATION
+                MAIN APPLICATION SHELL
             ====================================================== */}
 
-            <div className="
-                flex
-                min-h-screen
-                min-w-0
-                w-full
-                flex-1
-                flex-col
-                overflow-x-hidden
-            ">
+            <div
+                className="
+                    flex
+                    h-dvh
+                    min-h-0
+                    min-w-0
+                    flex-1
+                    flex-col
+                    overflow-hidden
+                "
+            >
 
                 {/* =================================================
                     HEADER
                 ================================================== */}
 
-                <div className="w-full min-w-0 shrink-0">
+                <div className="shrink-0">
                     <Header
                         onMenuClick={() => setIsSidebarOpen(true)}
                     />
                 </div>
 
-
                 {/* =================================================
-                    CONTENT
+                    SCROLLABLE PAGE AREA
+
+                    IMPORTANT:
+                    This is the ONLY vertical scroll container.
                 ================================================== */}
 
                 <main
                     className="
                         min-h-0
                         min-w-0
-                        w-full
                         flex-1
                         overflow-x-hidden
                         overflow-y-auto
+                        overscroll-y-contain
                         bg-white
                         sm:bg-slate-100
-                        overscroll-contain
                     "
+                    style={{
+                        WebkitOverflowScrolling: "touch",
+                    }}
                 >
-
                     <div
                         className="
-                            box-border
                             w-full
-                            max-w-full
                             min-w-0
                             px-0
                             py-0
@@ -125,11 +128,9 @@ export default function Layout({ children }: Props) {
                     >
                         {children}
                     </div>
-
                 </main>
 
             </div>
-
         </div>
     );
 }
